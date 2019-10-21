@@ -1,0 +1,18 @@
+diff --git a/codebase/libxml2/HTMLparser.c b/codebase/libxml2/HTMLparser.c
+index d6971b5..7c82c11 100644
+--- a/codebase/libxml2/HTMLparser.c
++++ b/codebase/libxml2/HTMLparser.c
+@@ -2473,8 +2473,13 @@ htmlParseName(htmlParserCtxtPtr ctxt) {
+ 	       (*in == ':') || (*in == '.'))
+ 	    in++;
+ 
++#ifdef MAGMA_ENABLE_FIXES
+ 	if (in == ctxt->input->end)
+ 	    return(NULL);
++#endif
++#ifdef MAGMA_ENABLE_CANARIES
++	MAGMA_LOG(38, in >= ctxt->input->end);
++#endif
+ 
+ 	if ((*in > 0) && (*in < 0x80)) {
+ 	    count = in - ctxt->input->cur;

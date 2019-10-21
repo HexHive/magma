@@ -1,0 +1,48 @@
+diff --git a/codebase/poppler/CMakeLists.txt b/codebase/poppler/CMakeLists.txt
+index 8e27bc2..92a4968 100644
+--- a/codebase/poppler/CMakeLists.txt
++++ b/codebase/poppler/CMakeLists.txt
+@@ -41,2 +41,2 @@ if (ECM_FOUND)
+-set(POPPLER_VERSION "${POPPLER_MAJOR_VERSION}.${POPPLER_MINOR_VERSION}.${POPPLER_MICRO_VERSION}")
++set(POPPLER_VERSION "${POPPLER_MAJOR_VERSION}.${POPPLER_MINOR_VERSION}.${POPPLER_MICRO_VERSION}magma")
+
+@@ -491,9 +494,15 @@ if(TIFF_FOUND)
+   set(poppler_LIBS ${poppler_LIBS} ${TIFF_LIBRARIES})
+ endif()
+ 
++string(REPLACE ";" "\;" POPPLER_COPTS "$ENV{POPPLER_COPTS}")
++add_definitions(${POPPLER_COPTS})
++
++string(STRIP $ENV{LIBS} LIBS)
++set(poppler_LIBS ${poppler_LIBS} ${LIBS})
++
+ if(MSVC)
+ add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+ add_library(poppler STATIC ${poppler_SRCS})
+ else()
+ add_library(poppler ${poppler_SRCS})
+ endif()
+diff --git a/codebase/poppler/utils/pdfimages.cc b/codebase/poppler/utils/pdfimages.cc
+index 1dfe302..8ce84fd 100644
+--- a/codebase/poppler/utils/pdfimages.cc
++++ b/codebase/poppler/utils/pdfimages.cc
+@@ -114,6 +114,7 @@ static const ArgDesc argDesc[] = {
+ };
+ 
+ int main(int argc, char *argv[]) {
++  magma_init();
+   PDFDoc *doc;
+   GooString *fileName;
+   char *imgRoot = nullptr;
+diff --git a/codebase/poppler/utils/pdftoppm.cc b/codebase/poppler/utils/pdftoppm.cc
+index 48a39f7..c2e674f 100644
+--- a/codebase/poppler/utils/pdftoppm.cc
++++ b/codebase/poppler/utils/pdftoppm.cc
+@@ -378,6 +386,7 @@ static void processPageJobs() {
+ #endif // UTILS_USE_PTHREADS
+ 
+ int main(int argc, char *argv[]) {
++  magma_init();
+   PDFDoc *doc;
+   GooString *fileName = nullptr;
+   char *ppmRoot = nullptr;

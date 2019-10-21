@@ -1,0 +1,16 @@
+[submodule "codebase/libpng16"]
+	path = codebase/libpng16
+	url = https://github.com/glennrp/libpng.git
+	branch = libpng16
+[submodule "codebase/libtiff4"]
+	path = codebase/libtiff4
+	url = https://gitlab.com/libtiff/libtiff.git
+	branch = master
+[submodule "codebase/libxml2"]
+	path = codebase/libxml2
+	url = https://github.com/GNOME/libxml2.git
+	branch = master
+[submodule "codebase/poppler"]
+	path = codebase/poppler
+	url = https://gitlab.freedesktop.org/poppler/poppler.git
+	branch = master

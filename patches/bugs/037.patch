@@ -1,0 +1,23 @@
+diff --git a/codebase/libxml2/parser.c b/codebase/libxml2/parser.c
+index 3f31329..113f75d 100644
+--- a/codebase/libxml2/parser.c
++++ b/codebase/libxml2/parser.c
+@@ -9634,10 +9634,18 @@ xmlParseEndTag2(xmlParserCtxtPtr ctxt, const xmlChar *prefix,
+     SKIP(2);
+ 
+     curLength = ctxt->input->end - ctxt->input->cur;
++#ifdef MAGMA_ENABLE_FIXES
+     if ((tlen > 0) && (curLength >= (size_t)tlen) &&
+         (xmlStrncmp(ctxt->input->cur, ctxt->name, tlen) == 0)) {
+         if ((curLength >= (size_t)(tlen + 1)) &&
+ 	    (ctxt->input->cur[tlen] == '>')) {
++#else
++#ifdef MAGMA_ENABLE_CANARIES
++    MAGMA_LOG(37, (curLength < (size_t)tlen) | (curLength < ((size_t)tlen + 1)));
++#endif
++    if ((tlen > 0) && (xmlStrncmp(ctxt->input->cur, ctxt->name, tlen) == 0)) {
++        if (ctxt->input->cur[tlen] == '>') {
++#endif
+ 	    ctxt->input->cur += tlen + 1;
+ 	    ctxt->input->col += tlen + 1;
+ 	    goto done;
