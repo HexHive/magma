@@ -4,14 +4,7 @@ from random import randint
 import multiprocessing.pool
 from monitor import run_monitor
 import itertools
-
-MAGMA_DIR = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../"))
-
-for _,_,files in os.walk(os.path.join(MAGMA_DIR, "patches", "bugs")):
-    files.sort()
-    # the number of elements in the shared object
-    MAGMA_LENGTH = int(files[-1][:files[-1].index(".patch")]) + 1
-    break
+from config import *
 
 class TargetProgram(dict):
     '''
@@ -223,18 +216,13 @@ class FuzzerBenchmark:
         A generator routine. Generates all the Campaign objects to evaluate the
         fuzzer.
         '''
-        targets = {
-            "libpng16": [("readpng", "@@")],
-            "libtiff4": [("tiffcp", "-i @@ /dev/null")],
-            "libxml2": [("xmllint", "--valid --oldxml10 --push --memory @@")],
-            "poppler": [("pdfimages", "@@ /tmp/out"), ("pdftoppm", "-mono -cropbox @@")]
-        }
 
+        targets = MAGMA_TARGETS.copy()
         for x in self.exclude_targets or []:
             targets.pop(x)
 
         for i in range(self.trials):
-            for target_name, target_programs in targets.items():
+            for target_name, target_programs in ((x,y["programs"]) for x,y in targets.items()):
                 for target_program in target_programs:
                     campaign_id = "{fuzzer_name}_{target_name}_{target_program}_{trial}_{uid}".format(
                         fuzzer_name = type(self.fuzzer).__name__,

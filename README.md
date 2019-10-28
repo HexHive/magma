@@ -201,3 +201,5 @@ the fuzzer findings and monitor logs.
 ## Known Issues
 
 * poppler does not compile in x86-32 with the current build system.
+* In order to run honggfuzz in Docker, the `SYS_PTRACE` capability must be added
+  to the container at creation.

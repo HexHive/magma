@@ -10,8 +10,7 @@ from string import ascii_letters, digits
 from time import sleep
 from functools import reduce
 import argparse
-
-SIZE = 100
+from config import *
 
 class DataCollector:
     def __init__(self, data_source, labels, output_file, delim = "\t",
@@ -193,7 +192,7 @@ def main():
         hour of data points at an interval of 5000 ms, use --count 720")
     args = parser.parse_args()
 
-    run_monitor(args.storage, SIZE, args.output, args.interval, args.count, args.force)
+    run_monitor(args.storage, MAGMA_LENGTH, args.output, args.interval, args.count, args.force)
 
 if __name__ == '__main__':
     main()
