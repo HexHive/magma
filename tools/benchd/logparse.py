@@ -40,7 +40,7 @@ def parse_fuzzer_campaigns(fuzzer_dir, parse_logs=True):
             "target": c_params[1],
             "program": c_params[2],
             "run": c_params[3],
-            "cid": c_params[4],
+            "uid": c_params[4],
             "c_path": c_path,
             "m_path": os.path.join(c_path, "monitor.txt")
         } for c_path, c_params in campaigns

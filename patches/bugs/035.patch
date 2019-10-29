@@ -42,7 +42,7 @@ index 3f31329..55b4bb4 100644
      return(xmlDictLookup(ctxt->dict, (BASE_PTR + startPosition), len));
 +#else
 +#ifdef MAGMA_ENABLE_CANARIES
-+    MAGMA_LOG(35, end != ctxt->input->end);
++    MAGMA_LOG(35, (end - len) != (BASE_PTR + startPosition));
 +#endif
 +    return(xmlDictLookup(ctxt->dict, (end - len), len));
 +#endif

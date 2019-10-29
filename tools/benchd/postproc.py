@@ -139,17 +139,67 @@ def process_all_fuzzers(work_dir, build_dir, povs=False):
 
     return detections
 
+def save_povs(detections, pov_dir):
+    campaigns = [(f,t,p,r,c)
+        for f, targets in detections.items()
+        for t, programs in targets.items()
+        for p, campaigns in programs.items()
+        for r, c in campaigns.items()]
+
+    # First get PoVs that map to known bugs
+    bugs = (b
+        for t, props in MAGMA_TARGETS.items()
+        for b in props["bugs"])
+    bug_povs = {bug: {
+            typ: [
+                (f, t, p, r, pov) for f,t,p,r,c in campaigns
+                for b, povs in c[typ].items() if b == bug
+                for pov in povs
+            ] for typ in ("crash", "hang", "undetected")
+        } for bug in bugs
+    }
+
+    # Then get PoVs that map to new or unknown faults
+    new_povs = {typ: [
+            (f, t, p, r, pov) for f,t,p,r,c in campaigns
+            for pov in c[typ]
+        ] for typ in ("new_crash", "new_hang", "unknown")
+    }
+
+    # Now, save all PoVs, aptly named
+    i = 0
+    for bug, typs in bug_povs.items():
+        for typ, povs in typs.items():
+            for f, t, p, r, pov in povs:
+                pov_name = f"{str(bug).zfill(3)}_{typ}_{f}_{t}_{p}_{r}_{i}"
+                copyfile(pov, os.path.join(pov_dir, pov_name))
+                print(f"Saved bug PoV: {pov_name}")
+                i += 1
+    for typ, povs in new_povs.items():
+        for f, t, p, r, pov in povs:
+            pov_name = f"{typ}_{f}_{t}_{p}_{r}_{i}"
+            copyfile(pov, os.path.join(pov_dir, pov_name))
+            print(f"Saved new PoV: {pov_name}")
+            i += 1
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("work_dir",
         help="The path to the directory where all fuzzers' campaigns are stored.")
     parser.add_argument("build_dir",
         help="The path to the directory where compiled binaries are/will be stored.")
+    parser.add_argument("--save-povs",
+        help="The path to the directory where PoVs will be saved.")
     args = parser.parse_args()
 
-    detections = process_all_fuzzers(args.work_dir, args.build_dir, povs=True)
-    pp = pprint.PrettyPrinter(indent=4)
-    pp.pprint(detections)
+    povs = "save_povs" in args
+    detections = process_all_fuzzers(args.work_dir, args.build_dir, povs=povs)
+
+    if not povs:
+        pp = pprint.PrettyPrinter(indent=4)
+        pp.pprint(detections)
+    else:
+        save_povs(detections, args.save_povs)
 
 if __name__ == '__main__':
     main()
