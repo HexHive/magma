@@ -115,7 +115,7 @@ sudo apt install git make build-essential cmake autoconf automake \
 
 It suffices to get a shallow clone of Magma and its submodules:
 ```
-git clone --depth 1 --recurse-submodules --shallow-submodules https://github.com/HexHive/magma.git
+git clone --depth 1 --recurse-submodules https://github.com/HexHive/magma.git
 ```
 
 Then, to build all of Magma, just run `make all`.

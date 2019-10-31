@@ -66,7 +66,7 @@ ENV LD_LIBRARY_PATH="/root/clang+llvm/lib:${LD_LIBRARY_PATH}"
 
 ###### Magma ######
 
-RUN git clone --depth 1 --recurse-submodules --shallow-submodules https://github.com/HexHive/magma.git
+RUN git clone --depth 1 --recurse-submodules https://github.com/HexHive/magma.git
 RUN pip3 install posix_ipc screenutils pandas
 RUN mkdir /root/campaigns
 RUN mkdir /root/postproc
