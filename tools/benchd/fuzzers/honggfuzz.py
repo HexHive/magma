@@ -74,10 +74,12 @@ class honggfuzzFuzzer(Fuzzer):
         except:
             pass
 
-        fuzz_cmd = "{fuzz} -f {seeds_dir} -z -t 0.02 -n 1 --covdir_all {findings_dir}/{COV_DIR} -W {findings_dir}/{CRS_DIR}{args} -- {target_path} {target_args}".format(
+        fuzz_cmd = "{fuzz} -f {seeds_dir} -z -t 0.02 -n 1 --covdir_all {findings_dir}/{cov_dir} -W {findings_dir}/{crs_dir}{args} -- {target_path} {target_args}".format(
                 fuzz = self.fuzz,
                 seeds_dir = seeds_dir,
                 findings_dir = findings_dir,
+                cov_dir = COV_DIR,
+                crs_dir = CRS_DIR,
                 args = " %s" % args if (args is not None and args != "") else "",
                 target_path = target["path"],
                 target_args = target["args"].replace("@@", "___FILE___")
