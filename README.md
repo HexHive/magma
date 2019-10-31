@@ -71,7 +71,8 @@ To build the Dockerfile and run a Docker container:
 sudo apt install docker.io
 cd docker/
 docker build -t magma .
-docker run -it magma
+docker create -it --cap-add=SYS_PTRACE --name magma_0 magma
+docker exec -it magma_0 /bin/bash
 ```
 
 The scripts shipped with Magma (benchd) are currently hard-coded to support the
