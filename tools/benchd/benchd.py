@@ -42,7 +42,9 @@ BENCHD_FUZZERS = {
         "instance": honggfuzzFuzzer("/root/fuzzers/honggfuzz/"),
         "workdir": os.path.join(BENCHD_OUTDIR, "honggfuzz"),
         "exclude_targets": [],
-        "env": {}
+        "env": {
+            "HFUZZ_CC_USE_GCC_BELOW_8": "1"
+        }
     }
 }
 
