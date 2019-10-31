@@ -72,6 +72,7 @@ sudo apt install docker.io
 cd docker/
 docker build -t magma .
 docker create -it --cap-add=SYS_PTRACE --name magma_0 magma
+docker start magma_0
 docker exec -it magma_0 /bin/bash
 ```
 
