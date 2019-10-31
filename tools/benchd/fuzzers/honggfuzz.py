@@ -65,14 +65,16 @@ class honggfuzzFuzzer(Fuzzer):
         pass
 
     def launch(self, target, seeds_dir, findings_dir, args=None, timeout=86400, logfile=None):
+        COV_DIR = "coverage"
+        CRS_DIR = "crashes"
         try:
             os.mkdir(findings_dir)
-            os.mkdir(os.path.join(findings_dir,"cov"))
-            os.mkdir(os.path.join(findings_dir,"crashes"))
+            os.mkdir(os.path.join(findings_dir,COV_DIR))
+            os.mkdir(os.path.join(findings_dir,CRS_DIR))
         except:
             pass
 
-        fuzz_cmd = "{fuzz} -f {seeds_dir} -z -t 0.02 -n 1 --covdir_all {findings_dir}/coverage -W {findings_dir}/crashes{args} -- {target_path} {target_args}".format(
+        fuzz_cmd = "{fuzz} -f {seeds_dir} -z -t 0.02 -n 1 --covdir_all {findings_dir}/{COV_DIR} -W {findings_dir}/{CRS_DIR}{args} -- {target_path} {target_args}".format(
                 fuzz = self.fuzz,
                 seeds_dir = seeds_dir,
                 findings_dir = findings_dir,
