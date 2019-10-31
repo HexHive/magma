@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import os
 from fuzzers import AFLFuzzer, AFLFastFuzzer, MOptAFLFuzzer, FairFuzzFuzzer, AngoraFuzzer, honggfuzzFuzzer
 from fuzzer import FuzzerBenchmark, Scheduler

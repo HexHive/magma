@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from config import *
 from benchd import BENCHD_FUZZERS
 from monitor import ShmemRawArray
