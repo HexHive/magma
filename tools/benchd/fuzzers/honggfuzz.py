@@ -29,7 +29,7 @@ class honggfuzzFuzzer(Fuzzer):
             self.magma_dir,
             # "-f %s" % os.path.join(self.magma_dir, "Makefile")
             "clean",
-            "patch",
+            "all_patches",
             target_name
         ]
         env["CC"] = self.cc

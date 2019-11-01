@@ -12,17 +12,19 @@ TARGETS := $(shell find $(CBDIR) -maxdepth 1 -type d -printf %P\\n)
 BUG_COUNT := $(shell echo $(lastword $(sort $(patsubst bugs/%.patch,%,$(BUG_PATCHES)))) | sed 's/^0*//')
 export BUG_COUNT
 
-.PHONY: all clean patch copy $(PATCHES) $(TARGETS)
+.PHONY: all all_targets all_patches clean copy setup $(PATCHES) $(TARGETS)
 
 .NOTPARALLEL:
 
-all: $(PATCHES) $(TARGETS)
+all: all_patches all_targets
 	@rm -r $(TMPDIR)
+
+all_targets: $(TARGETS)
+
+all_patches: $(PATCHES)
 
 clean:
 	rm -rf tmp build/*
-
-patch: $(PATCHES)
 
 copy:
 	@echo "Copying codebase to tmp directory"
@@ -31,11 +33,13 @@ copy:
 	fi;
 	@cp -r "$(CBDIR)" "$(TMPDIR)"
 
+setup: copy $(SETUP_PATCHES)
+
 $(PATCHES): copy
 	@echo "Applying patch $(basename $@)"
 	@sed -- 's/$(notdir $(CBDIR))/$(notdir $(TMPDIR))/g' $(PATCHDIR)/$@ | git apply
 
-$(TARGETS): copy patch
+$(TARGETS): setup
 	@mkdir -p $(BINDIR)
 	@echo "Building $@"
 	@cd $(TMPDIR); $(MAKE) $@;

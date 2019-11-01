@@ -43,6 +43,8 @@ applications. To that end, the near-future list of TODOs is the following:
 1. Add more bugs and libraries.
 1. Allow poppler to use the buggy versions of libpng and libtiff.
 1. Add processor affinity support to the `benchd` toolset.
+1. Replace the use of `git apply` with the GNU `patch` utility so that Magma can
+   be distributed without a git dependency.
 
 The long-term milestones of this project are:
 
@@ -140,6 +142,8 @@ behavior. The following environment variables control these configurations:
 * `MAGMA_STORAGE`: the name of the shared memory object where canary statistics
   will be stored. It is recommended to use a unique name for every launched
   campaign, to avoid data races on the same shmem object.
+* `MAGMA_SUFFIX`: a string suffix to add to the programs' names in the build dir
+  to use as an identifier if needed.
 * `MAGMA_ISAN`: if defined, the Ideal Sanitization mode will be used for the
   canaries. Whenever a bug is triggered, the canary will send a SIGSEGV signal
   to the target, causing it to crash.
