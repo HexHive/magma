@@ -41,7 +41,8 @@ applications. To that end, the near-future list of TODOs is the following:
    of the array is hard-coded and needs to be manually updated as more bugs are
    added.
 1. Add more bugs and libraries.
-1. Allow poppler to use the buggy versions of libpng and libtiff
+1. Allow poppler to use the buggy versions of libpng and libtiff.
+1. Add processor affinity support to the `benchd` toolset.
 
 The long-term milestones of this project are:
 
@@ -76,9 +77,8 @@ docker start magma_0
 docker exec -it magma_0 /bin/bash
 ```
 
-The scripts shipped with Magma (benchd) are currently hard-coded to support the
-directory structure of the Docker image. This is only temporary, pending a
-cleanup and refactoring of the benchd tools.
+The `benchd.py` tool shipped with Magma references the directory structure of
+the Docker image, and can thus be launched directly to start fuzzing campaigns.
 
 ### From Source
 

@@ -3,12 +3,16 @@ FROM ubuntu:18.04
 ENV WORKDIR /root
 WORKDIR ${WORKDIR}
 
+###### Dependencies ######
 RUN apt update
 RUN apt install -y git make build-essential cmake autoconf automake \
     libtool pkgconf \
     zlib1g-dev liblzma-dev libfreetype6-dev libfontconfig1-dev \
     libjpeg-dev libopenjp2-7-dev python-dev \
     libunwind-dev binutils-dev curl python3 python3-pip clang-7 wget screen
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python2 0
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 1
+##########################
 
 RUN mkdir fuzzers
 
