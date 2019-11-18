@@ -200,9 +200,9 @@ The provided Dockerfile allows you to directly start running the benchmark
 against the deployed fuzzers by just running `python3 benchd.py` in the
 `tools/benchd/` directory.
 
-Results will be saved in `/root/campaigns`, and the `evaluate_and_tabulate.py`
-and `postprocess_detect.py` scripts can be used to extract meaningful data from
-the fuzzer findings and monitor logs.
+Results will be saved in `/root/campaigns`, and the `logparse.py` and
+`postproc.py` scripts can be used to extract meaningful data from the fuzzer
+findings and monitor logs.
 
 ## Known Issues
 
