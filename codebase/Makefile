@@ -82,11 +82,11 @@ libxml2: magma
 
 poppler: magma
 	@cd poppler; \
-	 export CFLAGS="$(MAGMA_CFLAGS) $(CFLAGS)"; \
-	 export CXXFLAGS="$(MAGMA_CXXFLAGS) $(CXXFLAGS)"; \
+	 export CFLAGS="$(CFLAGS)"; \
+	 export CXXFLAGS="$(CXXFLAGS)"; \
 	 export LDFLAGS="$(MAGMA_LDFLAGS) $(LDFLAGS)"; \
 	 export LIBS="$(MAGMA_LIBS) $(LIBS)"; \
-	 export POPPLER_COPTS="$(MAGMA_LOG)"; \
+	 export POPPLER_COPTS="$(MAGMA_LOG) $(MAGMA_CFLAGS)"; \
 	 { mkdir -p build && cd build && cmake .. \
 	  	-DBUILD_GTK_TESTS:BOOL=OFF \
 	  	-DBUILD_QT5_TESTS:BOOL=OFF \
