@@ -4,3 +4,4 @@ from .moptafl import *
 from .fairfuzz import *
 from .angora import *
 from .honggfuzz import *
+from .aflgo import *

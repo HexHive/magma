@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
 import os
-from fuzzers import AFLFuzzer, AFLFastFuzzer, MOptAFLFuzzer, FairFuzzFuzzer, AngoraFuzzer, honggfuzzFuzzer
+from fuzzers import AFLFuzzer, AFLFastFuzzer, MOptAFLFuzzer, FairFuzzFuzzer, \
+    AngoraFuzzer, honggfuzzFuzzer, AFLGoFuzzer
 from fuzzer import FuzzerBenchmark, Scheduler
 from config import *
 
@@ -47,6 +48,12 @@ BENCHD_FUZZERS = {
         "env": {
             "HFUZZ_CC_USE_GCC_BELOW_8": "1"
         }
+    },
+    "aflgo": {
+        "instance": AFLGoFuzzer("/root/fuzzers/aflgo/"),
+        "workdir": os.path.join(BENCHD_OUTDIR, "aflgo"),
+        "exclude_targets": [],
+        "env": {}
     }
 }
 
