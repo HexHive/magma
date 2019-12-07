@@ -25,7 +25,8 @@ The `benchd` toolset manages fuzzing campaigns, runs multiple campaigns
 concurrently for a specified time duration, and collects and saves canary
 information. The provided scripts, `logparse.py` and `postproc.py` also help in
 parsing and processing monitor logs and fuzzer findings. Look at the `--help`
-output of these scripts to determine usage.
+output of these scripts to determine usage. `benchd` requirements can be
+installed from `tools/requirements.txt` via `pip`.
 
 Don't forget to set up the environment for the fuzzers under test. AFL, for instance, requires the following:
 
