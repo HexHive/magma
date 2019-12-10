@@ -14,6 +14,18 @@ index e92008d..22756e0 100644
     /* Success. */
     return 1;
  }
+@@ -4588,7 +4588,11 @@ png_image_free(png_imagep image)
+    if (image != NULL && image->opaque != NULL &&
+       image->opaque->error_buf == NULL)
+    {
++#ifdef MAGMA_ENABLE_FIXES
+       png_image_free_function(image);
++#else
++      (void)png_safe_execute(image, png_image_free_function, image);
++#endif
+       image->opaque = NULL;
+    }
+ }
 diff --git a/codebase/libpng16/png.h b/codebase/libpng16/png.h
 index 57b9399..2aba9d7 100644
 --- a/codebase/libpng16/png.h
