@@ -21,7 +21,7 @@ void magma_log(int bug, int condition)
 #else
     if (magma_buf == (void *)0) {
 #endif
-        return;
+        goto fatal;
     }
 
 #ifdef MAGMA_HARDEN_CANARIES
@@ -36,6 +36,7 @@ void magma_log(int bug, int condition)
     magma_protect(0);
 #endif
 
+fatal: (void)0;
 #ifdef MAGMA_FATAL_CANARIES
 #ifdef __cplusplus
     #define __THROW throw()
@@ -49,6 +50,7 @@ void magma_log(int bug, int condition)
     // send SIGSEGV to self
     kill(getpid(), (condition)*11);
 #endif
+    return;
 }
 
 #ifdef __cplusplus
