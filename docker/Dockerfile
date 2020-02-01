@@ -1,78 +1,46 @@
 FROM ubuntu:18.04
 
-ENV WORKDIR /root
-WORKDIR ${WORKDIR}
+RUN apt-get update && apt-get install -y sudo
 
-###### Dependencies ######
-RUN apt update
-RUN apt install -y git make build-essential cmake autoconf automake \
-    libtool pkgconf \
-    zlib1g-dev liblzma-dev libfreetype6-dev libfontconfig1-dev \
-    libjpeg-dev libopenjp2-7-dev python-dev \
-    libunwind-dev binutils-dev curl python3 python3-pip clang-7 wget screen
-RUN update-alternatives --install /usr/bin/python python /usr/bin/python2 0
-RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 1
-##########################
+ARG fuzzer_name
+ARG target_name
+# magma_root is relative to the docker-build's working directory
+# The Docker image must be built in the root of the magma directory
+ARG magma_root=./
 
-RUN mkdir fuzzers
+# Path variables inside the container
+ENV MAGMA_R /magma
+ENV MAGMA 	${MAGMA_R}/magma
+ENV OUT		/magma_out
+ENV SHARED 	/magma_shared
+ENV FUZZER 	${MAGMA_R}/fuzzers/${fuzzer_name}
+ENV TARGET 	${MAGMA_R}/targets/${target_name}
 
-###### AFL ######
+RUN groupadd -r magma && useradd -K UMASK=0000 -r -g magma magma
+RUN	echo "magma:amgam" | chpasswd && usermod -a -G sudo magma
+COPY --chown=magma:magma ${magma_root} ${MAGMA_R}
+RUN mkdir -p ${SHARED} ${OUT} && \
+	chown magma:magma ${SHARED} ${OUT} && \
+	chmod 744 ${SHARED} ${OUT}
 
-RUN git clone --depth 1 https://github.com/google/AFL.git fuzzers/afl
-RUN cd fuzzers/afl && make -j
+RUN ${MAGMA}/preinstall.sh
+RUN ${FUZZER}/preinstall.sh
+RUN ${TARGET}/preinstall.sh
 
-#################
+USER magma:magma
 
-###### AFLFast ######
+ENV CC	gcc
+ENV CXX g++
 
-RUN git clone --depth 1 https://github.com/mboehme/aflfast.git fuzzers/aflfast
-RUN cd fuzzers/aflfast && make -j
+RUN ${MAGMA}/prebuild.sh
+RUN ${FUZZER}/fetch.sh && ${FUZZER}/build.sh
+RUN ${TARGET}/fetch.sh && ${MAGMA}/apply_patches.sh
 
-#####################
+ENV CFLAGS -include "${MAGMA}/src/canary.h -DMAGMA_ENABLE_CANARIES -DMAGMA_FATAL_CANARIES" -g -O0
+ENV CXXFLAGS -include "${MAGMA}/src/canary.h -DMAGMA_ENABLE_CANARIES -DMAGMA_FATAL_CANARIES" -g -O0
+ENV LIBS -l:canary.o -lrt
+ENV LDFLAGS -L"${OUT}" -g
 
-###### MOpt-AFL ######
+RUN ${FUZZER}/instrument.sh
 
-RUN git clone --depth 1 https://github.com/puppet-meteor/MOpt-AFL.git fuzzers/moptafl
-RUN cd fuzzers/moptafl && mv "MOpt-AFL V1.0" fuzzer
-RUN cd fuzzers/moptafl/fuzzer && make -j
-
-######################
-
-###### FairFuzz ######
-
-RUN git clone --depth 1 https://github.com/carolemieux/afl-rb.git fuzzers/fairfuzz
-RUN cd fuzzers/fairfuzz && make -j
-
-######################
-
-###### honggfuzz ######
-
-RUN git clone --depth 1 https://github.com/google/honggfuzz.git fuzzers/honggfuzz
-RUN cd fuzzers/honggfuzz && make -j
-
-#######################
-
-###### Angora ######
-
-RUN git clone --depth 1 https://github.com/AngoraFuzzer/Angora.git fuzzers/angora
-# RUN curl --output - -L https://github.com/llvm/llvm-project/releases/download/llvmorg-7.1.0/llvm-7.1.0.src.tar.xz | xzcat | tar xvf -
-# RUN cd llvm-7.1.0.src/ && mkdir build && cd build/ && cmake .. && make -j && make install
-
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --profile minimal -y
-# ENV PREFIX ${WORKDIR}
-ENV PATH "/root/.cargo/bin:${PATH}"
-RUN cd fuzzers/angora && build/build.sh
-
-ENV PATH "/root/clang+llvm/bin:${PATH}"
-ENV LD_LIBRARY_PATH="/root/clang+llvm/lib:${LD_LIBRARY_PATH}"
-
-####################
-
-###### Magma ######
-
-RUN git clone --depth 1 --recurse-submodules https://github.com/HexHive/magma.git
-RUN pip3 install posix_ipc screenutils pandas
-RUN mkdir /root/campaigns
-RUN mkdir /root/postproc
-
-###################
+ENTRYPOINT "${MAGMA}/run.sh"

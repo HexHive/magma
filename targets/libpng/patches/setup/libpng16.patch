@@ -1,0 +1,23 @@
+--- a/scripts/pnglibconf.dfa
++++ b/scripts/pnglibconf.dfa
+@@ -331,1 +331,1 @@
+-option WARNINGS
++option WARNINGS disabled
+@@ -365,1 +365,1 @@
+-option STDIO
++option STDIO disabled
+@@ -411,2 +411,2 @@
+-setting USER_WIDTH_MAX default        1000000
+-setting USER_HEIGHT_MAX default       1000000
++setting USER_WIDTH_MAX default        0x7fffffff
++setting USER_HEIGHT_MAX default       0x7fffffff
+@@ -521,1 +521,1 @@
+-option WRITE enables WRITE_INT_FUNCTIONS
++option WRITE disabled
+--- a/contrib/oss-fuzz/libpng_read_fuzzer.cc
++++ b/contrib/oss-fuzz/libpng_read_fuzzer.cc
+@@ -15,3 +15,4 @@
++#include <stdlib.h>
+ #include <stddef.h>
+ #include <stdint.h>
+ #include <string.h>

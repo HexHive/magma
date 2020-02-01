@@ -1,0 +1,3 @@
+programs:
+  - libxml2_xml_read_memory_fuzzer
+  - libxml2_xml_reader_for_file_fuzzer

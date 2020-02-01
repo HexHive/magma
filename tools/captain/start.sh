@@ -1,0 +1,42 @@
+#!/bin/bash
+
+##
+# Pre-requirements:
+# - env FUZZER: fuzzer name (from fuzzers/)
+# - env TARGET: target name (from targets/)
+# - env PROGRAM: program name (name of binary artifact from $TARGET/build.sh)
+# - env SHARED: path to host-local volume where fuzzer findings are saved
+# - env POLL: time (in seconds) between polls
+# - env TIMEOUT: time to run the campaign
+# + env AFFINITY: the CPU to bind the container to (default: no affinity)
+# + env MAGMA: path to magma root (default: ../../)
+##
+
+if [ -z $FUZZER ] || [ -z $TARGET ] || [ -z $PROGRAM ] || [ -z $SHARED ]; then
+    echo '$FUZZER, $TARGET, $PROGRAM, and $SHARED must be specified as' \
+         'environment variables.'
+    exit 1
+fi
+IMG_NAME="magma/$FUZZER/$TARGET"
+
+##
+# Steps:
+# 1- Mount a host-local path either as a directory or as a tmpfs
+#    (this is where results are saved)
+# 2- docker-run non-interactive session of $IMG_NAME
+# 3- Start a monitor process to collect and log data
+##
+
+if [ ! -z $AFFINITY ]; then
+    flag_aff="--cpuset-cpus=$AFFINITY"
+fi
+
+container=$( \
+    docker run -dt --volume=`realpath "$SHARED"`:/magma_shared \
+        --cap-add=SYS_PTRACE --env=PROGRAM="$PROGRAM" --env=POLL="$POLL" \
+        --env=TIMEOUT="$TIMEOUT" $flag_aff \
+        "$IMG_NAME" \
+)
+code=$(docker wait $container)
+docker rm $container 1>/dev/null 2>&1
+exit $code

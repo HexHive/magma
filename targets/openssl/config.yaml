@@ -1,0 +1,4 @@
+programs:
+  - asn1
+  - asn1parse
+  - server
