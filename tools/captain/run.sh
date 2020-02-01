@@ -55,7 +55,7 @@ get_free_cpu()
     ##
     while true; do
         for ((i=0; i<$1; i++)); do
-            if ! sem --id "magma_cpu_$i" -j 1 \
+            if ! sem --id "magma_cpu_$i" -j 1 --st -1 \
                     1>/dev/null 2>&1; then
                 continue
             fi
@@ -85,6 +85,7 @@ for FUZZER in fuzzers/*; do
                 AFFINITY=$(get_free_cpu $WORKERS)
                 sem --id "magma" -u -j $WORKERS \
                     start_campaign "$FUZZER" "$TARGET" "$PROGRAM" $i $AFFINITY
+                sleep 1 # this prevents races over the CPU (hacky)
             done
         done
     done
