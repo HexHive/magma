@@ -95,7 +95,6 @@ static int ExecuteFilesOnyByOne(int argc, char **argv) {
     in.seekg(0, in.end);
     size_t length = in.tellg();
     in.seekg (0, in.beg);
-    std::cout << "Reading " << length << " bytes from " << argv[i] << std::endl;
     if (length < 0 || length > kMaxAflInputSize) {
       continue;
     }
@@ -105,27 +104,12 @@ static int ExecuteFilesOnyByOne(int argc, char **argv) {
     assert(in);
     LLVMFuzzerTestOneInput(reinterpret_cast<const uint8_t *>(bytes.data()),
                            bytes.size());
-    std::cout << "Execution successful" << std::endl;
   }
   return 0;
 }
 
 __attribute__((weak))
 int main(int argc, char **argv) {
-  Printf(
-      "======================= INFO =========================\n"
-      "This binary is built for AFL-fuzz.\n"
-      "To run the target function on individual input(s) execute this:\n"
-      "  %s < INPUT_FILE\n"
-      "or\n"
-      "  %s INPUT_FILE1 [INPUT_FILE2 ... ]\n"
-      "To fuzz with afl-fuzz execute this:\n"
-      "  afl-fuzz [afl-flags] %s [-N]\n"
-      "afl-fuzz will run N iterations before "
-      "re-spawning the process (default: 1000)\n"
-      "======================================================\n",
-          argv[0], argv[0], argv[0]);
-
   if (LLVMFuzzerInitialize)
     LLVMFuzzerInitialize(&argc, &argv);
   // Do any other expensive one-time initialization here.
