@@ -26,5 +26,5 @@ export AFL_SKIP_CPUFREQ=1
 export AFL_NO_AFFINITY=1
 "$FUZZER/repo/afl-fuzz" -i "$TARGET/corpus/$PROGRAM" -o "$SHARED/findings" \
     $flag_cmplog -m none -p fast \
-    -- "$OUT/afl/$PROGRAM" "$ARGS" @@  2>&1 | \
+    -- "$OUT/afl/$PROGRAM" 2>&1 | \
     tee "$SHARED/fuzzer.log"

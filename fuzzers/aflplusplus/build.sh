@@ -12,7 +12,7 @@ if [ ! -d "$FUZZER/repo" ]; then
 fi
 
 cd "$FUZZER/repo"
-make -j $(nproc) source-only
+CC=clang make -j $(nproc) source-only
 
 # compile afl_driver.cpp
 mkdir -p "$OUT/afl" "$OUT/cmplog"

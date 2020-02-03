@@ -10,8 +10,8 @@ set -e
 # - env CFLAGS and CXXFLAGS must be set to link against Magma instrumentation
 ##
 
-export CC="$FUZZER/repo/afl-gcc"
-export CXX="$FUZZER/repo/afl-g++"
+export CC="$FUZZER/repo/afl-clang-fast"
+export CXX="$FUZZER/repo/afl-clang-fast++"
 export AS="$FUZZER/repo/afl-as"
 
 export LIBS="$LIBS -l:afl_driver.o -lstdc++"

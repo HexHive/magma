@@ -22,5 +22,5 @@ mkdir -p "$SHARED/findings" "$SHARED/output"
 
 "$FUZZER/repo/honggfuzz" -n 1 -P -z --input "$TARGET/corpus/$PROGRAM" \
     --output "$SHARED/output" --workspace "$SHARED/findings" \
-    -- "$OUT/$PROGRAM" "$ARGS" ___FILE___ 2>&1 | \
+    -- "$OUT/$PROGRAM" 2>&1 | \
     tee "$SHARED/fuzzer.log"
