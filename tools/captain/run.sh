@@ -71,8 +71,8 @@ get_free_cpu()
     ##
     while true; do
         for ((i=0; i<$1; i++)); do
-            if ! sem --id "magma_cpu_$i" -j 1 --st -1 \
-                    1>/dev/null 2>&1; then
+            if [ -d ~/.parallel/semaphores/"id-magma_cpu_$i" ] || \
+               ! sem --id "magma_cpu_$i" -j 1 --st -1 1>/dev/null 2>&1; then
                 continue
             fi
             # a free CPU was found, return it
