@@ -90,7 +90,11 @@ void magma_log(int bug, int condition)
 fatal: (void)0;
 #ifdef MAGMA_FATAL_CANARIES
     // send SIGSEGV to self
-    kill(getpid(), (condition)*11);
+    static pid_t pid = 0;
+    if (pid == 0) {
+        pid = getpid();
+    }
+    kill(pid, (condition)*11);
 #endif
 #endif
     return;
