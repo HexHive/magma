@@ -12,7 +12,8 @@
 
 # Clean corpus dir from crashing cases
 for seed in "$TARGET/corpus/$PROGRAM"/*; do
-    if ! "$OUT/$PROGRAM" "$seed"; then
+    if ! timeout -s KILL --preserve-status 0.5s "$OUT/$PROGRAM" "$seed" \
+            1>/dev/null 2>&1; then
         rm "$seed"
     fi
 done
