@@ -4,6 +4,8 @@ RUN apt-get update && apt-get install -y sudo
 
 ARG fuzzer_name
 ARG target_name
+ARG USER_ID=1000
+ARG GROUP_ID=1000
 # magma_root is relative to the docker-build's working directory
 # The Docker image must be built in the root of the magma directory
 ARG magma_root=./
@@ -16,7 +18,8 @@ ENV SHARED 	/magma_shared
 ENV FUZZER 	${MAGMA_R}/fuzzers/${fuzzer_name}
 ENV TARGET 	${MAGMA_R}/targets/${target_name}
 
-RUN groupadd -r magma && useradd -K UMASK=0000 -r -g magma magma
+RUN groupadd -g ${GROUP_ID} magma && \
+	useradd -l -u ${USER_ID} -K UMASK=0000 -g magma magma
 RUN	echo "magma:amgam" | chpasswd && usermod -a -G sudo magma
 COPY --chown=magma:magma ${magma_root} ${MAGMA_R}
 RUN mkdir -p ${SHARED} ${OUT} && \
