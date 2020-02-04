@@ -55,11 +55,12 @@ start_campaign()
     AR="$WORKDIR/ar/$FUZZER/$TARGET/$PROGRAM"
     mkdir -p "$AR"
     if [ -z $MAGMA_NO_ARCHIVE ]; then
-        tar -cf "${AR}/${ITERATION}.tar" "$SHARED"
+        sem --id "magma_tar" --fg -j 1 \
+            tar -cf "${AR}/${ITERATION}.tar" "$SHARED" 1>/dev/null 2>&1 && \
+        rm -rf "$SHARED"
     else
         mv "$SHARED" "$AR"
     fi
-    rm -rf "$SHARED"
 }
 export -f start_campaign
 
@@ -79,6 +80,7 @@ get_free_cpu()
             echo $i
             exit 0
         done
+        sleep 1 # yet another hacky fix...
     done
 }
 
