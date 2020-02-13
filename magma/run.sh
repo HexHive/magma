@@ -34,6 +34,6 @@ while true; do
     sleep $POLL
 done &
 
-cd "$OUT"
+cd "$SHARED"
 timeout $TIMEOUT "$FUZZER/run.sh"
 kill $(jobs -p)
