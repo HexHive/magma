@@ -115,7 +115,7 @@ for FUZZER in "${fuzzers[@]}"; do
 
     mapfile -t items < <(yq r --printMode p "$1" $FUZZER'[*]')
     for item in "${items[@]}"; do
-        TARGET="$(yq r --printMode p "$1" "$item"'.*')"
+        TARGET="$(yq r --printMode p "$1" "$item"'.*' | tr -d '[]')"
         if [ -z "$TARGET" ]; then
             TARGET="$(yq r "$1" "$item")"
         else
