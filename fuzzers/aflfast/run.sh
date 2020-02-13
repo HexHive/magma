@@ -12,7 +12,11 @@
 
 # Clean corpus dir from crashing cases
 for seed in "$TARGET/corpus/$PROGRAM"/*; do
-    if ! timeout -s KILL --preserve-status '0.1s' "$OUT/$PROGRAM" ${ARGS/@@/"$seed"} \
+   one_args="${ARGS/@@/"$seed"}"
+    if [ -z "$one_args" ]; then
+        one_args="$seed"
+    fi
+    if ! timeout -s KILL --preserve-status '0.1s' "$OUT/$PROGRAM" $one_args \
             1>/dev/null 2>&1; then
         rm "$seed"
     fi
