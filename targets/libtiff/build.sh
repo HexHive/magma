@@ -42,11 +42,13 @@ mv "$TARGET"/jbigkit/libjbig/*.h "$WORK/include/"
 popd
 
 cd "$TARGET/repo"
-cmake . -DCMAKE_INSTALL_PREFIX=$WORK -DBUILD_SHARED_LIBS=off
+./autogen.sh
+./configure --disable-shared --prefix="$WORK"
 make -j$(nproc) clean
 make -j$(nproc)
 make install
 
+cp "$WORK/bin/tiffcp" "$OUT/"
 $CXX $CXXFLAGS -std=c++11 -I$WORK/include \
     contrib/oss-fuzz/tiff_read_rgba_fuzzer.cc -o $OUT/tiff_read_rgba_fuzzer \
     $WORK/lib/libtiffxx.a $WORK/lib/libtiff.a $WORK/lib/libz.a $WORK/lib/libjpeg.a \

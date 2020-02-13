@@ -1,2 +1,4 @@
 programs:
   - pdf_fuzzer
+  - pdfimages: '@@ /tmp/out'
+  - pdftoppm: '-mono -cropbox @@'

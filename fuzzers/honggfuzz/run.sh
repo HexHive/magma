@@ -12,7 +12,7 @@
 
 # Clean corpus dir from crashing cases
 for seed in "$TARGET/corpus/$PROGRAM"/*; do
-    if ! timeout -s KILL --preserve-status 0.5s "$OUT/$PROGRAM" "$seed" \
+    if ! timeout -s KILL --preserve-status '0.1s' "$OUT/$PROGRAM" ${ARGS/@@/"$seed"} \
             1>/dev/null 2>&1; then
         rm "$seed"
     fi
@@ -20,7 +20,10 @@ done
 
 mkdir -p "$SHARED/findings" "$SHARED/output"
 
+# replace AFL-style input file parameter with honggfuzz-style one
+ARGS="${ARGS/@@/___FILE___}"
+
 "$FUZZER/repo/honggfuzz" -n 1 -P -z --input "$TARGET/corpus/$PROGRAM" \
     --output "$SHARED/output" --workspace "$SHARED/findings" \
-    -- "$OUT/$PROGRAM" 2>&1 | \
+    -- "$OUT/$PROGRAM" $ARGS 2>&1 | \
     tee "$SHARED/fuzzer.log"

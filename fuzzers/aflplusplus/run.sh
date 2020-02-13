@@ -12,7 +12,7 @@
 
 # Clean corpus dir from crashing cases
 for seed in "$TARGET/corpus/$PROGRAM"/*; do
-    if ! timeout -s KILL --preserve-status 0.5s "$OUT/afl/$PROGRAM" "$seed" \
+    if ! timeout -s KILL --preserve-status '0.1s' "$OUT/afl/$PROGRAM" ${ARGS/@@/"$seed"} \
             1>/dev/null 2>&1; then
         rm "$seed"
     fi
@@ -26,5 +26,5 @@ export AFL_SKIP_CPUFREQ=1
 export AFL_NO_AFFINITY=1
 "$FUZZER/repo/afl-fuzz" -i "$TARGET/corpus/$PROGRAM" -o "$SHARED/findings" \
     $flag_cmplog -m none -p fast \
-    -- "$OUT/afl/$PROGRAM" 2>&1 | \
+    -- "$OUT/afl/$PROGRAM" $ARGS 2>&1 | \
     tee "$SHARED/fuzzer.log"

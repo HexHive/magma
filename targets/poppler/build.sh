@@ -39,17 +39,17 @@ cmake "$TARGET/repo" \
   -DENABLE_GLIB=OFF \
   -DENABLE_LIBCURL=OFF \
   -DENABLE_QT5=OFF \
-  -DENABLE_UTILS=OFF \
+  -DENABLE_UTILS=ON \
   -DWITH_Cairo=OFF \
   -DWITH_NSS3=OFF \
   -DFREETYPE_INCLUDE_DIRS="$WORK/include/freetype2" \
   -DFREETYPE_LIBRARY="$WORK/lib/libfreetype.a" \
-  -DICONV_LIBRARIES="/usr/lib/x86_64-linux-gnu/libc.so"
-make -j$(nproc) poppler poppler-cpp
+  -DICONV_LIBRARIES="/usr/lib/x86_64-linux-gnu/libc.so" \
+  -DCMAKE_EXE_LINKER_FLAGS_INIT="$LIBS"
+make -j$(nproc) poppler poppler-cpp pdfimages pdftoppm
 
-fuzz_target=pdf_fuzzer
-
+cp "$WORK/poppler/utils/"{pdfimages,pdftoppm} "$OUT/"
 $CXX $CXXFLAGS -std=c++11 -I"$TARGET/repo/cpp" \
-    "$TARGET/src/pdf_fuzzer.cc" -o "$OUT/$fuzz_target" \
+    "$TARGET/src/pdf_fuzzer.cc" -o "$OUT/pdf_fuzzer" \
     "$WORK/poppler/cpp/libpoppler-cpp.a" "$WORK/poppler/libpoppler.a" \
     "$WORK/lib/libfreetype.a" $LDFLAGS $LIBS

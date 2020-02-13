@@ -25,7 +25,7 @@ fi
 MAGMA=${MAGMA:-"$(cd "$(dirname "${BASH_SOURCE[0]}")/../../" >/dev/null 2>&1 \
     && pwd)"}
 export MAGMA
-WORKERS=${WORKERS:-+0}
+WORKERS=${WORKERS:-(( $(nproc) - 2 ))}
 export POLL=${POLL:-5}
 export TIMEOUT=${TIMEOUT:-1m}
 
@@ -38,15 +38,18 @@ start_campaign()
     # - $1: FUZZER
     # - $2: TARGET
     # - $3: PROGRAM
-    # - $4: ITERATION
-    # - $5: AFFINITY
+    # - $4: ARGS
+    # - $5: ITERATION
+    # - $6: AFFINITY
     ##
-    export FUZZER="$1"
-    export TARGET="$2"
-    export PROGRAM="$3"
-    export ITERATION="$4"
-    export AFFINITY="$5"
+    export ITERATION="$1"
+    export AFFINITY="$2"
+    export FUZZER="$3"
+    export TARGET="$4"
+    export PROGRAM="$5"
+    export ARGS="${@:6}"
     export SHARED="$WORKDIR/cache/$FUZZER/$TARGET/$PROGRAM/$ITERATION"
+
     echo "Starting: $FUZZER/$TARGET/$PROGRAM/$ITERATION on CPU $AFFINITY"
     mkdir -p "$SHARED" && chmod 777 "$SHARED"
     sem --id "magma_cpu_$AFFINITY" --fg -j 1 \
@@ -84,6 +87,13 @@ get_free_cpu()
     done
 }
 
+contains_element () {
+    local e match="$1"
+    shift
+    for e; do [[ "$e" == "$match" ]] && return 0; done
+    return 1
+}
+
 # clear any stuck semaphores
 rm -rf ~/.parallel/semaphores/id-magma*
 
@@ -92,32 +102,53 @@ mkdir -p "$WORKDIR/cache"
 mkdir -p "$WORKDIR/ar"
 if [ -z $MAGMA_CACHE_ON_DISK ]; then
     echo "Obtaining sudo permissions to mount tmpfs"
-    sudo mount -t tmpfs -o size=200g,uid=$(id -u $USER),gid=$(id -g $USER) \
+    if mountpoint -q -- "$WORKDIR/cache"; then
+        sudo umount -f "$WORKDIR/cache"
+    fi
+    sudo mount -t tmpfs -o size=16g,uid=$(id -u $USER),gid=$(id -g $USER) \
         tmpfs "$WORKDIR/cache"
 fi
 
-echo "$(yq r --printMode p "$1" '*')" | \
-while read FUZZER; do
+mapfile -t fuzzers < <(yq r --printMode p "$1" '*')
+for FUZZER in "${fuzzers[@]}"; do
     export FUZZER
-    echo "$(yq r "$1" $FUZZER.'**')" | \
-    while read TARGET; do
+
+    mapfile -t items < <(yq r --printMode p "$1" $FUZZER'[*]')
+    for item in "${items[@]}"; do
+        TARGET="$(yq r --printMode p "$1" "$item"'.*')"
+        if [ -z "$TARGET" ]; then
+            TARGET="$(yq r "$1" "$item")"
+        else
+            mapfile -t customprgs < <(yq r "$1" "$item"'.**')
+            item="$(tr -d '[]' <<< "$item")"
+            TARGET="${TARGET/$item'.'/}"
+        fi
         export TARGET
+
         # build the magma/fuzzer/target Docker image
         IMG_NAME="magma/$FUZZER/$TARGET"
         echo "Building $IMG_NAME"
         $MAGMA/tools/captain/build.sh 1>/dev/null 2>&1
 
-        # start the multiple fuzzer campaigns
-        yq read "$MAGMA/targets/$TARGET/config.yaml" programs | \
-        while read PROGRAM; do
-            PROGRAM="$(echo "$PROGRAM" | cut -c 3-)"
+        mapfile -t defaultprgs < <(yq r "$MAGMA/targets/$TARGET/config.yaml" \
+            'programs[*]')
+        for prog in "${defaultprgs[@]}"; do
+            PROGRAM="$(eval echo $(awk -F': ' '{print $1}' <<< "$prog"))"
+            ARGS="$(eval echo $(awk -F': ' '{print $2}' <<< "$prog"))"
+            if [ ${#customprgs[@]} -ne 0 ] && \
+                    ! contains_element "$PROGRAM" "${customprgs[@]}"; then
+                continue
+            fi
+            echo "Starting campaign for: $PROGRAM $ARGS"
+
             for ((i=0; i<$REPEAT; i++)); do
                 AFFINITY=$(get_free_cpu $WORKERS)
                 sem --id "magma" -u -j $WORKERS \
-                    start_campaign "$FUZZER" "$TARGET" "$PROGRAM" $i $AFFINITY
+                    start_campaign $i $AFFINITY "$FUZZER" "$TARGET" "$PROGRAM" "$ARGS"
                 sleep 1 # this prevents races over the CPU (hacky)
             done
         done
+        unset customprgs
     done
 done
 

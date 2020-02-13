@@ -5,6 +5,7 @@
 # - env FUZZER: fuzzer name (from fuzzers/)
 # - env TARGET: target name (from targets/)
 # - env PROGRAM: program name (name of binary artifact from $TARGET/build.sh)
+# - env ARGS: program launch arguments
 # - env SHARED: path to host-local volume where fuzzer findings are saved
 # - env POLL: time (in seconds) between polls
 # - env TIMEOUT: time to run the campaign
@@ -33,8 +34,8 @@ fi
 
 container=$( \
     docker run -dt --volume=`realpath "$SHARED"`:/magma_shared \
-        --cap-add=SYS_PTRACE --env=PROGRAM="$PROGRAM" --env=POLL="$POLL" \
-        --env=TIMEOUT="$TIMEOUT" $flag_aff \
+        --cap-add=SYS_PTRACE --env=PROGRAM="$PROGRAM" --env=ARGS="$ARGS" \
+        --env=POLL="$POLL" --env=TIMEOUT="$TIMEOUT" $flag_aff \
         "$IMG_NAME" \
 )
 code=$(docker wait $container)

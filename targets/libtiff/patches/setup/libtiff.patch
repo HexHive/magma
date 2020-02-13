@@ -1,9 +1,9 @@
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -702,8 +702,5 @@
+@@ -702,8 +702,6 @@
  add_subdirectory(port)
  add_subdirectory(libtiff)
--add_subdirectory(tools)
+ add_subdirectory(tools)
 -add_subdirectory(test)
 -add_subdirectory(contrib)
  add_subdirectory(build)
