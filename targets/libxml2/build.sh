@@ -14,11 +14,11 @@ fi
 
 cd "$TARGET/repo"
 ./autogen.sh
-./configure --with-http=no --with-python=no --with-lzma=no
+./configure --with-http=no --with-python=no --with-lzma=no --disable-shared
 make -j$(nproc) clean
 make -j$(nproc) all
 
-cp .libs/xmllint "$OUT/"
+cp xmllint "$OUT/"
 
 for fuzzer in libxml2_xml_read_memory_fuzzer libxml2_xml_reader_for_file_fuzzer; do
   $CXX $CXXFLAGS -std=c++11 -Iinclude/ -I"$TARGET/src/" \

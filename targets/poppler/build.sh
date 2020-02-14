@@ -25,6 +25,7 @@ make install
 
 mkdir -p "$WORK/poppler"
 pushd "$WORK/poppler"
+rm -rf *
 cmake "$TARGET/repo" \
   -DCMAKE_BUILD_TYPE=debug \
   -DBUILD_SHARED_LIBS=OFF \
