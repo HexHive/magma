@@ -13,6 +13,7 @@ set -e
 #       instead of in-memory (default: undefined)
 # + env MAGMA_NO_ARCHIVE: if defined, campaign workdirs will not be tarballed
 #       (default: undefined)
+# + env TMPFS_SIZE: the size of the tmpfs mounted volume (default: 50g)
 ##
 
 if [ -z $WORKDIR ] || [ -z $REPEAT ]; then
@@ -26,6 +27,7 @@ MAGMA=${MAGMA:-"$(cd "$(dirname "${BASH_SOURCE[0]}")/../../" >/dev/null 2>&1 \
     && pwd)"}
 export MAGMA
 WORKERS=${WORKERS:-(( $(nproc) - 2 ))}
+TMPFS_SIZE=${TMPFS_SIZE:-50g}
 export POLL=${POLL:-5}
 export TIMEOUT=${TIMEOUT:-1m}
 
@@ -105,7 +107,7 @@ if [ -z $MAGMA_CACHE_ON_DISK ]; then
     if mountpoint -q -- "$WORKDIR/cache"; then
         sudo umount -f "$WORKDIR/cache"
     fi
-    sudo mount -t tmpfs -o size=16g,uid=$(id -u $USER),gid=$(id -g $USER) \
+    sudo mount -t tmpfs -o size=$TMPFS_SIZE,uid=$(id -u $USER),gid=$(id -g $USER) \
         tmpfs "$WORKDIR/cache"
 fi
 
@@ -145,7 +147,7 @@ for FUZZER in "${fuzzers[@]}"; do
                 AFFINITY=$(get_free_cpu $WORKERS)
                 sem --id "magma" -u -j $WORKERS \
                     start_campaign $i $AFFINITY "$FUZZER" "$TARGET" "$PROGRAM" "$ARGS"
-                sleep 1 # this prevents races over the CPU (hacky)
+                sleep 1 # this reduces races over the CPU (hacky)
             done
         done
         unset customprgs
