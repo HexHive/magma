@@ -18,8 +18,10 @@ ENV SHARED 	/magma_shared
 ENV FUZZER 	${MAGMA_R}/fuzzers/${fuzzer_name}
 ENV TARGET 	${MAGMA_R}/targets/${target_name}
 
-RUN groupadd -g ${GROUP_ID} magma && \
-	useradd -l -u ${USER_ID} -K UMASK=0000 -g magma magma
+RUN mkdir -p /home && \
+	groupadd -g ${GROUP_ID} magma && \
+	useradd -l -u ${USER_ID} -K UMASK=0000 -d /home -g magma magma && \
+	chown magma:magma /home
 RUN	echo "magma:amgam" | chpasswd && usermod -a -G sudo magma
 COPY --chown=magma:magma ${magma_root} ${MAGMA_R}
 RUN mkdir -p ${SHARED} ${OUT} && \
