@@ -14,6 +14,7 @@ set -e
 # + env MAGMA_NO_ARCHIVE: if defined, campaign workdirs will not be tarballed
 #       (default: undefined)
 # + env TMPFS_SIZE: the size of the tmpfs mounted volume (default: 50g)
+# + env MAGMA: path to magma root (default: ../../)
 ##
 
 if [ -z $WORKDIR ] || [ -z $REPEAT ]; then
@@ -61,7 +62,7 @@ start_campaign()
     mkdir -p "$AR"
     if [ -z $MAGMA_NO_ARCHIVE ]; then
         sem --id "magma_tar" --fg -j 1 \
-            tar -cf "${AR}/${ITERATION}.tar" "$SHARED" 1>/dev/null 2>&1 && \
+          tar -cf "${AR}/${ITERATION}.tar" -C "$SHARED" . 1>/dev/null 2>&1 && \
         rm -rf "$SHARED"
     else
         mv "$SHARED" "$AR"

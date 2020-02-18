@@ -10,24 +10,11 @@
 # - env ARGS: extra arguments to pass to the program
 ##
 
-# Clean corpus dir from crashing cases
-for seed in "$TARGET/corpus/$PROGRAM"/*; do
-    one_args="${ARGS/@@/"$seed"}"
-    if [ -z "$one_args" ]; then
-        one_args="$seed"
-    fi
-    if ! timeout -s KILL --preserve-status '0.1s' "$OUT/$PROGRAM" $one_args \
-            1>/dev/null 2>&1; then
-        rm "$seed"
-    fi
-done
-
 mkdir -p "$SHARED/findings" "$SHARED/output"
 
 # replace AFL-style input file parameter with honggfuzz-style one
 ARGS="${ARGS/@@/___FILE___}"
 
-"$FUZZER/repo/honggfuzz" -n 1 -P -z --input "$TARGET/corpus/$PROGRAM" \
+"$FUZZER/repo/honggfuzz" -n 1 -z --input "$TARGET/corpus/$PROGRAM" \
     --output "$SHARED/output" --workspace "$SHARED/findings" \
-    -- "$OUT/$PROGRAM" $ARGS 2>&1 | \
-    tee "$SHARED/fuzzer.log"
+    -- "$OUT/$PROGRAM" $ARGS 2>&1

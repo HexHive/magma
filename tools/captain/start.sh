@@ -10,7 +10,6 @@
 # - env POLL: time (in seconds) between polls
 # - env TIMEOUT: time to run the campaign
 # + env AFFINITY: the CPU to bind the container to (default: no affinity)
-# + env MAGMA: path to magma root (default: ../../)
 ##
 
 if [ -z $FUZZER ] || [ -z $TARGET ] || [ -z $PROGRAM ] || [ -z $SHARED ]; then

@@ -10,6 +10,7 @@
 # - env ARGS: extra arguments to pass to the program
 # - env POLL: time (in seconds) to sleep between polls
 # - env TIMEOUT: time to run the campaign
+# + env LOGSIZE: size (in bytes) of log file to generate (default: 1 MiB)
 ##
 
 if ! rm -rf "$SHARED"/*; then
@@ -17,11 +18,23 @@ if ! rm -rf "$SHARED"/*; then
     exit 1
 fi
 
+# set default max log size to 1 MiB
+LOGSIZE=${LOGSIZE:-$[1 << 20]}
+
 export MONITOR="$SHARED/monitor"
 mkdir -p "$MONITOR"
 
-# launch the fuzzer in parallel with the monitor
+# change working directory to somewhere accessible by the fuzzer and target
+cd "$SHARED"
 
+# prune the seed corpus for any fault-triggering test-cases
+for seed in "$TARGET/corpus/$PROGRAM"/*; do
+    if ! "$FUZZER/runonce.sh" "$seed"; then
+        rm "$seed"
+    fi
+done
+
+# launch the fuzzer in parallel with the monitor
 counter=0
 while true; do
     "$OUT/monitor" > "$MONITOR/tmp"
@@ -34,6 +47,7 @@ while true; do
     sleep $POLL
 done &
 
-cd "$SHARED"
-timeout $TIMEOUT "$FUZZER/run.sh"
+timeout $TIMEOUT "$FUZZER/run.sh" | \
+    multilog n2 s$LOGSIZE "$SHARED/log"
+
 kill $(jobs -p)
