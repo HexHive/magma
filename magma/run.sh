@@ -27,9 +27,25 @@ mkdir -p "$MONITOR"
 # change working directory to somewhere accessible by the fuzzer and target
 cd "$SHARED"
 
+find_triggered()
+{
+    ##
+    # Pre-requirements:
+    # - $1: human-readable monitor output
+    ##
+    awk '{print $5}' <<< "$1" | while read triggered; do
+        if [ $triggered -ne 0 ]; then
+            return 1
+        fi
+    done
+}
+
 # prune the seed corpus for any fault-triggering test-cases
 for seed in "$TARGET/corpus/$PROGRAM"/*; do
-    if ! "$FUZZER/runonce.sh" "$seed"; then
+    out="$($OUT/monitor --fetch watch --dump human "$FUZZER/runonce.sh" "$seed")"
+    code=$?
+
+    if [ $code -ne 0 ] || ! find_triggered "$out"; then
         rm "$seed"
     fi
 done
