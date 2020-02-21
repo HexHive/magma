@@ -51,7 +51,11 @@ static bool magma_init(void)
         return false;
     }
     init_called = true;
-	int fd = open(NAME, O_RDWR);
+    const char *file = getenv("MAGMA_STORAGE");
+    if (file == NULL) {
+        file = NAME;
+    }
+	int fd = open(file, O_RDWR);
 	if (fd == -1) {
 		fprintf(stderr, "Monitor not running. Canaries will be disabled.\n");
 		data_ptr = NULL;
