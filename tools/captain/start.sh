@@ -19,16 +19,8 @@ if [ -z $FUZZER ] || [ -z $TARGET ] || [ -z $PROGRAM ] || [ -z $SHARED ]; then
 fi
 IMG_NAME="magma/$FUZZER/$TARGET"
 
-##
-# Steps:
-# 1- Mount a host-local path either as a directory or as a tmpfs
-#    (this is where results are saved)
-# 2- docker-run non-interactive session of $IMG_NAME
-# 3- Start a monitor process to collect and log data
-##
-
 if [ ! -z $AFFINITY ]; then
-    flag_aff="--cpuset-cpus=$AFFINITY"
+    flag_aff="--cpuset-cpus=$AFFINITY --env=AFFINITY=$AFFINITY"
 fi
 
 container=$( \

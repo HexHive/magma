@@ -1,5 +1,4 @@
-#!/bin/bash
-set -e
+#!/bin/bash -e
 
 ##
 # Pre-requirements:
@@ -38,29 +37,33 @@ start_campaign()
 {
     ##
     # Pre-requirements:
-    # - $1: FUZZER
-    # - $2: TARGET
-    # - $3: PROGRAM
-    # - $4: ARGS
-    # - $5: ITERATION
-    # - $6: AFFINITY
+    # - env AFFINITY
+    # - $1: ITERATION
+    # - $2: FUZZER
+    # - $3: TARGET
+    # - $4: PROGRAM
+    # - $5+: ARGS
     ##
     export ITERATION="$1"
-    export AFFINITY="$2"
-    export FUZZER="$3"
-    export TARGET="$4"
-    export PROGRAM="$5"
-    export ARGS="${@:6}"
+    export FUZZER="$2"
+    export TARGET="$3"
+    export PROGRAM="$4"
+    # The following line results in joining the original ARGS by spaces, which
+    # breaks single-words-with-spaces into multiple words, which is not ideal.
+    # Consider using arrays instead. Bash currently does not support exporting
+    # arrays, however.
+    # Future fix: export ARGS=("${@:5}")
+    export ARGS="${@:5}"
     export SHARED="$WORKDIR/cache/$FUZZER/$TARGET/$PROGRAM/$ITERATION"
 
-    echo "Starting: $FUZZER/$TARGET/$PROGRAM/$ITERATION on CPU $AFFINITY"
+    echo "Started $FUZZER/$TARGET/$PROGRAM/$ITERATION on CPU $AFFINITY"
     mkdir -p "$SHARED" && chmod 777 "$SHARED"
-    sem --id "magma_cpu_$AFFINITY" --fg -j 1 \
-        "$MAGMA/tools/captain/start.sh" \
-        1>/dev/null 2>&1
+    "$MAGMA/tools/captain/start.sh" 1>/dev/null 2>&1
+
     AR="$WORKDIR/ar/$FUZZER/$TARGET/$PROGRAM"
     mkdir -p "$AR"
     if [ -z $MAGMA_NO_ARCHIVE ]; then
+        # only one tar job runs at a time, to prevent out-of-space errors
         sem --id "magma_tar" --fg -j 1 \
           tar -cf "${AR}/${ITERATION}.tar" -C "$SHARED" . 1>/dev/null 2>&1 && \
         rm -rf "$SHARED"
@@ -70,25 +73,47 @@ start_campaign()
 }
 export -f start_campaign
 
-get_free_cpu()
+start_ex()
 {
     ##
     # Pre-requirements:
     # - $1: WORKERS
+    # - $2: NUMCPUS
+    # - $3: CPUSET
+    # - $4+: COMMAND
     ##
-    while true; do
-        for ((i=0; i<$1; i++)); do
-            if [ -d ~/.parallel/semaphores/"id-magma_cpu_$i" ] || \
-               ! sem --id "magma_cpu_$i" -j 1 --st -1 1>/dev/null 2>&1; then
-                continue
-            fi
-            # a free CPU was found, return it
-            echo $i
-            exit 0
+    WORKERS=$1
+    NUMCPUS=$2
+    CPUSET=$3
+    COMMAND=("${@:4}")
+    if [ $NUMCPUS -gt 0 ]; then
+        while true; do
+            for ((i=0; i<$WORKERS; i++)); do
+                if [ -d ~/.parallel/semaphores/"id-magma_cpu_$i" ] || \
+                        ! sem -u --id "magma_cpu_$i" -j 1 --st -1 --fg \
+                        start_ex $WORKERS $((NUMCPUS - 1)) "$CPUSET,$i" \
+                        ${COMMAND[@]}; then
+                    continue
+                else
+                    exit 0
+                fi
+            done
+            sleep 1 # yet another hacky fix...
         done
-        sleep 1 # yet another hacky fix...
-    done
+    else
+        # release transaction lock (hacky :/)
+        rm -r ~/.parallel/semaphores/id-magma
+        # GNU Parallel does not re-aquire the mutex when it steals it, thus the
+        # following statement does not do the intended task of releasing the
+        # mutex after stealing it:
+        # sem --id "magma" --st 1
+        # Hence, we have to delete the metadata used by GNU Parallel, as above
+
+        export AFFINITY=$(cut -d',' -f2- <<< $CPUSET)
+        ${COMMAND[@]}
+    fi
 }
+export -f start_ex
 
 contains_element () {
     local e match="$1"
@@ -128,7 +153,7 @@ for FUZZER in "${fuzzers[@]}"; do
         fi
         export TARGET
 
-        # build the magma/fuzzer/target Docker image
+        # build the Docker image
         IMG_NAME="magma/$FUZZER/$TARGET"
         echo "Building $IMG_NAME"
         $MAGMA/tools/captain/build.sh 1>/dev/null 2>&1
@@ -142,20 +167,23 @@ for FUZZER in "${fuzzers[@]}"; do
                     ! contains_element "$PROGRAM" "${customprgs[@]}"; then
                 continue
             fi
-            echo "Starting campaign for: $PROGRAM $ARGS"
 
+            echo "Starting campaigns for $PROGRAM $ARGS"
             for ((i=0; i<$REPEAT; i++)); do
-                AFFINITY=$(get_free_cpu $WORKERS)
-                sem --id "magma" -u -j $WORKERS \
-                    start_campaign $i $AFFINITY "$FUZZER" "$TARGET" "$PROGRAM" "$ARGS"
-                sleep 1 # this reduces races over the CPU (hacky)
+                NUMCPUS=1 # this can later be read from fuzzer config
+                # acquire transaction lock
+                sem --id "magma" -u \
+                    start_ex $WORKERS $NUMCPUS "-1" \
+                    start_campaign $i "$FUZZER" "$TARGET" "$PROGRAM" "$ARGS"
             done
         done
         unset customprgs
     done
 done
 
-sem --id "magma" --wait
+for ((i=0; i<$WORKERS; i++)); do
+    sem --id "magma_cpu_$i" --wait
+done
 
 if [ -z $MAGMA_CACHE_ON_DISK ]; then
     echo "Obtaining sudo permissions to umount tmpfs"
