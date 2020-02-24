@@ -101,7 +101,7 @@ start_ex()
             sleep 1 # yet another hacky fix...
         done
     else
-        # release transaction lock (hacky :/)
+        # release CPU allocation lock (hacky :/)
         rm -r ~/.parallel/semaphores/id-magma
         # GNU Parallel does not re-aquire the mutex when it steals it, thus the
         # following statement does not do the intended task of releasing the
@@ -171,7 +171,7 @@ for FUZZER in "${fuzzers[@]}"; do
             echo "Starting campaigns for $PROGRAM $ARGS"
             for ((i=0; i<$REPEAT; i++)); do
                 NUMCPUS=1 # this can later be read from fuzzer config
-                # acquire transaction lock
+                # acquire CPU allocation lock
                 sem --id "magma" -u \
                     start_ex $WORKERS $NUMCPUS "-1" \
                     start_campaign $i "$FUZZER" "$TARGET" "$PROGRAM" "$ARGS"
