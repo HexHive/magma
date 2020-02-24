@@ -1,5 +1,8 @@
 FROM ubuntu:18.04
 
+# TODO remove sudo for user "magma" to avoid unwanted priv escalation from
+# other attack vectors.
+
 RUN apt-get update && apt-get install -y sudo
 
 ARG fuzzer_name
