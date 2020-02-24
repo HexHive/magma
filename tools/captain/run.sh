@@ -26,7 +26,11 @@ fi
 MAGMA=${MAGMA:-"$(cd "$(dirname "${BASH_SOURCE[0]}")/../../" >/dev/null 2>&1 \
     && pwd)"}
 export MAGMA
+
 WORKERS=${WORKERS:-(( $(nproc) - 2 ))}
+WORKERPOOLR=($(lscpu -b --parse | sed '/^#/d' | cut -d, -f1))
+export WORKERPOOL="${WORKERPOOLR[@]:0:WORKERS}"
+
 TMPFS_SIZE=${TMPFS_SIZE:-50g}
 export POLL=${POLL:-5}
 export TIMEOUT=${TIMEOUT:-1m}
@@ -38,22 +42,12 @@ start_campaign()
     ##
     # Pre-requirements:
     # - env AFFINITY
-    # - $1: ITERATION
-    # - $2: FUZZER
-    # - $3: TARGET
-    # - $4: PROGRAM
-    # - $5+: ARGS
+    # - env ITERATION
+    # - env FUZZER
+    # - env TARGET
+    # - env PROGRAM
+    # - env ARGS
     ##
-    export ITERATION="$1"
-    export FUZZER="$2"
-    export TARGET="$3"
-    export PROGRAM="$4"
-    # The following line results in joining the original ARGS by spaces, which
-    # breaks single-words-with-spaces into multiple words, which is not ideal.
-    # Consider using arrays instead. Bash currently does not support exporting
-    # arrays, however.
-    # Future fix: export ARGS=("${@:5}")
-    export ARGS="${@:5}"
     export SHARED="$WORKDIR/cache/$FUZZER/$TARGET/$PROGRAM/$ITERATION"
 
     echo "Started $FUZZER/$TARGET/$PROGRAM/$ITERATION on CPU $AFFINITY"
@@ -63,7 +57,7 @@ start_campaign()
     AR="$WORKDIR/ar/$FUZZER/$TARGET/$PROGRAM"
     mkdir -p "$AR"
     if [ -z $MAGMA_NO_ARCHIVE ]; then
-        # only one tar job runs at a time, to prevent out-of-space errors
+        # only one tar job runs at a time, to prevent out-of-storage errors
         sem --id "magma_tar" --fg -j 1 \
           tar -cf "${AR}/${ITERATION}.tar" -C "$SHARED" . 1>/dev/null 2>&1 && \
         rm -rf "$SHARED"
@@ -77,21 +71,19 @@ start_ex()
 {
     ##
     # Pre-requirements:
-    # - $1: WORKERS
-    # - $2: NUMCPUS
-    # - $3: CPUSET
-    # - $4+: COMMAND
+    # - $1: NUMCPUS
+    # - $2: CPUSET
+    # - $3+: COMMAND
     ##
-    WORKERS=$1
-    NUMCPUS=$2
-    CPUSET=$3
-    COMMAND=("${@:4}")
+    NUMCPUS=$1
+    CPUSET=$2
+    COMMAND=("${@:3}")
     if [ $NUMCPUS -gt 0 ]; then
         while true; do
-            for ((i=0; i<$WORKERS; i++)); do
+            for i in $WORKERPOOL; do
                 if [ -d ~/.parallel/semaphores/"id-magma_cpu_$i" ] || \
                         ! sem -u --id "magma_cpu_$i" -j 1 --st -1 --fg \
-                        start_ex $WORKERS $((NUMCPUS - 1)) "$CPUSET,$i" \
+                        start_ex $((NUMCPUS - 1)) "$CPUSET,$i" \
                         ${COMMAND[@]}; then
                     continue
                 else
@@ -102,7 +94,7 @@ start_ex()
         done
     else
         # release CPU allocation lock (hacky :/)
-        rm -r ~/.parallel/semaphores/id-magma
+        rm -rf ~/.parallel/semaphores/id-magma
         # GNU Parallel does not re-aquire the mutex when it steals it, thus the
         # following statement does not do the intended task of releasing the
         # mutex after stealing it:
@@ -161,8 +153,8 @@ for FUZZER in "${fuzzers[@]}"; do
         mapfile -t defaultprgs < <(yq r "$MAGMA/targets/$TARGET/config.yaml" \
             'programs[*]')
         for prog in "${defaultprgs[@]}"; do
-            PROGRAM="$(eval echo $(awk -F': ' '{print $1}' <<< "$prog"))"
-            ARGS="$(eval echo $(awk -F': ' '{print $2}' <<< "$prog"))"
+            export PROGRAM="$(eval echo $(awk -F': ' '{print $1}' <<< "$prog"))"
+            export ARGS="$(eval echo $(awk -F': ' '{print $2}' <<< "$prog"))"
             if [ ${#customprgs[@]} -ne 0 ] && \
                     ! contains_element "$PROGRAM" "${customprgs[@]}"; then
                 continue
@@ -170,18 +162,19 @@ for FUZZER in "${fuzzers[@]}"; do
 
             echo "Starting campaigns for $PROGRAM $ARGS"
             for ((i=0; i<$REPEAT; i++)); do
+                export ITERATION=$i
                 NUMCPUS=1 # this can later be read from fuzzer config
                 # acquire CPU allocation lock
                 sem --id "magma" -u \
-                    start_ex $WORKERS $NUMCPUS "-1" \
-                    start_campaign $i "$FUZZER" "$TARGET" "$PROGRAM" "$ARGS"
+                    start_ex $NUMCPUS "-1" \
+                    start_campaign
             done
         done
         unset customprgs
     done
 done
 
-for ((i=0; i<$WORKERS; i++)); do
+for i in $WORKERPOOL; do
     sem --id "magma_cpu_$i" --wait
 done
 
