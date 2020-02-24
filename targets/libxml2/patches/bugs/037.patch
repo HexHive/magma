@@ -1,3 +1,5 @@
+--- a/parser.c
++++ b/parser.c
 @@ -96,12 +96,6 @@ xmlCreateEntityParserCtxtInternal(const xmlChar *URL, const xmlChar *ID,
  
  static void xmlHaltParser(xmlParserCtxtPtr ctxt);
@@ -39,8 +41,6 @@
  /**
   * nameNsPop:
   * @ctxt: an XML parser context
---- a/parser.c
-+++ b/parser.c
 @@ -9634,10 +9634,21 @@ xmlParseEndTag2(xmlParserCtxtPtr ctxt, const xmlChar *prefix,
      SKIP(2);
  
@@ -52,7 +52,7 @@
  	    (ctxt->input->cur[tlen] == '>')) {
 +#else
 +#ifdef MAGMA_ENABLE_CANARIES
-+    MAGMA_LOG(37, (tlen > 0) & (curLength < (size_t)tlen));
++    MAGMA_LOG(37, MAGMA_AND(tlen > 0, curLength < (size_t)tlen));
 +#endif
 +    if ((tlen > 0) && (xmlStrncmp(ctxt->input->cur, ctxt->name, tlen) == 0)) {
 +#ifdef MAGMA_ENABLE_CANARIES
