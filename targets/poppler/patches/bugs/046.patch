@@ -11,7 +11,7 @@ index 042a6ef..d1ab6b1 100644
  	break;
 +#endif
 +#ifdef MAGMA_ENABLE_CANARIES
-+      MAGMA_LOG(46, (intersectionIndex < 0) | ((unsigned)intersectionIndex >= allIntersections.size()));
++      MAGMA_LOG(46, MAGMA_OR(intersectionIndex < 0, (unsigned)intersectionIndex >= allIntersections.size()));
 +#endif
        const auto& line = allIntersections[intersectionIndex];
        interIdx = 0;

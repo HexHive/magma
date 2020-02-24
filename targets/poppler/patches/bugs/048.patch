@@ -16,10 +16,10 @@ index 654608c..2405541 100644
      height = 0;
 +#else
 +#ifdef MAGMA_ENABLE_CANARIES
-+  MAGMA_LOG(48, (src->getWidth() - xSrc < width) | \
-+                (src->getHeight() - ySrc < height) | \
-+                (bitmap->getWidth() - xDest < width) | \
-+                (bitmap->getHeight() - yDest < height) \
++  MAGMA_LOG(48, MAGMA_OR(src->getWidth() - xSrc < width, \
++                MAGMA_OR(src->getHeight() - ySrc < height, \
++                MAGMA_OR(bitmap->getWidth() - xDest < width, \
++                bitmap->getHeight() - yDest < height))) \
 +  );
 +#endif
 +#endif

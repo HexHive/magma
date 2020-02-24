@@ -50,7 +50,7 @@ index 8d2e06f..5715bb0 100644
      }
 +#ifdef MAGMA_ENABLE_CANARIES
 +    // ditto ;)
-+    MAGMA_LOG(34, (size < 0) | (len < 0));
++    MAGMA_LOG(34, MAGMA_OR(size < 0, len < 0));
 +#endif
      memcpy(ret, str1, size * sizeof(xmlChar));
      memcpy(&ret[size], str2, len * sizeof(xmlChar));

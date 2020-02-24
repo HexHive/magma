@@ -13,7 +13,7 @@ index a073794..0a0e691 100644
 +#endif
 +				{
 +#ifdef MAGMA_ENABLE_CANARIES
-+					MAGMA_LOG(19, (i == sizeof(*td->td_transferfunction) / sizeof(*(*td->td_transferfunction))) | (i == (td->td_samplesperpixel - td->td_extrasamples)));
++					MAGMA_LOG(19, MAGMA_OR(i == sizeof(*td->td_transferfunction) / sizeof(*(*td->td_transferfunction)), i == (td->td_samplesperpixel - td->td_extrasamples)));
 +#endif
  					fprintf(fd, " %5u",
  					    td->td_transferfunction[i][l]);

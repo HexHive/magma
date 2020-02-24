@@ -17,13 +17,13 @@ index 04aa717..579a9a7 100644
 +#endif
  
 +#ifdef MAGMA_ENABLE_CANARIES
-+    MAGMA_LOG(26, (entity->etype == XML_EXTERNAL_PARAMETER_ENTITY) &
-+        ((ctxt->options & XML_PARSE_NOENT) == 0) &
-+        ((ctxt->options & XML_PARSE_DTDVALID) == 0) &
-+        ((ctxt->options & XML_PARSE_DTDLOAD) == 0) &
-+        ((ctxt->options & XML_PARSE_DTDATTR) == 0) &
-+        (ctxt->replaceEntities == 0) &
-+        (ctxt->validate == 0));
++    MAGMA_LOG(26, MAGMA_AND(entity->etype == XML_EXTERNAL_PARAMETER_ENTITY, \
++        MAGMA_AND((ctxt->options & XML_PARSE_NOENT) == 0, \
++        MAGMA_AND((ctxt->options & XML_PARSE_DTDVALID) == 0, \
++        MAGMA_AND((ctxt->options & XML_PARSE_DTDLOAD) == 0, \
++        MAGMA_AND((ctxt->options & XML_PARSE_DTDATTR) == 0, \
++        MAGMA_AND(ctxt->replaceEntities == 0, \
++        ctxt->validate == 0)))))));
 +#endif
  	    input = xmlNewEntityInputStream(ctxt, entity);
  	    if (xmlPushInput(ctxt, input) < 0) {

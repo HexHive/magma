@@ -13,10 +13,10 @@ index 1b300b0..47d6992 100644
          }
 +#endif
 +#ifdef MAGMA_ENABLE_CANARIES
-+        MAGMA_LOG(22, (tif->tif_mode == O_RDONLY) & \
-+	        (nstrips > 1000000) & \
-+	        ((offset >= TIFFGetFileSize(tif)) | \
-+	         (stripbytes > (TIFFGetFileSize(tif) - offset) / (nstrips - 1))));
++        MAGMA_LOG(22, MAGMA_AND(tif->tif_mode == O_RDONLY, \
++	        MAGMA_AND(nstrips > 1000000, \
++	        MAGMA_OR(offset >= TIFFGetFileSize(tif), \
++	         stripbytes > (TIFFGetFileSize(tif) - offset) / (nstrips - 1)))));
 +#endif
  
          allocChoppedUpStripArrays(tif, nstrips, stripbytes, rowsperstrip);

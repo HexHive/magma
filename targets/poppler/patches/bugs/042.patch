@@ -13,7 +13,7 @@ index 3d2befc..078c143 100644
      }
 +#endif
 +#ifdef MAGMA_ENABLE_CANARIES
-+    MAGMA_LOG(42, (surface_width == 0) | (surface_height == 0));
++    MAGMA_LOG(42, MAGMA_OR(surface_width == 0, surface_height == 0));
 +#endif
      repeatX = result_width / surface_width;
      repeatY = result_height / surface_height;

@@ -7,7 +7,7 @@ index e92008d..8d3cecb 100644
  
  #ifdef PNG_eXIf_SUPPORTED
 +#ifdef MAGMA_ENABLE_CANARIES
-+   MAGMA_LOG(7, (info_ptr->eXIf_buf != NULL) & ((mask & info_ptr->free_me & PNG_FREE_EXIF) == 0));
++   MAGMA_LOG(7, MAGMA_AND(info_ptr->eXIf_buf != NULL, (mask & info_ptr->free_me & PNG_FREE_EXIF) == 0));
 +#endif
     /* Free any eXIf entry */
     if (((mask & PNG_FREE_EXIF) & info_ptr->free_me) != 0)

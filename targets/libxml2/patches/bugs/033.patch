@@ -24,10 +24,10 @@ index 3f31329..db7f7d1 100644
 +		    xmlLoadEntityContent(ctxt, ent);
 +#endif
 +#ifdef MAGMA_ENABLE_CANARIES
-+		    MAGMA_LOG(33, (m_tmp == 1) &
-+			((ctxt->options & XML_PARSE_NOENT) == 0) &
-+			((ctxt->options & XML_PARSE_DTDVALID) == 0) &
-+			(ctxt->validate == 0));
++		    MAGMA_LOG(33, MAGMA_AND(m_tmp == 1, \
++			MAGMA_AND((ctxt->options & XML_PARSE_NOENT) == 0, \
++			MAGMA_AND((ctxt->options & XML_PARSE_DTDVALID) == 0, \
++			ctxt->validate == 0))));
 +#endif
  		}
  		ctxt->depth++;
