@@ -37,32 +37,58 @@ export TIMEOUT=${TIMEOUT:-1m}
 
 WORKDIR="$(realpath "$WORKDIR")"
 
+get_next_cid()
+{
+    ##
+    # Pre-requirements:
+    # - $1: the directory where campaigns are stored
+    ##
+    shopt -s nullglob
+    campaigns=("$1"/*)
+    if [ ${#campaigns[@]} -eq 0 ]; then
+        echo 0
+    else
+        cids=($(sort -n < <(basename -a -s .tar "${campaigns[@]}")))
+        for ((i=0;;i++)); do
+            if [ -z ${cids[i]} ] || [ ${cids[i]} -ne $i ]; then
+                echo $i
+                break
+            fi
+        done
+    fi
+}
+export -f get_next_cid
+
 start_campaign()
 {
     ##
     # Pre-requirements:
     # - env AFFINITY
-    # - env ITERATION
     # - env FUZZER
     # - env TARGET
     # - env PROGRAM
     # - env ARGS
     ##
-    export SHARED="$WORKDIR/cache/$FUZZER/$TARGET/$PROGRAM/$ITERATION"
+    CACHEDIR="$WORKDIR/cache/$FUZZER/$TARGET/$PROGRAM"
+    CID=$(sem --id magma_cid --fg -j 1 -u \
+            get_next_cid "$CACHEDIR")
+    export SHARED="$CACHEDIR/$CID"
 
-    echo "Started $FUZZER/$TARGET/$PROGRAM/$ITERATION on CPU $AFFINITY"
+    echo "Started $FUZZER/$TARGET/$PROGRAM/$CID on CPU $AFFINITY"
     mkdir -p "$SHARED" && chmod 777 "$SHARED"
     "$MAGMA/tools/captain/start.sh" 1>/dev/null 2>&1
 
-    AR="$WORKDIR/ar/$FUZZER/$TARGET/$PROGRAM"
-    mkdir -p "$AR"
+    ARDIR="$WORKDIR/ar/$FUZZER/$TARGET/$PROGRAM"
+    mkdir -p "$ARDIR"
+    CID=$(sem --id magma_cid --fg -j 1 -u \
+            get_next_cid "$ARDIR")
     if [ -z $MAGMA_NO_ARCHIVE ]; then
         # only one tar job runs at a time, to prevent out-of-storage errors
         sem --id "magma_tar" --fg -j 1 \
-          tar -cf "${AR}/${ITERATION}.tar" -C "$SHARED" . 1>/dev/null 2>&1 && \
+          tar -cf "${ARDIR}/${CID}.tar" -C "$SHARED" . 1>/dev/null 2>&1 && \
         rm -rf "$SHARED"
     else
-        mv "$SHARED" "$AR"
+        mv "$SHARED" "${ARDIR}/${CID}"
     fi
 }
 export -f start_campaign
@@ -103,6 +129,7 @@ start_ex()
 
         export AFFINITY=$(cut -d',' -f2- <<< $CPUSET)
         ${COMMAND[@]}
+        exit 0
     fi
 }
 export -f start_ex
@@ -162,7 +189,6 @@ for FUZZER in "${fuzzers[@]}"; do
 
             echo "Starting campaigns for $PROGRAM $ARGS"
             for ((i=0; i<$REPEAT; i++)); do
-                export ITERATION=$i
                 NUMCPUS=1 # this can later be read from fuzzer config
                 # acquire CPU allocation lock
                 sem --id "magma" -u \
