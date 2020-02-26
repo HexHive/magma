@@ -1,0 +1,28 @@
+diff --git a/poppler/FileSpec.cc b/poppler/FileSpec.cc
+index be262ad4..1c623d2f 100644
+--- a/poppler/FileSpec.cc
++++ b/poppler/FileSpec.cc
+@@ -136,12 +136,22 @@ FileSpec::FileSpec(const Object *fileSpecA)
+         return;
+       }
+     }
+-
++#ifdef MAGMA_ENABLE_FIXES
+     obj1 = fileSpec.dictLookup("Desc");
+     if (obj1.isString()) {
+       desc = obj1.getString()->copy();
+     }
+   }
++#else
++  }
++
++    obj1 = fileSpec.dictLookup("Desc");
++    if (obj1.isString())
++        desc = obj1.getString()->copy();
++#endif
++#ifdef MAGMA_ENABLE_CANARIES
++     MAGMA_LOG(203, obj1.isString());
++#endif
+ }
+ 
+ FileSpec::~FileSpec()
