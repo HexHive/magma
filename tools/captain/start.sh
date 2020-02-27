@@ -23,12 +23,14 @@ if [ ! -z $AFFINITY ]; then
     flag_aff="--cpuset-cpus=$AFFINITY --env=AFFINITY=$AFFINITY"
 fi
 
-container=$( \
-    docker run -dt --volume=`realpath "$SHARED"`:/magma_shared \
+    docker run -t --volume=`realpath "$SHARED"`:/magma_shared \
         --cap-add=SYS_PTRACE --env=PROGRAM="$PROGRAM" --env=ARGS="$ARGS" \
         --env=POLL="$POLL" --env=TIMEOUT="$TIMEOUT" $flag_aff \
         "$IMG_NAME" \
-)
-code=$(docker wait $container)
-docker rm $container 1>/dev/null 2>&1
-exit $code
+
+
+echo $"Started container $container"
+# docker logs $container > ./logs/$FUZZER-$TARGET-$PROGRAM-$AFFINITY-container.log
+# code=$(docker wait $container)
+# docker rm $container 1>/dev/null 2>&1
+# exit $code
