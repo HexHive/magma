@@ -27,7 +27,7 @@ MAGMA=${MAGMA:-"$(cd "$(dirname "${BASH_SOURCE[0]}")/../../" >/dev/null 2>&1 \
     && pwd)"}
 export MAGMA
 
-WORKERS=${WORKERS:-(( $(nproc) - 2 ))}
+WORKERS=${WORKERS:-$(( $(nproc) - 2 ))}
 WORKERPOOLR=($(lscpu -b --parse | sed '/^#/d' | cut -d, -f1))
 export WORKERPOOL="${WORKERPOOLR[@]:0:WORKERS}"
 
