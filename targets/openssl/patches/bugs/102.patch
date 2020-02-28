@@ -9,16 +9,15 @@
  #include <stdio.h>
  #include <stdlib.h>
  #include <string.h>
-@@ -48,7 +48,14 @@ int MDC2_Update(MDC2_CTX *c, const unsigned char *in, size_t len)
- 
+@@ -49,6 +49,13 @@ int MDC2_Update(MDC2_CTX *c, const unsigned char *in, size_t len)
      i = c->num;
      if (i != 0) {
-+#ifdef MAGMA_ENABLE_CANARIES
-+    MAGMA_LOG(102,INT_MAX - len < i);
-+#endif
 +#ifdef MAGMA_ENABLE_FIXES
          if (len < MDC2_BLOCK - i) {
 +#else
++#ifdef MAGMA_ENABLE_CANARIES
++        MAGMA_LOG(102, SIZE_MAX - len < i);
++#endif
 +        if (i + len < MDC2_BLOCK) {
 +#endif
              /* partial block */
