@@ -4,12 +4,12 @@
          goto err;
  
      pktmp = X509_get0_pubkey(x);
-+#ifdef MAGMA_ENABLE_CANARIES
-+    MAGMA_LOG(107,pktmp == NULL);
-+#endif    
 +#ifdef MAGMA_ENABLE_FIXES
      if (pktmp == NULL)
          goto err;
++#endif
++#ifdef MAGMA_ENABLE_CANARIES
++    MAGMA_LOG(107,pktmp == NULL);
 +#endif
      i = X509_REQ_set_pubkey(ret, pktmp);
      if (!i)
