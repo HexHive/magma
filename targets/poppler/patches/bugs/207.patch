@@ -6,7 +6,7 @@ index afb54dfb..7346604d 100644
        shift();
        shift();
  
-+#ifdef MAGMA_ENABLE_FIX      
++#ifdef MAGMA_ENABLE_FIXES
        if (unlikely(num <= 0 || gen < 0)) {
            return Object();
        }
