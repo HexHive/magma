@@ -4,14 +4,14 @@
      }
  
      /* Detached content must be supplied via in_bio instead. */
-+#ifdef MAGMA_ENABLE_CANARIES
-+        MAGMA_LOG(106,data_body == NULL & in_bio == NULL);
-+#endif
 +#ifdef MAGMA_ENABLE_FIXES
      if (data_body == NULL && in_bio == NULL) {
          PKCS7err(PKCS7_F_PKCS7_DATADECODE, PKCS7_R_NO_CONTENT);
          goto err;
      }
++#endif
++#ifdef MAGMA_ENABLE_CANARIES
++        MAGMA_LOG(106, MAGMA_AND(data_body == NULL, in_bio == NULL));
 +#endif
  
      /* We will be checking the signature */
