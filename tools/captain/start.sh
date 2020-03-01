@@ -17,20 +17,22 @@ if [ -z $FUZZER ] || [ -z $TARGET ] || [ -z $PROGRAM ] || [ -z $SHARED ]; then
          'environment variables.'
     exit 1
 fi
+
 IMG_NAME="magma/$FUZZER/$TARGET"
 
 if [ ! -z $AFFINITY ]; then
     flag_aff="--cpuset-cpus=$AFFINITY --env=AFFINITY=$AFFINITY"
 fi
 
-    docker run -t --volume=`realpath "$SHARED"`:/magma_shared \
+container_id=$(
+docker run -dt --volume=`realpath "$SHARED"`:/magma_shared \
         --cap-add=SYS_PTRACE --env=PROGRAM="$PROGRAM" --env=ARGS="$ARGS" \
         --env=POLL="$POLL" --env=TIMEOUT="$TIMEOUT" $flag_aff \
-        "$IMG_NAME" \
-
-
-echo $"Started container $container"
-# docker logs $container > ./logs/$FUZZER-$TARGET-$PROGRAM-$AFFINITY-container.log
-# code=$(docker wait $container)
-# docker rm $container 1>/dev/null 2>&1
-# exit $code
+        "$IMG_NAME" 
+)
+echo "Started container with id: $container_id"
+exit_code=$(docker wait $container_id)
+docker logs "$container_id" &> ""$LOGSDIR"/"$FUZZER"_"$TARGET"_"$PROGRAM"_"$AFFINITY"_container.log"
+echo "Container for $FUZZER/$TARGET/$PROGRAM/$AFFINITY exited with $exit_code for $FUZZER $TARGET"
+docker rm $container_id 1>/dev/null 2>&1
+exit $exit_code
