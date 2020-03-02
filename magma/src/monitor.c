@@ -120,27 +120,23 @@ void dump_raw(const data_t *data)
 
 void dump_row(const data_t *data)
 {
-    char buffer[1<<10] = {0};
-    char tmp[1<<7];
     int bugs = sizeof(data_t) / sizeof(canary_t);
     for (int i = 0; i < bugs; ++i) {
-        snprintf(tmp, sizeof(tmp), "%1$03d_R,%1$03d_T", i);
-        if (buffer[0]) {
-            strcat(buffer, ",");
+        fprintf(stdout, "%1$03d_R,%1$03d_T", i);
+        if (i < bugs - 1) {
+            putc(',', stdout);
         }
-        strcat(buffer, tmp);
     }
-    puts(buffer);
-    bzero(buffer, sizeof(buffer));
+    putc('\n', stdout);
+
     for (int i = 0; i < bugs; ++i) {
-        snprintf(tmp, sizeof(tmp), "%llu,%llu", \
+        int len = fprintf(stdout, "%llu,%llu", \
             (*data)[i].reached, (*data)[i].triggered);
-        if (buffer[0]) {
-            strcat(buffer, ",");
+        if (i < bugs - 1) {
+            putc(',', stdout);
         }
-        strcat(buffer, tmp);
     }
-    puts(buffer);
+    putc('\n', stdout);
 }
 
 void dump_human(const data_t *data)
