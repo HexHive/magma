@@ -14,7 +14,7 @@
 #       (default: undefined)
 # + env TMPFS_SIZE: the size of the tmpfs mounted volume (default: 50g)
 # + env MAGMA: path to magma root (default: ../../)
-# + env LOGDIR: path to logs directory
+# + env LOGSDIR: path to logs directory
 ##
 
 if [ -z $WORKDIR ] || [ -z $REPEAT ]; then
