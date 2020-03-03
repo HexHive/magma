@@ -14,6 +14,7 @@
 #       (default: undefined)
 # + env TMPFS_SIZE: the size of the tmpfs mounted volume (default: 50g)
 # + env MAGMA: path to magma root (default: ../../)
+# + env LOGSDIR: path to logs directory
 ##
 
 if [ -z $WORKDIR ] || [ -z $REPEAT ]; then
@@ -36,6 +37,12 @@ export POLL=${POLL:-5}
 export TIMEOUT=${TIMEOUT:-1m}
 
 WORKDIR="$(realpath "$WORKDIR")"
+
+echo_time()
+{
+    date "+[%F %R] $*"
+}
+export -f echo_time
 
 get_next_cid()
 {
@@ -70,13 +77,14 @@ start_campaign()
     # - env ARGS
     ##
     CACHEDIR="$WORKDIR/cache/$FUZZER/$TARGET/$PROGRAM"
-    CID=$(sem --id magma_cid --fg -j 1 -u \
+    export CID=$(sem --id magma_cid --fg -j 1 -u \
             get_next_cid "$CACHEDIR")
     export SHARED="$CACHEDIR/$CID"
 
-    echo "Started $FUZZER/$TARGET/$PROGRAM/$CID on CPU $AFFINITY"
+    echo_time "Started $FUZZER/$TARGET/$PROGRAM/$CID on CPU $AFFINITY"
     mkdir -p "$SHARED" && chmod 777 "$SHARED"
-    "$MAGMA/tools/captain/start.sh" 1>/dev/null 2>&1
+
+    "$MAGMA"/tools/captain/start.sh
 
     ARDIR="$WORKDIR/ar/$FUZZER/$TARGET/$PROGRAM"
     mkdir -p "$ARDIR"
@@ -148,7 +156,7 @@ rm -rf ~/.parallel/semaphores/id-magma*
 mkdir -p "$WORKDIR/cache"
 mkdir -p "$WORKDIR/ar"
 if [ -z $MAGMA_CACHE_ON_DISK ]; then
-    echo "Obtaining sudo permissions to mount tmpfs"
+    echo_time "Obtaining sudo permissions to mount tmpfs"
     if mountpoint -q -- "$WORKDIR/cache"; then
         sudo umount -f "$WORKDIR/cache"
     fi
@@ -174,8 +182,15 @@ for FUZZER in "${fuzzers[@]}"; do
 
         # build the Docker image
         IMG_NAME="magma/$FUZZER/$TARGET"
-        echo "Building $IMG_NAME"
-        $MAGMA/tools/captain/build.sh 1>/dev/null 2>&1
+        echo_time "Building $IMG_NAME"
+
+    if [ -z $LOGSDIR ]; then
+        BUILD_LOGFILE="/dev/null"
+    else
+        BUILD_LOGFILE=""$LOGSDIR"/"$FUZZER"_"$TARGET"_build.log"
+    fi
+
+        "$MAGMA"/tools/captain/build.sh &> "$BUILD_LOGFILE"
 
         mapfile -t defaultprgs < <(yq r "$MAGMA/targets/$TARGET/config.yaml" \
             'programs[*]')
@@ -187,7 +202,7 @@ for FUZZER in "${fuzzers[@]}"; do
                 continue
             fi
 
-            echo "Starting campaigns for $PROGRAM $ARGS"
+            echo_time "Starting campaigns for $PROGRAM $ARGS"
             for ((i=0; i<$REPEAT; i++)); do
                 NUMCPUS=1 # this can later be read from fuzzer config
                 # acquire CPU allocation lock
@@ -205,6 +220,6 @@ for i in $WORKERPOOL; do
 done
 
 if [ -z $MAGMA_CACHE_ON_DISK ]; then
-    echo "Obtaining sudo permissions to umount tmpfs"
+    echo_time "Obtaining sudo permissions to umount tmpfs"
     sudo umount "$WORKDIR/cache"
 fi
