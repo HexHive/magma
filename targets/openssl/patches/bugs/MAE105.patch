@@ -16,7 +16,7 @@ index 1c9c018cf2..3897c7238f 100644
      return bn_expand2((a),(bits+BN_BITS2-1)/BN_BITS2);
 +#else
 +#ifdef MAGMA_ENABLE_CANARIES
-+    MAGMA_LOG(105,bits > (INT_MAX - BN_BITS2 + 1));
++    MAGMA_LOG(MAE105,bits > (INT_MAX - BN_BITS2 + 1));
 +#endif
 +    return ((((((bits+BN_BITS2-1))/BN_BITS2)) <= (a)->dmax)?(a):bn_expand2((a),(bits+BN_BITS2-1)/BN_BITS2));
 +#endif

@@ -6,7 +6,7 @@
      if (i != 0) {
 +
 +#ifdef MAGMA_ENABLE_CANARIES
-+        MAGMA_LOG(101,INT_MAX - inl < i);
++        MAGMA_LOG(MAE101,INT_MAX - inl < i);
 +#endif
 +        
 +#ifdef MAGMA_ENABLE_FIXES

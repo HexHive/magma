@@ -11,7 +11,7 @@
      }
 +#endif
 +#ifdef MAGMA_ENABLE_CANARIES
-+        MAGMA_LOG(106, MAGMA_AND(data_body == NULL, in_bio == NULL));
++        MAGMA_LOG(MAE106, MAGMA_AND(data_body == NULL, in_bio == NULL));
 +#endif
  
      /* We will be checking the signature */

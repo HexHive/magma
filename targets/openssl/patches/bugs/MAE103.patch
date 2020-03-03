@@ -12,7 +12,7 @@
      }
 +#endif
 +#ifdef MAGMA_ENABLE_CANARIES
-+    MAGMA_LOG(103,ckey == NULL);
++    MAGMA_LOG(MAE103,ckey == NULL);
 +#endif
  
      dh_clnt = EVP_PKEY_get0_DH(ckey);
@@ -30,7 +30,7 @@
      }
 +#endif
 +#ifdef MAGMA_ENABLE_CANARIES
-+    MAGMA_LOG(103,ckey == NULL);
++    MAGMA_LOG(MAE103,ckey == NULL);
 +#endif
  
      if (ssl_derive(s, ckey, skey, 0) == 0) {

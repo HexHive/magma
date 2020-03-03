@@ -16,7 +16,7 @@
          if (len < MDC2_BLOCK - i) {
 +#else
 +#ifdef MAGMA_ENABLE_CANARIES
-+        MAGMA_LOG(102, SIZE_MAX - len < i);
++        MAGMA_LOG(MAE102, SIZE_MAX - len < i);
 +#endif
 +        if (i + len < MDC2_BLOCK) {
 +#endif

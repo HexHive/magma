@@ -9,7 +9,7 @@
          goto err;
 +#endif
 +#ifdef MAGMA_ENABLE_CANARIES
-+    MAGMA_LOG(107,pktmp == NULL);
++    MAGMA_LOG(MAE107,pktmp == NULL);
 +#endif
      i = X509_REQ_set_pubkey(ret, pktmp);
      if (!i)

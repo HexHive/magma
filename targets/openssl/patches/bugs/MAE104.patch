@@ -16,7 +16,7 @@
 +    /**
 +    *This bug will do a 1 byte overread when the length is too short
 +    */
-+    MAGMA_LOG(104, MAGMA_AND(f != NULL, \
++    MAGMA_LOG(MAE104, MAGMA_AND(f != NULL, \
 +            MAGMA_AND(f->addressFamily != NULL, \
 +            MAGMA_AND(f->addressFamily->data != NULL, \
 +            f->addressFamily->length < 2)))
