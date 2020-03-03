@@ -113,57 +113,78 @@ void print_help()
     }
 }
 
+void *dump_one_raw(pcanary_t canary, void *arg)
+{
+    fwrite(canary, sizeof(*canary), 1, stdout);
+    return NULL;
+}
+
 void dump_raw(const data_t *data)
 {
-    fwrite(*data, sizeof(canary_t), sizeof(data_t)/sizeof(canary_t), stdout);
+    stor_forall((pcanary_t)(*data), dump_one_raw, NULL, NULL, -1);
+}
+
+void *dump_one_row_header(pcanary_t canary, void *arg)
+{
+    bool *begin = (bool *)arg;
+    if (!*begin) {
+        putc(',', stdout);
+    }
+    fprintf(stdout, "%1$s_R,%1$s_T", canary->name);
+    *begin = false;
+    return NULL;
+}
+
+void *dump_one_row_data(pcanary_t canary, void *arg)
+{
+    bool *begin = (bool *)arg;
+    if (!*begin) {
+        putc(',', stdout);
+    }
+    fprintf(stdout, "%llu,%llu", canary->reached, canary->triggered);
+    *begin = false;
+    return NULL;
 }
 
 void dump_row(const data_t *data)
 {
-    int bugs = sizeof(data_t) / sizeof(canary_t);
-    for (int i = 0; i < bugs; ++i) {
-        fprintf(stdout, "%1$03d_R,%1$03d_T", i);
-        if (i < bugs - 1) {
-            putc(',', stdout);
-        }
-    }
+    bool begin = true;
+    stor_forall((pcanary_t)(*data), dump_one_row_header, &begin, NULL, -1);
     putc('\n', stdout);
 
-    for (int i = 0; i < bugs; ++i) {
-        int len = fprintf(stdout, "%llu,%llu", \
-            (*data)[i].reached, (*data)[i].triggered);
-        if (i < bugs - 1) {
-            putc(',', stdout);
-        }
-    }
+    begin = true;
+    stor_forall((pcanary_t)(*data), dump_one_row_data, &begin, NULL, -1);
     putc('\n', stdout);
+}
+
+void *dump_one_human(pcanary_t canary, void *arg)
+{
+    printf("%s reached %llu triggered %llu\n", \
+            canary->name, canary->reached, canary->triggered);
+    return NULL;
 }
 
 void dump_human(const data_t *data)
 {
-    int bugs = sizeof(data_t) / sizeof(canary_t);
-    for (int i = 0; i < bugs; ++i) {
-        printf("B%03d reached %llu triggered %llu\n", \
-            i, (*data)[i].reached, (*data)[i].triggered);
-    }
+    stor_forall((pcanary_t)(*data), dump_one_human, NULL, NULL, -1);
 }
 
 bool fetch_file(data_t *data, const char *fname)
 {
     bool success = true;
-    pshared_data_t data_ptr;
+    pstored_data_t data_ptr;
     int fd = open(fname, O_RDWR);
     if (fd == -1) {
         fd = open(fname, O_CREAT | O_RDWR, 0666);
-        if (ftruncate(fd, SIZE) != 0) {
+        if (ftruncate(fd, FILESIZE) != 0) {
             success = false;
             goto exit;
         }
 
-        data_ptr = mmap(0, SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-        memset(data_ptr, 0, SIZE);
+        data_ptr = mmap(0, FILESIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+        memset(data_ptr, 0, FILESIZE);
     } else {
-        data_ptr = mmap(0, SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+        data_ptr = mmap(0, FILESIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
     }
 
     /* Since the file may be updated by a live producer, we follow protocol*/
@@ -176,7 +197,7 @@ bool fetch_file(data_t *data, const char *fname)
         goto exit;
     }
 exit:
-    munmap(data_ptr, SIZE);
+    munmap(data_ptr, FILESIZE);
     close(fd);
     return success;
 }
@@ -188,7 +209,7 @@ bool fetch_watch(data_t *data, int *status, int argc, char **argv)
     getcwd(fname, sizeof(fname));
     strcat(strcat(fname, "/"), "monitor_XXXXXX");
     int fd = mkstemp(fname);
-    if (ftruncate(fd, SIZE) != 0) {
+    if (ftruncate(fd, FILESIZE) != 0) {
         success = false;
         goto exit;
     }
@@ -205,8 +226,8 @@ bool fetch_watch(data_t *data, int *status, int argc, char **argv)
     }
     wait(status);
 
-    pshared_data_t data_ptr;
-    data_ptr = mmap(0, SIZE, PROT_READ, MAP_SHARED, fd, 0);
+    pstored_data_t data_ptr;
+    data_ptr = mmap(0, FILESIZE, PROT_READ, MAP_SHARED, fd, 0);
 
     /* Since the producer is dead, we can fetch its buffer directly */
     memcpy(*data, data_ptr->producer_buffer, sizeof(data_t));

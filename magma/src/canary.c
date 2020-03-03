@@ -14,32 +14,16 @@ extern "C" {
 #include <signal.h>
 #include <stdbool.h>
 
-static pshared_data_t data_ptr = NULL;
+static pstored_data_t data_ptr = NULL;
 static int magma_faulty = 0;
 
 static void magma_protect(int write)
 {
-	if (write == 0) {
-		mprotect(data_ptr, SIZE, PROT_READ);
-	} else {
-		mprotect(data_ptr, SIZE, PROT_READ | PROT_WRITE);
-	}
-}
-
-static bool magma_update(int bug, canary_type_e type, int delta)
-{
-    // update the producer buffer
-    // this should be up-to-date regardless if there is a slot in the bufer
-    data_ptr->producer_buffer[bug].raw[type] += delta;
-    if (data_ptr->consumed) {
-        // TODO find a way to update consumer buffer without full copy (deltas?)
-        memcpy(data_ptr->consumer_buffer, data_ptr->producer_buffer, sizeof(data_t));
-        // memory barrier
-        __sync_synchronize();
-        data_ptr->consumed = false;
-        return true;
+    if (write == 0) {
+        mprotect(data_ptr, FILESIZE, PROT_READ);
+    } else {
+        mprotect(data_ptr, FILESIZE, PROT_READ | PROT_WRITE);
     }
-    return false;
 }
 
 static bool magma_init(void)
@@ -55,24 +39,23 @@ static bool magma_init(void)
     if (file == NULL) {
         file = NAME;
     }
-	int fd = open(file, O_RDWR);
-	if (fd == -1) {
-		fprintf(stderr, "Monitor not running. Canaries will be disabled.\n");
-		data_ptr = NULL;
+    int fd = open(file, O_RDWR);
+    if (fd == -1) {
+        fprintf(stderr, "Monitor not running. Canaries will be disabled.\n");
+        data_ptr = NULL;
         return false;
-	} else {
-		data_ptr = (pshared_data_t)mmap(0, SIZE, PROT_WRITE, MAP_SHARED, fd, 0);
-		close(fd);
-        magma_update(0, REACHED, 1); // counts executions
+    } else {
+        data_ptr = mmap(0, FILESIZE, PROT_WRITE, MAP_SHARED, fd, 0);
+        close(fd);
 
 #ifdef MAGMA_HARDEN_CANARIES
-		magma_protect(0);
+        magma_protect(0);
 #endif
         return true;
-	}
+    }
 }
 
-void magma_log(int bug, int condition)
+void magma_log(const char *bug, int condition)
 {
 #ifndef MAGMA_DISABLE_CANARIES
     if (!data_ptr && !magma_init()) {
@@ -83,8 +66,16 @@ void magma_log(int bug, int condition)
     magma_protect(1);
 #endif
 
-    magma_update(bug, REACHED,           1 & (magma_faulty ^ 1));
-    magma_update(bug, TRIGGERED, condition & (magma_faulty ^ 1));
+    pcanary_t prod_canary   = stor_get(data_ptr->producer_buffer, bug);
+    prod_canary->reached   += 1         & (magma_faulty ^ 1);
+    prod_canary->triggered += condition & (magma_faulty ^ 1);
+    if (data_ptr->consumed) {
+        memcpy(data_ptr->consumer_buffer, data_ptr->producer_buffer, sizeof(data_t));
+        // memory barrier
+        __sync_synchronize();
+        data_ptr->consumed = false;
+    }
+
     magma_faulty = magma_faulty | condition;
 
 #ifdef MAGMA_HARDEN_CANARIES

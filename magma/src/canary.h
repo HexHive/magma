@@ -14,7 +14,7 @@ extern "C" {
 #define MAGMA_AND(a,b) magma_and((a),(b))
 #define MAGMA_OR(a,b) magma_or((a),(b))
 
-extern void magma_log(int bug, int condition);
+extern void magma_log(const char *bug, int condition);
 
 #ifdef __cplusplus
 }

@@ -46,7 +46,7 @@ RUN ${TARGET}/fetch.sh && ${MAGMA}/apply_patches.sh
 
 ENV CFLAGS -include "${MAGMA}/src/canary.h -DMAGMA_ENABLE_CANARIES -DMAGMA_FATAL_CANARIES" -g -O0
 ENV CXXFLAGS -include "${MAGMA}/src/canary.h -DMAGMA_ENABLE_CANARIES -DMAGMA_FATAL_CANARIES" -g -O0
-ENV LIBS -l:canary.o -lrt
+ENV LIBS -l:magma.o -lrt
 ENV LDFLAGS -L"${OUT}" -g
 
 RUN ${FUZZER}/instrument.sh

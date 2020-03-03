@@ -10,5 +10,10 @@ set -e
 
 MAGMA_STORAGE="$SHARED/canaries.raw"
 
+$CC $CFLAGS -D"MAGMA_STORAGE=\"$MAGMA_STORAGE\"" -c "$MAGMA/src/storage.c" \
+    -fPIC -I "$MAGMA/src/" -o "$OUT/pre_storage.o" $LDFLAGS
+
 $CC $CFLAGS -g -O0 -D"MAGMA_STORAGE=\"$MAGMA_STORAGE\"" "$MAGMA/src/monitor.c" \
-    -I "$MAGMA/src/" -o "$OUT/monitor" $LDFLAGS $LIBS
+    "$OUT/pre_storage.o" -I "$MAGMA/src/" -o "$OUT/monitor" $LDFLAGS $LIBS
+
+rm "$OUT/pre_storage.o"

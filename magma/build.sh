@@ -12,3 +12,9 @@ MAGMA_STORAGE="$SHARED/canaries.raw"
 
 $CC $CFLAGS -D"MAGMA_STORAGE=\"$MAGMA_STORAGE\"" -c "$MAGMA/src/canary.c" \
     -fPIC -I "$MAGMA/src/" -o "$OUT/canary.o" $LDFLAGS
+
+$CC $CFLAGS -D"MAGMA_STORAGE=\"$MAGMA_STORAGE\"" -c "$MAGMA/src/storage.c" \
+    -fPIC -I "$MAGMA/src/" -o "$OUT/storage.o" $LDFLAGS
+
+ld -r "$OUT/canary.o" "$OUT/storage.o" -o "$OUT/magma.o"
+rm "$OUT/canary.o" "$OUT/storage.o"
