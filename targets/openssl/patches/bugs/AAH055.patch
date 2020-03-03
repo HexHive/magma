@@ -37,7 +37,7 @@
 +             * iteration will result in dereferencing `n` outside the bounds of
 +             * `b`.
 +             */
-+            MAGMA_LOG(55, i == 0);
++            MAGMA_LOG("AAH055", i == 0);
 +#endif
 +        }
 +        /* Complement and increment next octet */

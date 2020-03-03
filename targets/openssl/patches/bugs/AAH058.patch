@@ -17,7 +17,7 @@
 +             * will overread the `q` buffer, since it points to a fixed-size
 +             * buffer whose size is less than `num`.
 +             */
-+            MAGMA_LOG(58, num > (int)sizeof(ebcdic_buf));
++            MAGMA_LOG("AAH058", num > (int)sizeof(ebcdic_buf));
 +#endif
 +#endif
              q = ebcdic_buf;

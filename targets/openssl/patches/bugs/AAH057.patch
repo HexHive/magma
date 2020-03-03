@@ -27,7 +27,7 @@
 +                         * is resized initially to the reported length, which
 +                         * could result in temporary memory exhaustion.
 +                         */
-+                        MAGMA_LOG(57, i <= 0);
++                        MAGMA_LOG("AAH057", i <= 0);
 +#endif
                          if (i <= 0) {
                              ASN1err(ASN1_F_ASN1_D2I_READ_BIO,

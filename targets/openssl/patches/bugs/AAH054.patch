@@ -11,7 +11,7 @@
 +                {
 +                    int magma_result = doapr_outch(sbuffer, buffer, &currlen, maxlen, ch);
 +#ifdef MAGMA_ENABLE_CANARIES
-+                    MAGMA_LOG(54, magma_result == 0);
++                    MAGMA_LOG("AAH054", magma_result == 0);
 +#endif
 +                }
 +#endif
@@ -30,7 +30,7 @@
 +                {
 +                    int magma_result = doapr_outch(sbuffer, buffer, &currlen, maxlen, va_arg(args, int));
 +#ifdef MAGMA_ENABLE_CANARIES
-+                    MAGMA_LOG(54, magma_result == 0);
++                    MAGMA_LOG("AAH054", magma_result == 0);
 +#endif
 +                }
 +#endif
@@ -48,7 +48,7 @@
 +                {
 +                    int magma_result = doapr_outch(sbuffer, buffer, &currlen, maxlen, ch);
 +#ifdef MAGMA_ENABLE_CANARIES
-+                    MAGMA_LOG(54, magma_result == 0);
++                    MAGMA_LOG("AAH054", magma_result == 0);
 +#endif
 +                }
 +#endif
@@ -66,7 +66,7 @@
 +    {
 +        int magma_result = doapr_outch(sbuffer, buffer, &currlen, maxlen, '\0');
 +#ifdef MAGMA_ENABLE_CANARIES
-+        MAGMA_LOG(54, magma_result == 0);
++        MAGMA_LOG("AAH054", magma_result == 0);
 +#endif
 +    }
 +#endif
@@ -84,7 +84,7 @@
 +        {
 +            int magma_result = doapr_outch(sbuffer, buffer, currlen, maxlen, ' ');
 +#ifdef MAGMA_ENABLE_CANARIES
-+            MAGMA_LOG(54, magma_result == 0);
++            MAGMA_LOG("AAH054", magma_result == 0);
 +#endif
 +        }
 +#endif
@@ -99,7 +99,7 @@
 +        {
 +            int magma_result = doapr_outch(sbuffer, buffer, currlen, maxlen, *value++);
 +#ifdef MAGMA_ENABLE_CANARIES
-+            MAGMA_LOG(54, magma_result == 0);
++            MAGMA_LOG("AAH054", magma_result == 0);
 +#endif
 +        }
 +#endif
@@ -114,7 +114,7 @@
 +        {
 +            int magma_result = doapr_outch(sbuffer, buffer, currlen, maxlen, ' ');
 +#ifdef MAGMA_ENABLE_CANARIES
-+            MAGMA_LOG(54, magma_result == 0);
++            MAGMA_LOG("AAH054", magma_result == 0);
 +#endif
 +        }
 +#endif
@@ -132,7 +132,7 @@
 +        {
 +            int magma_result = doapr_outch(sbuffer, buffer, currlen, maxlen, ' ');
 +#ifdef MAGMA_ENABLE_CANARIES
-+            MAGMA_LOG(54, magma_result == 0);
++            MAGMA_LOG("AAH054", magma_result == 0);
 +#endif
 +        }
 +#endif
@@ -148,7 +148,7 @@
 +        {
 +            int magma_result = doapr_outch(sbuffer, buffer, currlen, maxlen, signvalue);
 +#ifdef MAGMA_ENABLE_CANARIES
-+            MAGMA_LOG(54, magma_result == 0);
++            MAGMA_LOG("AAH054", magma_result == 0);
 +#endif
 +        }
 +#endif
@@ -162,7 +162,7 @@
 +        {
 +            int magma_result = doapr_outch(sbuffer, buffer, currlen, maxlen, *prefix);
 +#ifdef MAGMA_ENABLE_CANARIES
-+            MAGMA_LOG(54, magma_result == 0);
++            MAGMA_LOG("AAH054", magma_result == 0);
 +#endif
 +        }
 +#endif
@@ -179,7 +179,7 @@
 +            {
 +                int magma_result = doapr_outch(sbuffer, buffer, currlen, maxlen, '0');
 +#ifdef MAGMA_ENABLE_CANARIES
-+                MAGMA_LOG(54, magma_result == 0);
++                MAGMA_LOG("AAH054", magma_result == 0);
 +#endif
 +            }
 +#endif
@@ -195,7 +195,7 @@
 +        {
 +            int magma_result = doapr_outch(sbuffer, buffer, currlen, maxlen, convert[--place]);
 +#ifdef MAGMA_ENABLE_CANARIES
-+            MAGMA_LOG(54, magma_result == 0);
++            MAGMA_LOG("AAH054", magma_result == 0);
 +#endif
 +        }
 +#endif
@@ -210,7 +210,7 @@
 +        {
 +            int magma_result = doapr_outch(sbuffer, buffer, currlen, maxlen, ' ');
 +#ifdef MAGMA_ENABLE_CANARIES
-+            MAGMA_LOG(54, magma_result == 0);
++            MAGMA_LOG("AAH054", magma_result == 0);
 +#endif
 +        }
 +#endif
@@ -228,7 +228,7 @@
 +            {
 +                int magma_result = doapr_outch(sbuffer, buffer, currlen, maxlen, signvalue);
 +#ifdef MAGMA_ENABLE_CANARIES
-+                MAGMA_LOG(54, magma_result == 0);
++                MAGMA_LOG("AAH054", magma_result == 0);
 +#endif
 +            }
 +#endif
@@ -243,7 +243,7 @@
 +            {
 +                int magma_result = doapr_outch(sbuffer, buffer, currlen, maxlen, '0');
 +#ifdef MAGMA_ENABLE_CANARIES
-+                MAGMA_LOG(54, magma_result == 0);
++                MAGMA_LOG("AAH054", magma_result == 0);
 +#endif
 +            }
 +#endif
@@ -258,7 +258,7 @@
 +        {
 +            int magma_result = doapr_outch(sbuffer, buffer, currlen, maxlen, ' ');
 +#ifdef MAGMA_ENABLE_CANARIES
-+            MAGMA_LOG(54, magma_result == 0);
++            MAGMA_LOG("AAH054", magma_result == 0);
 +#endif
 +        }
 +#endif
@@ -272,7 +272,7 @@
 +    {
 +        int magma_result = doapr_outch(sbuffer, buffer, currlen, maxlen, signvalue);
 +#ifdef MAGMA_ENABLE_CANARIES
-+        MAGMA_LOG(54, magma_result == 0);
++        MAGMA_LOG("AAH054", magma_result == 0);
 +#endif
 +    }
 +#endif
@@ -285,7 +285,7 @@
 +        {
 +            int magma_result = doapr_outch(sbuffer, buffer, currlen, maxlen, iconvert[--iplace]);
 +#ifdef MAGMA_ENABLE_CANARIES
-+            MAGMA_LOG(54, magma_result == 0);
++            MAGMA_LOG("AAH054", magma_result == 0);
 +#endif
 +        }
 +#endif
@@ -303,7 +303,7 @@
 +        {
 +            int magma_result = doapr_outch(sbuffer, buffer, currlen, maxlen, '.');
 +#ifdef MAGMA_ENABLE_CANARIES
-+            MAGMA_LOG(54, magma_result == 0);
++            MAGMA_LOG("AAH054", magma_result == 0);
 +#endif
 +        }
 +#endif
@@ -317,7 +317,7 @@
 +            {
 +                int magma_result = doapr_outch(sbuffer, buffer, currlen, maxlen, fconvert[--fplace]);
 +#ifdef MAGMA_ENABLE_CANARIES
-+                MAGMA_LOG(54, magma_result == 0);
++                MAGMA_LOG("AAH054", magma_result == 0);
 +#endif
 +            }
 +#endif
@@ -331,7 +331,7 @@
 +        {
 +            int magma_result = doapr_outch(sbuffer, buffer, currlen, maxlen, '0');
 +#ifdef MAGMA_ENABLE_CANARIES
-+            MAGMA_LOG(54, magma_result == 0);
++            MAGMA_LOG("AAH054", magma_result == 0);
 +#endif
 +        }
 +#endif
@@ -349,7 +349,7 @@
 +            {
 +                int magma_result = doapr_outch(sbuffer, buffer, currlen, maxlen, ech);
 +#ifdef MAGMA_ENABLE_CANARIES
-+                MAGMA_LOG(54, magma_result == 0);
++                MAGMA_LOG("AAH054", magma_result == 0);
 +#endif
 +            }
 +#endif
@@ -361,7 +361,7 @@
 +                {
 +                    int magma_result = doapr_outch(sbuffer, buffer, currlen, maxlen, '-');
 +#ifdef MAGMA_ENABLE_CANARIES
-+                    MAGMA_LOG(54, magma_result == 0);
++                    MAGMA_LOG("AAH054", magma_result == 0);
 +#endif
 +                }
 +#endif
@@ -373,7 +373,7 @@
 +                {
 +                    int magma_result = doapr_outch(sbuffer, buffer, currlen, maxlen, '+');
 +#ifdef MAGMA_ENABLE_CANARIES
-+                    MAGMA_LOG(54, magma_result == 0);
++                    MAGMA_LOG("AAH054", magma_result == 0);
 +#endif
 +                }
 +#endif
@@ -387,7 +387,7 @@
 +            {
 +                int magma_result = doapr_outch(sbuffer, buffer, currlen, maxlen, econvert[--eplace]);
 +#ifdef MAGMA_ENABLE_CANARIES
-+                MAGMA_LOG(54, magma_result == 0);
++                MAGMA_LOG("AAH054", magma_result == 0);
 +#endif
 +            }
 +#endif
@@ -402,7 +402,7 @@
 +        {
 +            int magma_result = doapr_outch(sbuffer, buffer, currlen, maxlen, ' ');
 +#ifdef MAGMA_ENABLE_CANARIES
-+            MAGMA_LOG(54, magma_result == 0);
++            MAGMA_LOG("AAH054", magma_result == 0);
 +#endif
 +        }
 +#endif

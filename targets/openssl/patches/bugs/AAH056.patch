@@ -8,7 +8,7 @@
      s->init_msg = s->init_buf->data + msg_offset;
 +#endif
 +#ifdef MAGMA_ENABLE_CANARIES
-+    MAGMA_LOG(56, s->init_msg != (s->init_buf->data + msg_offset));
++    MAGMA_LOG("AAH056", s->init_msg != (s->init_buf->data + msg_offset));
 +#endif
  
      return 1;

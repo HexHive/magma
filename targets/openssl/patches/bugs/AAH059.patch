@@ -26,7 +26,7 @@
 +     * If there is a pending request packet and there exists at least one
 +     * previous request in the stack, then unbounded memory growth is possible.
 +     */
-+    MAGMA_LOG(59, MAGMA_AND(PACKET_remaining(&responder_id_list) > 0, \
++    MAGMA_LOG("AAH059", MAGMA_AND(PACKET_remaining(&responder_id_list) > 0, \
 +        sk_OCSP_RESPID_num(s->ext.ocsp.ids) > 0));
 +#endif
 +#endif
