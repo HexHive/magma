@@ -194,6 +194,8 @@ bool fetch_watch(data_t *data, int *status, int argc, char **argv)
     }
 
     if (fork() == 0) {
+        fclose(stdout);
+        fclose(stderr);
         char envname[] = "MAGMA_STORAGE";
         int envsz = strlen(envname) + 1 + strlen(fname) + 1;
         char *envvar = malloc(envsz);
