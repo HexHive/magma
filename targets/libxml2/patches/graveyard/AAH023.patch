@@ -1,0 +1,40 @@
+diff --git a/codebase/libxml2/parser.c b/codebase/libxml2/parser.c
+index 04aa717..6382b10 100644
+--- a/codebase/libxml2/parser.c
++++ b/codebase/libxml2/parser.c
+@@ -3245,6 +3255,16 @@ xmlParseNameComplex(xmlParserCtxtPtr ctxt) {
+ 	    len += l;
+ 	    NEXTL(l);
+ 	    c = CUR_CHAR(l);
++#ifdef MAGMA_ENABLE_FIXES
++#else
++        if (c == 0) {
++            count = 0;
++            GROW;
++            if (ctxt->instate == XML_PARSER_EOF)
++                return(NULL);
++            c = CUR_CHAR(l);
++        }
++#endif
+ 	}
+     }
+     if ((len > XML_MAX_NAME_LENGTH) &&
+@@ -3252,6 +3272,7 @@ xmlParseNameComplex(xmlParserCtxtPtr ctxt) {
+         xmlFatalErr(ctxt, XML_ERR_NAME_TOO_LONG, "Name");
+         return(NULL);
+     }
++#ifdef MAGMA_ENABLE_FIXES
+     if (ctxt->input->cur - ctxt->input->base < len) {
+         /*
+          * There were a couple of bugs where PERefs lead to to a change
+@@ -3262,6 +3283,10 @@ xmlParseNameComplex(xmlParserCtxtPtr ctxt) {
+                     "unexpected change of input buffer");
+         return (NULL);
+     }
++#endif
++#ifdef MAGMA_ENABLE_CANARIES
++    MAGMA_LOG("AAH023", (ctxt->input->cur - ctxt->input->base) < len);
++#endif
+     if ((*ctxt->input->cur == '\n') && (ctxt->input->cur[-1] == '\r'))
+         return(xmlDictLookup(ctxt->dict, ctxt->input->cur - (len + 1), len));
+     return(xmlDictLookup(ctxt->dict, ctxt->input->cur - len, len));

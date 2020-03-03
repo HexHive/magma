@@ -1,0 +1,77 @@
+--- a/crypto/dsa/dsa_ameth.c
++++ b/crypto/dsa/dsa_ameth.c
+@@ -151,6 +151,13 @@ static int dsa_priv_decode(EVP_PKEY *pkey, const PKCS8_PRIV_KEY_INFO *p8)
+     ASN1_INTEGER *privkey = NULL;
+     BN_CTX *ctx = NULL;
+ 
++    STACK_OF(ASN1_TYPE) *ndsa = NULL;
++    /**
++     * When this flag is set to 1, privkey refers to a memory region allocated
++     * for the ndsa structure. When ndsa is freed, freeing privkey will result
++     * in a double-free.
++     */
++    int magma_privkey_ndsa = 0;
+     DSA *dsa = NULL;
+ 
+     int ret = 0;
+@@ -159,10 +166,43 @@ static int dsa_priv_decode(EVP_PKEY *pkey, const PKCS8_PRIV_KEY_INFO *p8)
+         return 0;
+     X509_ALGOR_get0(NULL, &ptype, &pval, palg);
+ 
+-    if ((privkey = d2i_ASN1_INTEGER(NULL, &p, pklen)) == NULL)
+-        goto decerr;
+-    if (privkey->type == V_ASN1_NEG_INTEGER || ptype != V_ASN1_SEQUENCE)
+-        goto decerr;
++#ifndef MAGMA_ENABLE_FIXES
++    /* Check for broken DSA PKCS#8, UGH! */
++    if (*p == (V_ASN1_SEQUENCE | V_ASN1_CONSTRUCTED)) {
++        ASN1_TYPE *t1, *t2;
++        if ((ndsa = d2i_ASN1_SEQUENCE_ANY(NULL, &p, pklen)) == NULL)
++            goto decerr;
++        if (sk_ASN1_TYPE_num(ndsa) != 2)
++            goto decerr;
++        /*-
++         * Handle Two broken types:
++         * SEQUENCE {parameters, priv_key}
++         * SEQUENCE {pub_key, priv_key}
++         */
++
++        t1 = sk_ASN1_TYPE_value(ndsa, 0);
++        t2 = sk_ASN1_TYPE_value(ndsa, 1);
++        if (t1->type == V_ASN1_SEQUENCE) {
++            pval = t1->value.ptr;
++        } else if (ptype == V_ASN1_SEQUENCE) {
++        }
++        else
++            goto decerr;
++
++        if (t2->type != V_ASN1_INTEGER)
++            goto decerr;
++
++        privkey = t2->value.integer;
++        magma_privkey_ndsa = 1;
++    } else {
++#endif
++        if ((privkey = d2i_ASN1_INTEGER(NULL, &p, pklen)) == NULL)
++            goto decerr;
++        if (privkey->type == V_ASN1_NEG_INTEGER || ptype != V_ASN1_SEQUENCE)
++            goto decerr;
++#ifndef MAGMA_ENABLE_FIXES
++    }
++#endif
+ 
+     pstr = pval;
+     pm = pstr->data;
+@@ -204,6 +245,12 @@ static int dsa_priv_decode(EVP_PKEY *pkey, const PKCS8_PRIV_KEY_INFO *p8)
+     DSA_free(dsa);
+  done:
+     BN_CTX_free(ctx);
++#ifndef MAGMA_ENABLE_FIXES
++    sk_ASN1_TYPE_pop_free(ndsa, ASN1_TYPE_free);
++#endif
++#ifdef MAGMA_ENABLE_CANARIES
++    MAGMA_LOG("AAH053", magma_privkey_ndsa != 0);
++#endif
+     ASN1_STRING_clear_free(privkey);
+     return ret;
+ }

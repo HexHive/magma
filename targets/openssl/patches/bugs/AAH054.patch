@@ -1,0 +1,429 @@
+--- a/crypto/bio/b_print.c
++++ b/crypto/bio/b_print.c
+@@ -111,8 +111,17 @@ _dopr(char **sbuffer,
+             if (ch == '%')
+                 state = DP_S_FLAGS;
+             else
++#ifdef MAGMA_ENABLE_FIXES
+                 if (!doapr_outch(sbuffer, buffer, &currlen, maxlen, ch))
+                     return 0;
++#else
++                {
++                    int magma_result = doapr_outch(sbuffer, buffer, &currlen, maxlen, ch);
++#ifdef MAGMA_ENABLE_CANARIES
++                    MAGMA_LOG("AAH054", magma_result == 0);
++#endif
++                }
++#endif
+             ch = *format++;
+             break;
+         case DP_S_FLAGS:
+@@ -293,9 +302,18 @@ _dopr(char **sbuffer,
+                     return 0;
+                 break;
+             case 'c':
++#ifdef MAGMA_ENABLE_FIXES
+                 if (!doapr_outch(sbuffer, buffer, &currlen, maxlen,
+                                  va_arg(args, int)))
+                     return 0;
++#else
++                {
++                    int magma_result = doapr_outch(sbuffer, buffer, &currlen, maxlen, va_arg(args, int));
++#ifdef MAGMA_ENABLE_CANARIES
++                    MAGMA_LOG("AAH054", magma_result == 0);
++#endif
++                }
++#endif
+                 break;
+             case 's':
+                 strvalue = va_arg(args, char *);
+@@ -323,8 +341,17 @@ _dopr(char **sbuffer,
+                 }
+                 break;
+             case '%':
++#ifdef MAGMA_ENABLE_FIXES
+                 if (!doapr_outch(sbuffer, buffer, &currlen, maxlen, ch))
+                     return 0;
++#else
++                {
++                    int magma_result = doapr_outch(sbuffer, buffer, &currlen, maxlen, ch);
++#ifdef MAGMA_ENABLE_CANARIES
++                    MAGMA_LOG("AAH054", magma_result == 0);
++#endif
++                }
++#endif
+                 break;
+             case 'w':
+                 /* not supported yet, treat as next char */
+@@ -354,8 +381,17 @@ _dopr(char **sbuffer,
+         if (*truncated)
+             currlen = *maxlen - 1;
+     }
++#ifdef MAGMA_ENABLE_FIXES
+     if (!doapr_outch(sbuffer, buffer, &currlen, maxlen, '\0'))
+         return 0;
++#else
++    {
++        int magma_result = doapr_outch(sbuffer, buffer, &currlen, maxlen, '\0');
++#ifdef MAGMA_ENABLE_CANARIES
++        MAGMA_LOG("AAH054", magma_result == 0);
++#endif
++    }
++#endif
+     *retlen = currlen - 1;
+     return 1;
+ }
+@@ -392,20 +428,47 @@ fmtstr(char **sbuffer,
+         padlen = -padlen;
+ 
+     while ((padlen > 0) && (max < 0 || cnt < max)) {
++#ifdef MAGMA_ENABLE_FIXES
+         if (!doapr_outch(sbuffer, buffer, currlen, maxlen, ' '))
+             return 0;
++#else
++        {
++            int magma_result = doapr_outch(sbuffer, buffer, currlen, maxlen, ' ');
++#ifdef MAGMA_ENABLE_CANARIES
++            MAGMA_LOG("AAH054", magma_result == 0);
++#endif
++        }
++#endif
+         --padlen;
+         ++cnt;
+     }
+     while (strln > 0 && (max < 0 || cnt < max)) {
++#ifdef MAGMA_ENABLE_FIXES
+         if (!doapr_outch(sbuffer, buffer, currlen, maxlen, *value++))
+             return 0;
++#else
++        {
++            int magma_result = doapr_outch(sbuffer, buffer, currlen, maxlen, *value++);
++#ifdef MAGMA_ENABLE_CANARIES
++            MAGMA_LOG("AAH054", magma_result == 0);
++#endif
++        }
++#endif
+         --strln;
+         ++cnt;
+     }
+     while ((padlen < 0) && (max < 0 || cnt < max)) {
++#ifdef MAGMA_ENABLE_FIXES
+         if (!doapr_outch(sbuffer, buffer, currlen, maxlen, ' '))
+             return 0;
++#else
++        {
++            int magma_result = doapr_outch(sbuffer, buffer, currlen, maxlen, ' ');
++#ifdef MAGMA_ENABLE_CANARIES
++            MAGMA_LOG("AAH054", magma_result == 0);
++#endif
++        }
++#endif
+         ++padlen;
+         ++cnt;
+     }
+@@ -472,41 +535,95 @@ fmtint(char **sbuffer,
+ 
+     /* spaces */
+     while (spadlen > 0) {
++#ifdef MAGMA_ENABLE_FIXES
+         if (!doapr_outch(sbuffer, buffer, currlen, maxlen, ' '))
+             return 0;
++#else
++        {
++            int magma_result = doapr_outch(sbuffer, buffer, currlen, maxlen, ' ');
++#ifdef MAGMA_ENABLE_CANARIES
++            MAGMA_LOG("AAH054", magma_result == 0);
++#endif
++        }
++#endif
+         --spadlen;
+     }
+ 
+     /* sign */
+     if (signvalue)
++#ifdef MAGMA_ENABLE_FIXES
+         if (!doapr_outch(sbuffer, buffer, currlen, maxlen, signvalue))
+             return 0;
++#else
++        {
++            int magma_result = doapr_outch(sbuffer, buffer, currlen, maxlen, signvalue);
++#ifdef MAGMA_ENABLE_CANARIES
++            MAGMA_LOG("AAH054", magma_result == 0);
++#endif
++        }
++#endif
+ 
+     /* prefix */
+     while (*prefix) {
++#ifdef MAGMA_ENABLE_FIXES
+         if (!doapr_outch(sbuffer, buffer, currlen, maxlen, *prefix))
+             return 0;
++#else
++        {
++            int magma_result = doapr_outch(sbuffer, buffer, currlen, maxlen, *prefix);
++#ifdef MAGMA_ENABLE_CANARIES
++            MAGMA_LOG("AAH054", magma_result == 0);
++#endif
++        }
++#endif
+         prefix++;
+     }
+ 
+     /* zeros */
+     if (zpadlen > 0) {
+         while (zpadlen > 0) {
++#ifdef MAGMA_ENABLE_FIXES
+             if (!doapr_outch(sbuffer, buffer, currlen, maxlen, '0'))
+                 return 0;
++#else
++            {
++                int magma_result = doapr_outch(sbuffer, buffer, currlen, maxlen, '0');
++#ifdef MAGMA_ENABLE_CANARIES
++                MAGMA_LOG("AAH054", magma_result == 0);
++#endif
++            }
++#endif
+             --zpadlen;
+         }
+     }
+     /* digits */
+     while (place > 0) {
++#ifdef MAGMA_ENABLE_FIXES
+         if (!doapr_outch(sbuffer, buffer, currlen, maxlen, convert[--place]))
+             return 0;
++#else
++        {
++            int magma_result = doapr_outch(sbuffer, buffer, currlen, maxlen, convert[--place]);
++#ifdef MAGMA_ENABLE_CANARIES
++            MAGMA_LOG("AAH054", magma_result == 0);
++#endif
++        }
++#endif
+     }
+ 
+     /* left justified spaces */
+     while (spadlen < 0) {
++#ifdef MAGMA_ENABLE_FIXES
+         if (!doapr_outch(sbuffer, buffer, currlen, maxlen, ' '))
+             return 0;
++#else
++        {
++            int magma_result = doapr_outch(sbuffer, buffer, currlen, maxlen, ' ');
++#ifdef MAGMA_ENABLE_CANARIES
++            MAGMA_LOG("AAH054", magma_result == 0);
++#endif
++        }
++#endif
+         ++spadlen;
+     }
+     return 1;
+@@ -725,28 +842,74 @@ fmtfp(char **sbuffer,
+ 
+     if ((flags & DP_F_ZERO) && (padlen > 0)) {
+         if (signvalue) {
++#ifdef MAGMA_ENABLE_FIXES
+             if (!doapr_outch(sbuffer, buffer, currlen, maxlen, signvalue))
+                 return 0;
++#else
++            {
++                int magma_result = doapr_outch(sbuffer, buffer, currlen, maxlen, signvalue);
++#ifdef MAGMA_ENABLE_CANARIES
++                MAGMA_LOG("AAH054", magma_result == 0);
++#endif
++            }
++#endif
+             --padlen;
+             signvalue = 0;
+         }
+         while (padlen > 0) {
++#ifdef MAGMA_ENABLE_FIXES
+             if (!doapr_outch(sbuffer, buffer, currlen, maxlen, '0'))
+                 return 0;
++#else
++            {
++                int magma_result = doapr_outch(sbuffer, buffer, currlen, maxlen, '0');
++#ifdef MAGMA_ENABLE_CANARIES
++                MAGMA_LOG("AAH054", magma_result == 0);
++#endif
++            }
++#endif
+             --padlen;
+         }
+     }
+     while (padlen > 0) {
++#ifdef MAGMA_ENABLE_FIXES
+         if (!doapr_outch(sbuffer, buffer, currlen, maxlen, ' '))
+             return 0;
++#else
++        {
++            int magma_result = doapr_outch(sbuffer, buffer, currlen, maxlen, ' ');
++#ifdef MAGMA_ENABLE_CANARIES
++            MAGMA_LOG("AAH054", magma_result == 0);
++#endif
++        }
++#endif
+         --padlen;
+     }
++#ifdef MAGMA_ENABLE_FIXES
+     if (signvalue && !doapr_outch(sbuffer, buffer, currlen, maxlen, signvalue))
+         return 0;
++#else
++    if (signvalue)
++    {
++        int magma_result = doapr_outch(sbuffer, buffer, currlen, maxlen, signvalue);
++#ifdef MAGMA_ENABLE_CANARIES
++        MAGMA_LOG("AAH054", magma_result == 0);
++#endif
++    }
++#endif
+ 
+     while (iplace > 0) {
++#ifdef MAGMA_ENABLE_FIXES
+         if (!doapr_outch(sbuffer, buffer, currlen, maxlen, iconvert[--iplace]))
+             return 0;
++#else
++        {
++            int magma_result = doapr_outch(sbuffer, buffer, currlen, maxlen, iconvert[--iplace]);
++#ifdef MAGMA_ENABLE_CANARIES
++            MAGMA_LOG("AAH054", magma_result == 0);
++#endif
++        }
++#endif
+     }
+ 
+     /*
+@@ -754,18 +917,45 @@ fmtfp(char **sbuffer,
+      * char to print out.
+      */
+     if (max > 0 || (flags & DP_F_NUM)) {
++#ifdef MAGMA_ENABLE_FIXES
+         if (!doapr_outch(sbuffer, buffer, currlen, maxlen, '.'))
+             return 0;
++#else
++        {
++            int magma_result = doapr_outch(sbuffer, buffer, currlen, maxlen, '.');
++#ifdef MAGMA_ENABLE_CANARIES
++            MAGMA_LOG("AAH054", magma_result == 0);
++#endif
++        }
++#endif
+ 
+         while (fplace > 0) {
++#ifdef MAGMA_ENABLE_FIXES
+             if (!doapr_outch(sbuffer, buffer, currlen, maxlen,
+                              fconvert[--fplace]))
+                 return 0;
++#else
++            {
++                int magma_result = doapr_outch(sbuffer, buffer, currlen, maxlen, fconvert[--fplace]);
++#ifdef MAGMA_ENABLE_CANARIES
++                MAGMA_LOG("AAH054", magma_result == 0);
++#endif
++            }
++#endif
+         }
+     }
+     while (zpadlen > 0) {
++#ifdef MAGMA_ENABLE_FIXES
+         if (!doapr_outch(sbuffer, buffer, currlen, maxlen, '0'))
+             return 0;
++#else
++        {
++            int magma_result = doapr_outch(sbuffer, buffer, currlen, maxlen, '0');
++#ifdef MAGMA_ENABLE_CANARIES
++            MAGMA_LOG("AAH054", magma_result == 0);
++#endif
++        }
++#endif
+         --zpadlen;
+     }
+     if (realstyle == E_FORMAT) {
+@@ -775,25 +965,70 @@ fmtfp(char **sbuffer,
+             ech = 'e';
+         else
+             ech = 'E';
++#ifdef MAGMA_ENABLE_FIXES
+         if (!doapr_outch(sbuffer, buffer, currlen, maxlen, ech))
+                 return 0;
++#else
++            {
++                int magma_result = doapr_outch(sbuffer, buffer, currlen, maxlen, ech);
++#ifdef MAGMA_ENABLE_CANARIES
++                MAGMA_LOG("AAH054", magma_result == 0);
++#endif
++            }
++#endif
+         if (exp < 0) {
++#ifdef MAGMA_ENABLE_FIXES
+             if (!doapr_outch(sbuffer, buffer, currlen, maxlen, '-'))
+                     return 0;
++#else
++                {
++                    int magma_result = doapr_outch(sbuffer, buffer, currlen, maxlen, '-');
++#ifdef MAGMA_ENABLE_CANARIES
++                    MAGMA_LOG("AAH054", magma_result == 0);
++#endif
++                }
++#endif
+         } else {
++#ifdef MAGMA_ENABLE_FIXES
+             if (!doapr_outch(sbuffer, buffer, currlen, maxlen, '+'))
+                     return 0;
++#else
++                {
++                    int magma_result = doapr_outch(sbuffer, buffer, currlen, maxlen, '+');
++#ifdef MAGMA_ENABLE_CANARIES
++                    MAGMA_LOG("AAH054", magma_result == 0);
++#endif
++                }
++#endif
+         }
+         while (eplace > 0) {
++#ifdef MAGMA_ENABLE_FIXES
+             if (!doapr_outch(sbuffer, buffer, currlen, maxlen,
+                              econvert[--eplace]))
+                 return 0;
++#else
++            {
++                int magma_result = doapr_outch(sbuffer, buffer, currlen, maxlen, econvert[--eplace]);
++#ifdef MAGMA_ENABLE_CANARIES
++                MAGMA_LOG("AAH054", magma_result == 0);
++#endif
++            }
++#endif
+         }
+     }
+ 
+     while (padlen < 0) {
++#ifdef MAGMA_ENABLE_FIXES
+         if (!doapr_outch(sbuffer, buffer, currlen, maxlen, ' '))
+             return 0;
++#else
++        {
++            int magma_result = doapr_outch(sbuffer, buffer, currlen, maxlen, ' ');
++#ifdef MAGMA_ENABLE_CANARIES
++            MAGMA_LOG("AAH054", magma_result == 0);
++#endif
++        }
++#endif
+         ++padlen;
+     }
+     return 1;
+@@ -814,8 +1049,17 @@ doapr_outch(char **sbuffer,
+         return 0;
+ 
+     if (buffer && *currlen == *maxlen) {
++#ifdef MAGMA_ENABLE_FIXES
++        /**
++         * This fix prevents the vulnerability from being triggered through
++         * overflowing *maxlen. While it might be difficult to generate memory
++         * attrition that causes malloc to fail, it is guaranteed that by
++         * overflowing *maxlen into the negative range, the realloc call would
++         * fail, and the vulnerability would be triggered.
++         */
+         if (*maxlen > INT_MAX - BUFFER_INC)
+             return 0;
++#endif
+ 
+         *maxlen += BUFFER_INC;
+         if (*buffer == NULL) {
