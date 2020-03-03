@@ -24,24 +24,28 @@ make -j$(nproc)
 make install
 
 mkdir -p "$WORK/poppler"
-pushd "$WORK/poppler"
+cd "$WORK/poppler"
 rm -rf *
 cmake "$TARGET/repo" \
   -DCMAKE_BUILD_TYPE=debug \
   -DBUILD_SHARED_LIBS=OFF \
   -DFONT_CONFIGURATION=generic \
-  -DENABLE_DCTDECODER=none \
-  -DENABLE_LIBOPENJPEG=none \
-  -DENABLE_CMS=none \
-  -DENABLE_LIBPNG=OFF \
-  -DENABLE_ZLIB=OFF \
-  -DENABLE_LIBTIFF=OFF \
-  -DENABLE_LIBJPEG=OFF \
-  -DENABLE_GLIB=OFF \
-  -DENABLE_LIBCURL=OFF \
-  -DENABLE_QT5=OFF \
+  -DBUILD_GTK_TESTS=OFF \
+  -DBUILD_QT5_TESTS=OFF \
+  -DBUILD_CPP_TESTS=OFF \
+  -DENABLE_LIBPNG=ON \
+  -DENABLE_LIBTIFF=ON \
+  -DENABLE_LIBJPEG=ON \
+  -DENABLE_LIBOPENJPEG=ON \
+  -DENABLE_SPLASH=ON \
   -DENABLE_UTILS=ON \
-  -DWITH_Cairo=OFF \
+  -DWITH_Cairo=ON \
+  -DENABLE_CMS=OFF \
+  -DENABLE_LIBCURL=OFF \
+  -DENABLE_GLIB=OFF \
+  -DENABLE_GOBJECT_INTROSPECTION=OFF \
+  -DENABLE_QT5=OFF \
+  -DENABLE_LIBCURL=OFF \
   -DWITH_NSS3=OFF \
   -DFREETYPE_INCLUDE_DIRS="$WORK/include/freetype2" \
   -DFREETYPE_LIBRARY="$WORK/lib/libfreetype.a" \
@@ -53,4 +57,5 @@ cp "$WORK/poppler/utils/"{pdfimages,pdftoppm} "$OUT/"
 $CXX $CXXFLAGS -std=c++11 -I"$TARGET/repo/cpp" \
     "$TARGET/src/pdf_fuzzer.cc" -o "$OUT/pdf_fuzzer" \
     "$WORK/poppler/cpp/libpoppler-cpp.a" "$WORK/poppler/libpoppler.a" \
-    "$WORK/lib/libfreetype.a" $LDFLAGS $LIBS
+    "$WORK/lib/libfreetype.a" $LDFLAGS $LIBS -ljpeg -lz \
+    -lopenjp2 -lpng -ltiff -llcms2 -lm -lpthread -pthread
