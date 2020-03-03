@@ -53,7 +53,7 @@ done
 # launch the fuzzer in parallel with the monitor
 counter=0
 while true; do
-    "$OUT/monitor" > "$MONITOR/tmp"
+    "$OUT/monitor" --dump row > "$MONITOR/tmp"
     if [ $? -eq 0 ]; then
         mv "$MONITOR/tmp" "$MONITOR/$counter"
     else
