@@ -34,7 +34,7 @@ find_triggered()
     # - $1: human-readable monitor output
     ##
     awk '{print $5}' <<< "$1" | while read triggered; do
-        if [ $triggered -ne 0 ]; then
+        if [ ! -z $triggered ] && [ $triggered -ne 0 ]; then
             return 1
         fi
     done
