@@ -26,4 +26,4 @@ cp .libs/libpng16.a "$OUT/"
 $CXX $CXXFLAGS -std=c++11 -I. \
      contrib/oss-fuzz/libpng_read_fuzzer.cc \
      -o $OUT/libpng_read_fuzzer \
-     $LDFLAGS $LIBS .libs/libpng16.a -lz
+     $LDFLAGS .libs/libpng16.a $LIBS -lz
