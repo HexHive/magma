@@ -1,0 +1,19 @@
+--- a/crypto/evp/evp_enc.c
++++ b/crypto/evp/evp_enc.c
+@@ -656,7 +656,16 @@ static int evp_EncryptDecryptUpdate(EVP_CIPHER_CTX *ctx,
+     i = ctx->buf_len;
+     OPENSSL_assert(bl <= (int)sizeof(ctx->buf));
+     if (i != 0) {
++
++#ifdef MAGMA_ENABLE_CANARIES
++        MAGMA_LOG("MAE101",INT_MAX - inl < i);
++#endif
++
++#ifdef MAGMA_ENABLE_FIXES
+         if (bl - i > inl) {
++#else
++        if (i + inl < bl) {
++#endif
+             memcpy(&(ctx->buf[i]), in, inl);
+             ctx->buf_len += inl;
+             *outl = 0;
