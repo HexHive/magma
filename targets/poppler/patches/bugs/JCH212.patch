@@ -1,0 +1,27 @@
+diff --git a/poppler/Stream.cc b/poppler/Stream.cc
+index 76a542af..dd814338 100644
+--- a/poppler/Stream.cc
++++ b/poppler/Stream.cc
+@@ -453,10 +453,21 @@ ImageStream::ImageStream(Stream *strA, int widthA, int nCompsA, int nBitsA) {
+     } else {
+       imgLineSize = nVals;
+     }
++#ifdef MAGMA_ENABLE_CANARIES
++    MAGMA_LOG("JCH212", MAGMA_OR(nComps <= 0, width > INT_MAX / nComps));
++#endif
++#ifdef MAGMA_ENABLE_FIXES
+     if (nComps <= 0 || width > INT_MAX / nComps) {
+-      imgLineSize = -1;
++#else
++    if (width > INT_MAX / nComps) {
++#endif
++        imgLineSize = -1;
+     }
++#ifdef MAGMA_ENABLE_FIXES
+     imgLine = (unsigned char *)gmallocn_checkoverflow(imgLineSize, sizeof(unsigned char));
++#else
++    imgLine = (unsigned char *)gmallocn(imgLineSize, sizeof(unsigned char));
++#endif
+   }
+   imgIdx = nVals;
+ }

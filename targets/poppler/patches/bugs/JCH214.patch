@@ -1,0 +1,63 @@
+diff --git a/poppler/GfxState.cc b/poppler/GfxState.cc
+index 9aca67b3..8d5e89f2 100644
+--- a/poppler/GfxState.cc
++++ b/poppler/GfxState.cc
+@@ -2700,7 +2700,10 @@ void GfxSeparationColorSpace::getGray(const GfxColor *color, GfxGray *gray) cons
+   double c[gfxColorMaxComps];
+   GfxColor color2;
+   int i;
+-
++#ifdef MAGMA_ENABLE_CANARIES
++  MAGMA_LOG("JCH214", MAGMA_AND(alt->getMode() == csDeviceGray, name->cmp("Black") == 0));
++#endif
++#ifdef MAGMA_ENABLE_FIXES
+   if (alt->getMode() == csDeviceGray && name->cmp("Black") == 0) {
+     *gray = clip01(gfxColorComp1 - color->c[0]);
+   } else {
+@@ -2711,6 +2714,14 @@ void GfxSeparationColorSpace::getGray(const GfxColor *color, GfxGray *gray) cons
+     }
+     alt->getGray(&color2, gray);
+   }
++#else
++  x = colToDbl(color->c[0]);
++  func->transform(&x, c);
++  for (i = 0; i < alt->getNComps(); ++i) {
++      color2.c[i] = dblToCol(c[i]);
++  }
++  alt->getGray(&color2, gray);
++#endif
+ }
+ 
+ void GfxSeparationColorSpace::getRGB(const GfxColor *color, GfxRGB *rgb) const {
+@@ -2719,6 +2730,10 @@ void GfxSeparationColorSpace::getRGB(const GfxColor *color, GfxRGB *rgb) const {
+   GfxColor color2;
+   int i;
+ 
++#ifdef MAGMA_ENABLE_CANARIES
++  MAGMA_LOG("JCH214", MAGMA_AND(alt->getMode() == csDeviceGray, name->cmp("Black") == 0));
++#endif
++#ifdef MAGMA_ENABLE_FIXES
+   if (alt->getMode() == csDeviceGray && name->cmp("Black") == 0) {
+     rgb->r = clip01(gfxColorComp1 - color->c[0]);
+     rgb->g = clip01(gfxColorComp1 - color->c[0]);
+@@ -2737,6 +2752,20 @@ void GfxSeparationColorSpace::getRGB(const GfxColor *color, GfxRGB *rgb) const {
+     }
+     alt->getRGB(&color2, rgb);
+   }
++#else
++  x = colToDbl(color->c[0]);
++  func->transform(&x, c);
++  const int altNComps = alt->getNComps();
++  for (i = 0; i < altNComps; ++i) {
++      color2.c[i] = dblToCol(c[i]);
++  }
++  if (unlikely(altNComps > func->getOutputSize())) {
++      for (i = func->getOutputSize(); i < altNComps; ++i) {
++          color2.c[i] = 0;
++      }
++  }
++  alt->getRGB(&color2, rgb);
++#endif
+ }
+ 
+ void GfxSeparationColorSpace::getCMYK(const GfxColor *color, GfxCMYK *cmyk) const {
