@@ -16,7 +16,7 @@ index 7a56745fe2..4dcab8e6f5 100644
              }
 +#else
 +    #ifdef MAGMA_ENABLE_CANARIES
-+        MAGMA_LOG("MAE111",udp[0] == 0)
++        MAGMA_LOG("MAE111",udp[0] == 0);
 +    #endif
 +            if (ubits <= BN_BITS2 && udp[0] == 1)
 +                    break;
