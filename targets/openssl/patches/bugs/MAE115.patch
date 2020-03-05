@@ -1,0 +1,36 @@
+diff --git a/ssl/t1_lib.c b/ssl/t1_lib.c
+index 923cf5b5cd..6ed2362391 100644
+--- a/ssl/t1_lib.c
++++ b/ssl/t1_lib.c
+@@ -1452,6 +1452,12 @@ SSL_TICKET_STATUS tls_decrypt_ticket(SSL *s, const unsigned char *etick,
+     EVP_CIPHER_CTX *ctx = NULL;
+     SSL_CTX *tctx = s->session_ctx;
+ 
++    #ifdef MAGMA_ENABLE_FIXES
++
++    #else
++         if (eticklen < 48)
++            goto end;
++    #endif
+     if (eticklen == 0) {
+         /*
+          * The client will accept a ticket but doesn't currently have
+@@ -1550,11 +1556,18 @@ SSL_TICKET_STATUS tls_decrypt_ticket(SSL *s, const unsigned char *etick,
+     }
+ 
+     /* Sanity check ticket length: must exceed keyname + IV + HMAC */
++#ifdef MAGMA_ENABLE_FIXES
+     if (eticklen <=
+         TLSEXT_KEYNAME_LENGTH + EVP_CIPHER_CTX_iv_length(ctx) + mlen) {
+         ret = SSL_TICKET_NO_DECRYPT;
+         goto end;
+     }
++#else
++    #ifdef MAGMA_ENABLE_CANARIES
++        MAGMA_LOG("MAE115",eticklen <= TLSEXT_KEYNAME_LENGTH + EVP_CIPHER_CTX_iv_length(ctx) + mlen);
++    #endif
++
++#endif
+     eticklen -= mlen;
+     /* Check HMAC of encrypted ticket */
+     if (ssl_hmac_update(hctx, etick, eticklen) <= 0

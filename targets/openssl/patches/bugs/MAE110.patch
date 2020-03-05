@@ -1,0 +1,163 @@
+diff --git a/crypto/pkcs7/pk7_doit.c b/crypto/pkcs7/pk7_doit.c
+index 2cf62b62cd..f53a5e0082 100644
+--- a/crypto/pkcs7/pk7_doit.c
++++ b/crypto/pkcs7/pk7_doit.c
+@@ -203,6 +203,8 @@ BIO *PKCS7_dataInit(PKCS7 *p7, BIO *bio)
+     PKCS7_RECIP_INFO *ri = NULL;
+     ASN1_OCTET_STRING *os = NULL;
+ 
++
++#ifdef MAGMA_ENABLE_FIXES
+     if (p7 == NULL) {
+         PKCS7err(PKCS7_F_PKCS7_DATAINIT, PKCS7_R_INVALID_NULL_POINTER);
+         return NULL;
+@@ -221,6 +223,11 @@ BIO *PKCS7_dataInit(PKCS7 *p7, BIO *bio)
+         PKCS7err(PKCS7_F_PKCS7_DATAINIT, PKCS7_R_NO_CONTENT);
+         return NULL;
+     }
++#else
++    #ifdef MAGMA_ENABLE_CANARIES
++        MAGMA_LOG("MAE110",MAGMA_OR(p7 == NULL,p7->d.ptr));
++    #endif
++#endif
+ 
+     i = OBJ_obj2nid(p7->type);
+     p7->state = PKCS7_S_HEADER;
+@@ -369,7 +376,7 @@ BIO *PKCS7_dataDecode(PKCS7 *p7, EVP_PKEY *pkey, BIO *in_bio, X509 *pcert)
+     PKCS7_RECIP_INFO *ri = NULL;
+     unsigned char *ek = NULL, *tkey = NULL;
+     int eklen = 0, tkeylen = 0;
+-
++#ifdef MAGMA_ENABLE_FIXES
+     if (p7 == NULL) {
+         PKCS7err(PKCS7_F_PKCS7_DATADECODE, PKCS7_R_INVALID_NULL_POINTER);
+         return NULL;
+@@ -379,7 +386,11 @@ BIO *PKCS7_dataDecode(PKCS7 *p7, EVP_PKEY *pkey, BIO *in_bio, X509 *pcert)
+         PKCS7err(PKCS7_F_PKCS7_DATADECODE, PKCS7_R_NO_CONTENT);
+         return NULL;
+     }
+-
++#else
++    #ifdef MAGMA_ENABLE_CANARIES
++        MAGMA_LOG("MAE110",MAGMA_OR(p7 == NULL,p7->d.ptr == NULL));
++    #endif
++#endif
+     i = OBJ_obj2nid(p7->type);
+     p7->state = PKCS7_S_HEADER;
+ 
+@@ -650,7 +661,7 @@ int PKCS7_dataFinal(PKCS7 *p7, BIO *bio)
+     STACK_OF(X509_ATTRIBUTE) *sk;
+     STACK_OF(PKCS7_SIGNER_INFO) *si_sk = NULL;
+     ASN1_OCTET_STRING *os = NULL;
+-
++#ifdef MAGMA_ENABLE_FIXES
+     if (p7 == NULL) {
+         PKCS7err(PKCS7_F_PKCS7_DATAFINAL, PKCS7_R_INVALID_NULL_POINTER);
+         return 0;
+@@ -660,7 +671,11 @@ int PKCS7_dataFinal(PKCS7 *p7, BIO *bio)
+         PKCS7err(PKCS7_F_PKCS7_DATAFINAL, PKCS7_R_NO_CONTENT);
+         return 0;
+     }
+-
++#else
++    #ifdef MAGMA_ENABLE_CANARIES
++        MAGMA_LOG("MAE110",MAGMA_OR(p7 == NULL,p7->d.ptr == NULL));
++    #endif
++#endif
+     ctx_tmp = EVP_MD_CTX_new();
+     if (ctx_tmp == NULL) {
+         PKCS7err(PKCS7_F_PKCS7_DATAFINAL, ERR_R_MALLOC_FAILURE);
+@@ -705,7 +720,9 @@ int PKCS7_dataFinal(PKCS7 *p7, BIO *bio)
+         /* If detached data then the content is excluded */
+         if (PKCS7_type_is_data(p7->d.sign->contents) && p7->detached) {
+             ASN1_OCTET_STRING_free(os);
++        #ifdef MAGMA_ENABLE_FIXES
+             os = NULL;
++        #endif
+             p7->d.sign->contents->d.data = NULL;
+         }
+         break;
+@@ -715,7 +732,9 @@ int PKCS7_dataFinal(PKCS7 *p7, BIO *bio)
+         /* If detached data then the content is excluded */
+         if (PKCS7_type_is_data(p7->d.digest->contents) && p7->detached) {
+             ASN1_OCTET_STRING_free(os);
++        #ifdef MAGMA_ENABLE_FIXES
+             os = NULL;
++        #endif
+             p7->d.digest->contents->d.data = NULL;
+         }
+         break;
+@@ -783,6 +802,8 @@ int PKCS7_dataFinal(PKCS7 *p7, BIO *bio)
+             goto err;
+     }
+ 
++#ifdef MAGMA_ENABLE_FIXES
++
+     if (!PKCS7_is_detached(p7)) {
+         /*
+          * NOTE(emilia): I think we only reach os == NULL here because detached
+@@ -807,8 +828,27 @@ int PKCS7_dataFinal(PKCS7 *p7, BIO *bio)
+             BIO_set_mem_eof_return(btmp, 0);
+             ASN1_STRING_set0(os, (unsigned char *)cont, contlen);
+         }
++    
++
++
+     }
+     ret = 1;
++
++#else 
++    if (!PKCS7_is_detached(p7) && !(os->flags & ASN1_STRING_FLAG_NDEF)) {
++        char *cont;
++        long contlen;
++        btmp = BIO_find_type(bio, BIO_TYPE_MEM);
++        if (btmp == NULL) {
++           PKCS7err(PKCS7_F_PKCS7_DATAFINAL, PKCS7_R_UNABLE_TO_FIND_MEM_BIO);
++           goto err;
++        }
++        contlen = BIO_get_mem_data(btmp, &cont);
++        BIO_set_flags(btmp, BIO_FLAGS_MEM_RDONLY);
++        BIO_set_mem_eof_return(btmp, 0);
++        ASN1_STRING_set0(os, (unsigned char *)cont, contlen);
++    }
++#endif
+  err:
+     EVP_MD_CTX_free(ctx_tmp);
+     return ret;
+@@ -920,7 +960,7 @@ int PKCS7_dataVerify(X509_STORE *cert_store, X509_STORE_CTX *ctx, BIO *bio,
+     int ret = 0, i;
+     STACK_OF(X509) *cert;
+     X509 *x509;
+-
++#ifdef MAGMA_ENABLE_FIXES
+     if (p7 == NULL) {
+         PKCS7err(PKCS7_F_PKCS7_DATAVERIFY, PKCS7_R_INVALID_NULL_POINTER);
+         return 0;
+@@ -930,7 +970,11 @@ int PKCS7_dataVerify(X509_STORE *cert_store, X509_STORE_CTX *ctx, BIO *bio,
+         PKCS7err(PKCS7_F_PKCS7_DATAVERIFY, PKCS7_R_NO_CONTENT);
+         return 0;
+     }
+-
++#else
++    #ifdef MAGMA_ENABLE_CANARIES
++        MAGMA_LOG("MAE110",MAGMA_OR(p7 == NULL,p7->d.ptr));
++    #endif
++#endif
+     if (PKCS7_type_is_signed(p7)) {
+         cert = p7->d.sign->cert;
+     } else if (PKCS7_type_is_signedAndEnveloped(p7)) {
+diff --git a/crypto/pkcs7/pk7_lib.c b/crypto/pkcs7/pk7_lib.c
+index ca039656f0..26989a1b3a 100644
+--- a/crypto/pkcs7/pk7_lib.c
++++ b/crypto/pkcs7/pk7_lib.c
+@@ -392,8 +392,10 @@ int PKCS7_set_digest(PKCS7 *p7, const EVP_MD *md)
+ 
+ STACK_OF(PKCS7_SIGNER_INFO) *PKCS7_get_signer_info(PKCS7 *p7)
+ {
++#ifdef MAGMA_ENABLE_FIXES
+     if (p7 == NULL || p7->d.ptr == NULL)
+         return NULL;
++#endif
+     if (PKCS7_type_is_signed(p7)) {
+         return p7->d.sign->signer_info;
+     } else if (PKCS7_type_is_signedAndEnveloped(p7)) {
