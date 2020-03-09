@@ -6,16 +6,14 @@ index a861da21..fd38c198 100644
    oneByte = x0 == ((x1 - 1) & ~7);
  
    for (yy = y0; yy < y1; ++yy) {
--    if (unlikely((y + yy >= h) || (y + yy < 0)))
 +#ifdef MAGMA_ENABLE_FIXES
-+      if (unlikely((y + yy >= h) || (y + yy < 0)))
+     if (unlikely((y + yy >= h) || (y + yy < 0)))
        continue;
--
 +#endif
 +#ifdef MAGMA_ENABLE_CANARIES
-+      MAGMA_LOG("JCH210.patch", MAGMA_OR(y + yy >= h, y + yy < 0));
++    MAGMA_LOG("JCH210", MAGMA_OR(y + yy >= h, y + yy < 0));
 +#endif
-+      
+ 
      // one byte per line -- need to mask both left and right side
      if (oneByte) {
        if (x >= 0) {

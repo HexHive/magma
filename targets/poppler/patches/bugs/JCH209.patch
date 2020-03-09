@@ -6,13 +6,13 @@ index 37165e38..095a9d09 100644
  
      for (int i = 0; i < inkListLength; ++i) {
        const AnnotPath * path = inkList[i];
-+#ifdef MAGMA_ENABLE_CANARIES
-+      MAGMA_LOG("JCH209", !path);
-+#endif
 +#ifdef MAGMA_ENABLE_FIXES
        if (path && path->getCoordsLength() != 0) {
 +#else
-+      if (path->getCoordsLength() != 0) {          
++#ifdef MAGMA_ENABLE_CANARIES
++      MAGMA_LOG("JCH209", !path);
++#endif
++      if (path->getCoordsLength() != 0) {
 +#endif
          appearBuilder.appendf ("{0:.2f} {1:.2f} m\n", path->getX(0) - rect->x1, path->getY(0) - rect->y1);
          appearBBox->extendTo (path->getX(0) - rect->x1, path->getY(0) - rect->y1);

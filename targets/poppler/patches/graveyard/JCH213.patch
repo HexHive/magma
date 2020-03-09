@@ -2,18 +2,17 @@ diff --git a/utils/pdfunite.cc b/utils/pdfunite.cc
 index a8116e37..8227cb60 100644
 --- a/utils/pdfunite.cc
 +++ b/utils/pdfunite.cc
-@@ -214,15 +214,31 @@ int main (int argc, char *argv[])
+@@ -214,15 +214,36 @@ int main (int argc, char *argv[])
      intents = catDict->lookup("OutputIntents");
      afObj = catDict->lookupNF("AcroForm").copy();
      Ref *refPage = docs[0]->getCatalog()->getPageRef(1);
-+#ifdef MAGMA_ENABLE_CANARIES
-+    MAGMA_LOG("JCH213", !refPage);
-+#endif
 +#ifdef MAGMA_ENABLE_FIXES
      if (!afObj.isNull() && refPage) {
 +#else
 +    if (!afObj.isNull()) {
-+
++#ifdef MAGMA_ENABLE_CANARIES
++    MAGMA_LOG("JCH213", !refPage);
++#endif
 +#endif
        docs[0]->markAcroForm(&afObj, yRef, countRef, 0, refPage->num, refPage->num);
      }
@@ -22,6 +21,9 @@ index a8116e37..8227cb60 100644
      if (!ocObj.isNull() && ocObj.isDict() && refPage) {
 +#else
 +    if (!ocObj.isNull() && ocObj.isDict()) {
++#ifdef MAGMA_ENABLE_CANARIES
++    MAGMA_LOG("JCH213", !refPage);
++#endif
 +#endif
        docs[0]->markPageObjects(ocObj.getDict(), yRef, countRef, 0, refPage->num, refPage->num);
      }
@@ -30,6 +32,9 @@ index a8116e37..8227cb60 100644
      if (!names.isNull() && names.isDict() && refPage) {
 +#else
 +    if (!names.isNull() && names.isDict()) {
++#ifdef MAGMA_ENABLE_CANARIES
++    MAGMA_LOG("JCH213", !refPage);
++#endif
 +#endif
        docs[0]->markPageObjects(names.getDict(), yRef, countRef, 0, refPage->num, refPage->num);
      }
