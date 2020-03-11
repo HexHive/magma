@@ -14,6 +14,7 @@ if [ ! -d "$TARGET/repo" ]; then
 fi
 
 WORK="$TARGET/work"
+rm -rf "$WORK"
 mkdir -p "$WORK"
 mkdir -p "$WORK/lib" "$WORK/include"
 
