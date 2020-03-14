@@ -1,0 +1,41 @@
+diff --git a/ext/misc/zipfile.c b/ext/misc/zipfile.c
+index a35a26f4d..a8d093edd 100644
+--- a/ext/misc/zipfile.c
++++ b/ext/misc/zipfile.c
+@@ -1640,7 +1640,14 @@ static int zipfileUpdate(
+           rc = SQLITE_NOMEM;
+           nPath = 0;
+         }else{
+-          nPath = (int)strlen(zPath);
++#ifdef MAGMA_ENABLE_FIXES
++            nPath = (int)strlen(zPath);
++#else
++            nPath++;
++#endif
++#ifdef MAGMA_ENABLE_CANARIES
++            MAGMA_LOG("JCH217", (int)strlen(zPath) != 1);
++#endif
+         }
+       }
+     }
+@@ -2042,11 +2049,20 @@ void zipfileStep(sqlite3_context *pCtx, int nVal, sqlite3_value **apVal){
+   }else{
+     if( nName==0 || zName[nName-1]!='/' ){
+       zName = zFree = sqlite3_mprintf("%s/", zName);
++#ifdef MAGMA_ENABLE_FIXES
++#else
++      nName++;
++#ifdef MAGMA_ENABLE_CANARIES
++      MAGMA_LOG("JCH217", (int)strlen(zName) != 1);
++#endif
++#endif
+       if( zName==0 ){
+         rc = SQLITE_NOMEM;
+         goto zipfile_step_out;
+       }
++#ifdef MAGMA_ENABLE_FIXES
+       nName = (int)strlen(zName);
++#endif
+     }else{
+       while( nName>1 && zName[nName-2]=='/' ) nName--;
+     }
