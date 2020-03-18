@@ -27,6 +27,7 @@ fi
 MAGMA=${MAGMA:-"$(cd "$(dirname "${BASH_SOURCE[0]}")/../../" >/dev/null 2>&1 \
     && pwd)"}
 export MAGMA
+source "$MAGMA/tools/captain/common.sh"
 
 WORKERS=${WORKERS:-$(( $(nproc) - 2 ))}
 WORKERPOOLR=($(lscpu -b --parse | sed '/^#/d' | cut -d, -f1))
@@ -37,12 +38,6 @@ export POLL=${POLL:-5}
 export TIMEOUT=${TIMEOUT:-1m}
 
 WORKDIR="$(realpath "$WORKDIR")"
-
-echo_time()
-{
-    date "+[%F %R] $*"
-}
-export -f echo_time
 
 get_next_cid()
 {
