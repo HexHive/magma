@@ -6,35 +6,28 @@ index a35a26f4d..a8d093edd 100644
            rc = SQLITE_NOMEM;
            nPath = 0;
          }else{
--          nPath = (int)strlen(zPath);
 +#ifdef MAGMA_ENABLE_FIXES
-+            nPath = (int)strlen(zPath);
+           nPath = (int)strlen(zPath);
 +#else
-+            nPath++;
-+#endif
++          nPath++;
 +#ifdef MAGMA_ENABLE_CANARIES
-+            MAGMA_LOG("JCH217", (int)strlen(zPath) != 1);
++          MAGMA_LOG("JCH217", (int)strlen(zPath) != nPath);
++#endif
 +#endif
          }
        }
      }
-@@ -2042,11 +2049,20 @@ void zipfileStep(sqlite3_context *pCtx, int nVal, sqlite3_value **apVal){
-   }else{
-     if( nName==0 || zName[nName-1]!='/' ){
-       zName = zFree = sqlite3_mprintf("%s/", zName);
-+#ifdef MAGMA_ENABLE_FIXES
-+#else
-+      nName++;
-+#ifdef MAGMA_ENABLE_CANARIES
-+      MAGMA_LOG("JCH217", (int)strlen(zName) != 1);
-+#endif
-+#endif
-       if( zName==0 ){
+@@ -2046,8 +2053,14 @@ void zipfileStep(sqlite3_context *pCtx, int nVal, sqlite3_value **apVal){
          rc = SQLITE_NOMEM;
          goto zipfile_step_out;
        }
 +#ifdef MAGMA_ENABLE_FIXES
        nName = (int)strlen(zName);
++#else
+       nName++;
++#ifdef MAGMA_ENABLE_CANARIES
++      MAGMA_LOG("JCH217", (int)strlen(zName) != nName);
++#endif
 +#endif
      }else{
        while( nName>1 && zName[nName-2]=='/' ) nName--;
