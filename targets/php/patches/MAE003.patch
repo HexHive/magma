@@ -1,0 +1,21 @@
+diff --git a/ext/mbstring/php_mbregex.c b/ext/mbstring/php_mbregex.c
+index ceda96398e..6b34d5c00a 100644
+--- a/ext/mbstring/php_mbregex.c
++++ b/ext/mbstring/php_mbregex.c
+@@ -1311,8 +1311,16 @@ PHP_FUNCTION(mb_split)
+ 	}
+ 
+ 	/* otherwise we just have one last element to add to the array */
++#ifdef MAGMA_ENABLE_FIXES
+ 	if ((OnigUChar *)(string + string_len) > chunk_pos) {
+ 		size_t n = ((OnigUChar *)(string + string_len) - chunk_pos);
++#else
++	size_t n = ((OnigUChar *)(string + string_len) - chunk_pos);
++    if (n > 0) {
++    	#ifdef MAGMA_ENABLE_CANARIES
++    		MAGMA_LOG("MAE003", chunk_pos >= (OnigUChar *)(string + string_len));
++     	#endif
++#endif
+ 		add_next_index_stringl(return_value, (char *)chunk_pos, n);
+ 	} else {
+ 		add_next_index_stringl(return_value, "", 0);
