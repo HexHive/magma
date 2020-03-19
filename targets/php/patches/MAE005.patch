@@ -1,0 +1,41 @@
+diff --git a/ext/gd/libgd/gd_color_match.c b/ext/gd/libgd/gd_color_match.c
+index 19fdfe6d03..ceed16b0e9 100644
+--- a/ext/gd/libgd/gd_color_match.c
++++ b/ext/gd/libgd/gd_color_match.c
+@@ -28,6 +28,7 @@ int gdImageColorMatch (gdImagePtr im1, gdImagePtr im2)
+ 		return -4; /* At least 1 color must be allocated */
+ 	}
+ 
++#ifdef MAGMA_ENABLE_FIXES
+ 	buf = (unsigned long *)safe_emalloc(sizeof(unsigned long), 5 * gdMaxColors, 0);
+ 	memset( buf, 0, sizeof(unsigned long) * 5 * gdMaxColors );
+ 
+@@ -43,6 +44,28 @@ int gdImageColorMatch (gdImagePtr im1, gdImagePtr im2)
+ 			*(bp++) += gdTrueColorGetAlpha(rgb);
+ 		}
+ 	}
++#else
++	buf = (unsigned long *)safe_emalloc(sizeof(unsigned long), 5 * im2->colorsTotal, 0);
++  	memset( buf, 0, sizeof(unsigned long) * 5 * im2->colorsTotal );
++
++  	for (x=0; x<im1->sx; x++) {
++		for( y=0; y<im1->sy; y++ ) {
++			color = im2->pixels[y][x];
++			rgb = im1->tpixels[y][x];
++			bp = buf + (color * 5);
++			(*(bp++))++;
++			*(bp++) += gdTrueColorGetRed(rgb);
++			*(bp++) += gdTrueColorGetGreen(rgb);
++			*(bp++) += gdTrueColorGetBlue(rgb);
++			*(bp++) += gdTrueColorGetAlpha(rgb);
++		}
++	}
++	#ifdef MAGMA_ENABLE_CANARIES
++		MAGMA_LOG("MAE005",bp > sizeof(unsigned long) * 5 * im2->colorsTotal);
++	#endif
++#endif
++
++	
+ 	bp = buf;
+ 	for (color=0; color<im2->colorsTotal; color++) {
+ 		count = *(bp++);
