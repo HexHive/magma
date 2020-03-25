@@ -1,0 +1,29 @@
+diff --git a/ext/exif/exif.c b/ext/exif/exif.c
+index 8606bdd926..22dda26ac7 100644
+--- a/ext/exif/exif.c
++++ b/ext/exif/exif.c
+@@ -2949,12 +2949,24 @@ static void exif_thumbnail_extract(image_info_type *ImageInfo, const exif_offset
+ 		return;
+ 	}
+ 	/* Check to make sure we are not going to go past the ExifLength */
++#ifdef MAGMA_ENABLE_FIXES
+ 	char *thumbnail = exif_offset_info_try_get(
+ 		info, ImageInfo->Thumbnail.offset, ImageInfo->Thumbnail.size);
+ 	if (!thumbnail) {
+ 		EXIF_ERRLOG_THUMBEOF(ImageInfo)
+ 		return;
+ 	}
++#else
++	if ((ImageInfo->Thumbnail.offset + ImageInfo->Thumbnail.size) > length) {
++		  EXIF_ERRLOG_THUMBEOF(ImageInfo)
++                return;
++    }
++    #ifdef MAGMA_ENABLE_CANARIES
++    	MAGMA_LOG("MAE016",MAGMA_OR(MAGMA_OR(ImageInfo->Thumbnail.size > length,
++    		(ImageInfo->Thumbnail.offset + ImageInfo->Thumbnail.size) > length),
++    		 ImageInfo->Thumbnail.offset > length - ImageInfo->Thumbnail.size));
++    #endif
++#endif
+ 	ImageInfo->Thumbnail.data = estrndup(thumbnail, ImageInfo->Thumbnail.size);
+ 	exif_thumbnail_build(ImageInfo);
+ }
