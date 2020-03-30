@@ -10,7 +10,7 @@ index db495d832..566f375bf 100644
          pDup->u.zToken = 0;
 +#endif
 +#ifdef MAGMA_ENABE_FIXES
-+        MAGMA_LOG(pDup->u.zToken !=0);
++        MAGMA_LOG("JCH234", pDup->u.zToken !=0);
 +#endif
        }
        pList = sqlite3ExprListAppend(pParse, pList, pDup);
