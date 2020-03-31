@@ -1,0 +1,17 @@
+diff --git a/src/window.c b/src/window.c
+index db495d832..566f375bf 100644
+--- a/src/window.c
++++ b/src/window.c
+@@ -901,7 +901,12 @@ static ExprList *exprListAppendList(
+       if( bIntToNull && pDup && sqlite3ExprIsInteger(pDup, &iDummy) ){
+         pDup->op = TK_NULL;
+         pDup->flags &= ~(EP_IntValue|EP_IsTrue|EP_IsFalse);
++#ifdef MAGMA_ENABLE_FIXES
+         pDup->u.zToken = 0;
++#endif
++#ifdef MAGMA_ENABE_FIXES
++        MAGMA_LOG("JCH234", pDup->u.zToken !=0);
++#endif
+       }
+       pList = sqlite3ExprListAppend(pParse, pList, pDup);
+       if( pList ) pList->a[nInit+i].sortFlags = pAppend->a[i].sortFlags;

@@ -1,0 +1,30 @@
+diff --git a/src/vdbe.c b/src/vdbe.c
+index 7f0532866..ba607de8b 100644
+--- a/src/vdbe.c
++++ b/src/vdbe.c
+@@ -2096,7 +2096,12 @@ case OP_Ge: {             /* same as TK_GE, jump, in1, in3 */
+         testcase( pIn1->flags & MEM_IntReal );
+         sqlite3VdbeMemStringify(pIn1, encoding, 1);
+         testcase( (flags1&MEM_Dyn) != (pIn1->flags&MEM_Dyn) );
++#ifdef MAGMA_ENABLE_FIXES
+         flags1 = (pIn1->flags & ~MEM_TypeMask) | (flags1 & MEM_TypeMask);
++#endif
++#ifdef MAGMA_ENABLE_CANARIES
++        MAGMA_LOG("JCH230", (flags1&MEM_Dyn) != (pIn1->flags&MEM_Dyn));
++#endif
+         if( NEVER(pIn1==pIn3) ) flags3 = flags1 | MEM_Str;
+       }
+       if( (flags3 & MEM_Str)==0 && (flags3&(MEM_Int|MEM_Real|MEM_IntReal))!=0 ){
+@@ -2105,7 +2110,12 @@ case OP_Ge: {             /* same as TK_GE, jump, in1, in3 */
+         testcase( pIn3->flags & MEM_IntReal );
+         sqlite3VdbeMemStringify(pIn3, encoding, 1);
+         testcase( (flags3&MEM_Dyn) != (pIn3->flags&MEM_Dyn) );
++#ifdef MAGMA_ENABLE_FIXES
+         flags3 = (pIn3->flags & ~MEM_TypeMask) | (flags3 & MEM_TypeMask);
++#endif
++#ifdef MAGMA_ENABLE_CANARIES
++        MAGMA_LOG("JCH230", (flags3&MEM_Dyn) != (pIn3->flags&MEM_Dyn));
++#endif
+       }
+     }
+     assert( pOp->p4type==P4_COLLSEQ || pOp->p4.pColl==0 );
