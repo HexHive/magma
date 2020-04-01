@@ -1,0 +1,21 @@
+diff --git a/src/sqliteInt.h b/src/sqliteInt.h
+index 489768bbc..7f81275e3 100644
+--- a/src/sqliteInt.h
++++ b/src/sqliteInt.h
+@@ -3374,7 +3374,16 @@ struct Parse {
+ ** Sizes and pointers of various parts of the Parse object.
+ */
+ #define PARSE_HDR_SZ offsetof(Parse,aTempReg) /* Recursive part w/o aColCache*/
++#ifdef MAGMA_ENABLE_FIXES
+ #define PARSE_RECURSE_SZ offsetof(Parse,sLastToken)    /* Recursive part */
++#else
++#ifdef MAGMA_ENABLE_CANARIES
++#define PARSE_RECURSE_SZ (MAGMA_LOG_V("JCH224", 1), offsetof(Parse,nVar))
++#else
++#define PARSE_RECURSE_SZ offsetof(Parse,nVar)
++#endif
++#endif
++
+ #define PARSE_TAIL_SZ (sizeof(Parse)-PARSE_RECURSE_SZ) /* Non-recursive part */
+ #define PARSE_TAIL(X) (((char*)(X))+PARSE_RECURSE_SZ)  /* Pointer to tail */
+ 
