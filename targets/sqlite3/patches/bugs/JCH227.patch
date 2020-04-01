@@ -10,9 +10,9 @@ index ad309006d..dcdd38d11 100644
     && (rc = whereLoopResize(db, pNew, pNew->nLTerm+1))==SQLITE_OK
 +#endif
    ){
-+#ifdef
-+      MAGMA_LOG("JCH227", whereLoopResize(db, pNew, pNew->nLTerm+1))!=SQLITE_OK);
-+#else
++#ifdef MAGMA_ENABLE_CANARIES
++      MAGMA_LOG("JCH227", pNew->nLSlot < (pNew->nLTerm+1));
++#endif
      LogEst nIter;
      pNew->u.btree.nEq++;
      pNew->nSkip++;

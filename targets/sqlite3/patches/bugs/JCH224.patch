@@ -10,7 +10,7 @@ index 489768bbc..7f81275e3 100644
  #define PARSE_RECURSE_SZ offsetof(Parse,sLastToken)    /* Recursive part */
 +#else
 +#ifdef MAGMA_ENABLE_CANARIES
-+#define PARSE_RECURSE_SZ offsetof(Parse,nVar); MAGMA_LOG("JCH224", nVar);
++#define PARSE_RECURSE_SZ (MAGMA_LOG_V("JCH224", 1), offsetof(Parse,nVar))
 +#else
 +#define PARSE_RECURSE_SZ offsetof(Parse,nVar)
 +#endif

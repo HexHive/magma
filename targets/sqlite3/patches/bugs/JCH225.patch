@@ -15,7 +15,7 @@ index efaef813d..5a2181930 100644
 +#endif
      }
 +#ifdef MAGMA_ENABLE_CANARIES
-+    MAGMA_LOG("JCH225", pRtree->iNodeSize<(512-64);
++    MAGMA_LOG("JCH225", pRtree->iNodeSize<(512-64));
 +#endif
    }
  
