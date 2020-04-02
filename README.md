@@ -21,6 +21,8 @@ So far, we have added the following libraries to Magma:
 1. libtiff
 1. libxml2
 1. poppler
+1. openssl
+1. sqlite3
 
 For each library, we build at least one executable program that consumes an
 input file and feeds it to the instrumented library. While these programs are
@@ -203,6 +205,37 @@ against the deployed fuzzers by just running `python3 benchd.py` in the
 Results will be saved in `/root/campaigns`, and the `logparse.py` and
 `postproc.py` scripts can be used to extract meaningful data from the fuzzer
 findings and monitor logs.
+
+### Adding Bugs
+
+Magma allows the implementation of your own bugs into the availabe libraries.
+This is done by creating patches and adding them to `targets/LIBRARY/patches/bugs` for the corresponding library.
+
+To create patches you need to use the following flags :
+* `MAGMA_ENABLE_FIXES`: if defined, only the non-buggy code is run, i.e the patch doesn't 
+  change anything to the actual library
+* `MAGMA_ENABLE_CANARIES` : if defined, canaries are enabled and the buggy code should run. 
+  You should also insert an `oracle` that will report when the bug is **Reached** and **Triggered**
+
+As `oracle` we refer to the magma function :
+```
+MAGMA_LOG(String bug_identifier,Boolean trigger_condition)
+
+```
+If the trigger condition contains logical operators the following logical operators : `AND`,`OR`
+you should use `MAGMA_AND(e1,e2)` and `MAGMA_OR(e1,e2)`.
+
+This avoids the creation of new branches from short-compiler behavior by using bitwise operation.
+
+Once you have implemented your bug with the correct trigger condition you can create a new patch file named `bug_identifier.patch`  
+Also your patch must not contain an empty line at the end otherwise your patch won't be able to be applied. A simple way of avoiding this is to use
+```
+git diff>./PATH
+```
+
+Patches that implement a bug that is not triggerable can be moved to `targets/LIBRARY/patches/graveyard`
+
+
 
 ## Known Issues
 
