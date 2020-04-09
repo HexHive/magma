@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>
+        Magma : A Ground-Truth Fuzzing Benchmark
+    </title>
+
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  
+</head>
+<body>
+
+        <h1>
+            Magma : A Ground-Truth Fuzzing Benchmark
+        </h1>
+
+        <div class=targets>
+            <span>
+                Welcome to the magma report. In here you will be able to see the results of the benched fuzzers
+                over the target libraries.
+                See <a href="https://github.com/HexHive/magma/blob/master/README.md">here</a> for build and run details.
+            </span>
+
+            <h2>Benchmark process</h2>
+               <span>
+                   The differents fuzzers are run over the target libraries in which multiple patches have been implemented.
+                   These patches reintroduce previous corrected bugs. Once the fuzzer campaign is done you will find in this report how much
+                   bugs where triggered and at what moment. All this gives us enought material to establish a benchmark for the used fuzzers.
+                </span>
+        </div>
+
+        <div class="target_description">
+            <h2>Targeted Libraries</h2>
+            <span>Here are all the currently supported libraries in magma.</span>
+            <ul id="target_list">
+                
+                   <li>libpng has a total of 7 implemented bugs></li>
+                
+                   <li>poppler has a total of 22 implemented bugs></li>
+                
+                   <li>openssl has a total of 22 implemented bugs></li>
+                
+                   <li>libtiff has a total of 14 implemented bugs></li>
+                
+                   <li>libxml2 has a total of 18 implemented bugs></li>
+                
+                   <li>php has a total of 21 implemented bugs></li>
+                
+                   <li>sqlite3 has a total of 21 implemented bugs></li>
+                
+            </ul>
+            <span>
+                Total number of patches is 125
+            </span>
+        </div>
+
+        <div class=fuzzers>
+            
+            <h2>Evaluated Fuzzers</h2>
+
+            <span>Currently magma can evaluate 7</span>
+                
+            <ul id="fuzzer_list">
+                  <!--here we will put an href to the eachindividual fuzzer template -->
+                
+                   <li>fairfuzz</li>
+                
+                   <li>honggfuzz</li>
+                
+                   <li>vanilla</li>
+                
+                   <li>aflfast</li>
+                
+                   <li>moptafl</li>
+                
+                   <li>aflplusplus</li>
+                
+                   <li>afl</li>
+                
+            </ul>
+            
+        </div>
+
+
+        <div class="general graph">
+            <h2>General result</h2>
+
+            <img src ="">
+
+        </div>
+            
+
+</body>
+</html>
