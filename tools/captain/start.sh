@@ -25,6 +25,10 @@ if [ -z $LOGSDIR ]; then
 else
     CONTAINER_LOGFILE=""$LOGSDIR"/"$FUZZER"_"$TARGET"_"$PROGRAM"_"$CID"_container.log"
 fi
+MAGMA=${MAGMA:-"$(cd "$(dirname "${BASH_SOURCE[0]}")/../../" >/dev/null 2>&1 \
+    && pwd)"}
+export MAGMA
+source "$MAGMA/tools/captain/common.sh"
 
 IMG_NAME="magma/$FUZZER/$TARGET"
 

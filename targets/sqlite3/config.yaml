@@ -1,0 +1,2 @@
+programs:
+  - sqlite3_fuzz

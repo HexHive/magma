@@ -11,6 +11,7 @@ extern "C" {
 #endif
 
 #define MAGMA_LOG(b,c) do{magma_log((b),(int)(c));}while(0)
+#define MAGMA_LOG_V(b,c) (magma_log((b),(int)(c)))
 #define MAGMA_AND(a,b) magma_and((a),(b))
 #define MAGMA_OR(a,b) magma_or((a),(b))
 

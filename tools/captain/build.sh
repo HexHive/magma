@@ -15,6 +15,7 @@ fi
 IMG_NAME="magma/$FUZZER/$TARGET"
 MAGMA=${MAGMA:-"$(cd "$(dirname "${BASH_SOURCE[0]}")/../../" >/dev/null 2>&1 \
     && pwd)"}
+source "$MAGMA/tools/captain/common.sh"
 
 if [ -z $(docker image ls -q "$IMG_NAME") ] || [ ! -z $FORCE ]; then
     docker build -t "$IMG_NAME" \
