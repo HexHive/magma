@@ -7,7 +7,27 @@ import os
 
 # Two classes used to simplify the input for the rendering of the template
 class FuzzerDescription:
+    '''
+    A class to represent a fuzzer and its description
+    '''
+
     def __init__(self, name, type, use_case, availability, link):
+        '''
+        Parameters
+        ----------
+        name (string):
+            The name of the fuzzer (e.g."AFL", "AFL++")
+
+        type (string):
+            The type of the fuzzer (e.g. "gray-box")
+
+        use_case (string):
+            Mutational fuzzing or generational fuzzing
+
+        availability (string):
+            Indicates if it is open source or not
+        '''
+
         self.name = name
         self.type = type
         self.use_case = use_case
@@ -16,7 +36,13 @@ class FuzzerDescription:
 
 
 class Bug:
+    '''
+    A class to represent a bug
+    '''
+
     def __init__(self, name, type, times):
+        # TODO Comments
+
         self.name = name
         self.type = type
         self.times = times
@@ -52,14 +78,27 @@ fuzzer_descriptions = {
 
 
 class FuzzerTemplate:
+    '''
+    A class to generate a template for a fuzzer. Generate its html file and its
+    plots
+    '''
+
+    # The names of the directories
     TEMPLATES = "templates"
     OUTPUTS = "outputs"
     IMAGES = "images"
     BOX_PLOTS = "boxPlots"
     BAR_PLOTS = "barPlots"
 
-    def __init__(self, directory_name):
-        self.current_path = os.path.dirname(directory_name)
+    def __init__(self, _file_):
+        '''
+        Parameters
+        ----------
+        _file_:
+            The file to get the directory from
+        '''
+
+        self.current_path = os.path.dirname(_file_)
         # Set paths for templates, output and images
         self.template_dir = os.path.join(self.current_path, self.TEMPLATES)
         self.output_dir = os.path.join(self.current_path, self.OUTPUTS)
@@ -69,11 +108,28 @@ class FuzzerTemplate:
         self.path = self.Path(self.template_dir, self.output_dir,
                               self.image_dir, self.box_plot_dir,
                               self.bar_plot_dir)
+
         # Set jinja environment
         self.jinjaEnv = jinja2.Environment(loader=jinja2.FileSystemLoader(
             self.template_dir))
 
     def render(self, file_name, output_file_name, fuzzer):
+        '''
+        Generate (write to html file) and render reports (html, bugs reports,
+        tables,...)
+
+        Parameters
+        ----------
+        file_name (string):
+            The file to get the directory from
+
+        output_file_name (string):
+            The name of the html file to write to. (example: "afl")
+
+        fuzzer (FuzzerDescription):
+            The corresponding description
+        '''
+
         # TODO Generate bugs reports, tables, graphs
         template = self.jinjaEnv.get_template(file_name)
 
@@ -104,8 +160,31 @@ class FuzzerTemplate:
 #    def writeToFile(self):
 
     class Path:
+        '''
+        A class to represent the paths of the fuzzer reports
+        '''
+
         def __init__(self, template_dir, output_dir, image_dir,
                      box_plot_dir, bar_plot_dir):
+            '''
+            Parameters
+            ----------
+            template_dir:
+                The directory where the fuzzer template is
+
+            output_dir:
+                The directory where to output the .html files
+
+            image_dir:
+                The directory where to output the generated images (svg format)
+
+            box_plot_dir:
+                The directory where to output the box plots
+
+            bar_plot_dir:
+                The directory where to output the bar plots
+            '''
+
             self.template_dir = template_dir
             self.output_dir = output_dir
             self.image_dir = image_dir
