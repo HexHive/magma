@@ -151,13 +151,8 @@ class FuzzerTemplate:
         plt.title(title)
         plt.savefig(path, format="svg")
 
-    def csv_reading(self, file_name):
-        return pd.read_csv(file_name, sep=',')
-
     def csv_interpretation(self, file_name):
-        csv = self.csv_reading(file_name)
-
-#    def writeToFile(self):
+        csv = pd.read_csv(file_name, sep=',')
 
     class Path:
         '''
