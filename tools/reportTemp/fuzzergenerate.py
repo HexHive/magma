@@ -47,9 +47,7 @@ fuzzer_descriptions = {
                                  "Mutational fuzzing", "Open-source",
                                  "https://github.com/puppet-meteor/MOpt-AFL"),
 
-    "vanilla": FuzzerDescription("Vanilla", "",
-                                 "", "",
-                                 "")
+    "vanilla": FuzzerDescription("Vanilla", "", "", "", "")
 }
 
 
