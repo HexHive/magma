@@ -73,11 +73,11 @@ class FuzzerTemplate:
         self.jinjaEnv = jinja2.Environment(loader=jinja2.FileSystemLoader(
             self.template_dir))
 
-    def render_fuzzer_template(self, file_name, fuzzer):
+    def render(self, file_name, output_file_name, fuzzer):
         # TODO Generate bugs reports, tables, graphs
         template = self.jinjaEnv.get_template(file_name)
 
-        outputFile = os.path.join(self.output_dir, fuzzer.name+".html")
+        outputFile = os.path.join(self.output_dir, output_file_name)
         rendering = template.render(fuzzer=fuzzer)
         with open(outputFile, "w") as f:
             f.write(rendering)
@@ -119,6 +119,12 @@ class FuzzerTemplate:
             os.makedirs(self.bar_plot_dir, exist_ok=True)
 
 
+# This code will be used in generateReport.py
 fuzzer_template = FuzzerTemplate(__file__)
-fuzzer_template.render_fuzzer_template("template.html",
-                                       fuzzer_descriptions["afl"])
+
+# for fuzzer in fuzzer_list:
+#    fuzzer_template.render("template.html",
+#                           fuzzer_descriptions[fuzzer])
+
+fuzzer_template.render("fuzzerTemplate.html", "afl.html",
+                       fuzzer_descriptions["afl"])
