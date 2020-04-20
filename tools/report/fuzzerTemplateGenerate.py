@@ -133,9 +133,9 @@ class FuzzerTemplate:
         # TODO Generate bugs reports, tables, graphs
         template = self.jinjaEnv.get_template(file_name)
 
-        outputFile = os.path.join(self.output_dir, output_file_name)
+        output_file = os.path.join(self.output_dir, output_file_name)
         rendering = template.render(fuzzer=fuzzer)
-        with open(outputFile, "w") as f:
+        with open(output_file, "w") as f:
             f.write(rendering)
 
     # Two functions to generate and save the plot (bar and box plot)
