@@ -155,7 +155,7 @@ class FuzzerTemplate:
         return pd.read_csv(file_name, sep=',')
 
     def csv_interpretation(self, file_name):
-        csv = self.csvReading(file_name)
+        csv = self.csv_reading(file_name)
 
 #    def writeToFile(self):
 
