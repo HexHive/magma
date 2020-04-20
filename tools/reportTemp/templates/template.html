@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <title>{{ fuzzer.name }}</title>
+     <!-- Import Materialize CSS -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+  </head>
+
+  <body>
+    <h1 class="center-align brown-text text-darken-3">
+      {{ fuzzer.name }}
+    </h1>
+    <div>
+      <h6>
+        Description of fuzzer:
+      </h6>
+      <ul id="target_list">
+          <li>{{ fuzzer.type }}</li>
+          <li>{{ fuzzer.use_case }}</li>
+          <li>{{ fuzzer.availability }}</li>
+          <li><a href={{ fuzzer.link }}>site</a></li>
+      </ul>
+    </div>
+    <div>
+      <img src={{ graph }} alt=imagePath.description>
+    </div>
+    <div>
+    <table style="width:100%">
+      <tr>
+        <th>Bug</th>
+        <th>Type</th> 
+        <th>Time</th>
+      </tr>
+      {% for bug in bugs %}
+      <tr>
+        <td>{{ bug.name }}</td>
+        <td>{{ bug.type }}</td>
+        {% for time in bug.times %}
+        <td>{{ time }}</td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+    </table>
+    </div>
+    <div id="some_id" class="some_class">
+      {% for image in images %}
+      <h3>
+        {{ image.library }}
+      </h3>
+      <img src={{ image.src }} alt={{ image.boxPlot }}>
+      {% endfor %}
+    </div>
+  </body>
+
+</html>
