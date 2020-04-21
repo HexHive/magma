@@ -11,7 +11,7 @@
 ##
 
 export TIMELIMIT=0.1s
-export MEMLIMIT_MB=50
+export MEMLIMIT_MB=100
 
 run_limited()
 {
