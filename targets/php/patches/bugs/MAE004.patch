@@ -1,19 +1,18 @@
 diff --git a/ext/exif/exif.c b/ext/exif/exif.c
-index 8606bdd926..fef41eb5f5 100644
+index 57ca8fdaa6..d75b50a4e5 100644
 --- a/ext/exif/exif.c
 +++ b/ext/exif/exif.c
-@@ -4004,8 +4004,14 @@ static int exif_process_IFD_in_TIFF(image_info_type *ImageInfo, size_t dir_offse
- 	if (ImageInfo->ifd_nesting_level > MAX_IFD_NESTING_LEVEL) {
+@@ -4019,7 +4019,14 @@ static int exif_process_IFD_in_TIFF(image_info_type *ImageInfo, size_t dir_offse
  		return FALSE;
  	}
--
+ 
 +#ifdef MAGMA_ENABLE_FIXES
  	if (ImageInfo->FileSize >= 2 && ImageInfo->FileSize - 2 >= dir_offset) {
 +#else
++#ifdef MAGMA_ENABLE_CANARIES
++	MAGMA_LOG("MAE004", dir_offset > SIZE_MAX - 2);
++#endif
 +	if (ImageInfo->FileSize >= dir_offset+2) {
-+		#ifdef MAGMA_ENABLE_CANARIES
-+			MAGMA_LOG("MAE004", dir_offset == 0xFFFFFFFF);
-+		#endif
 +#endif
  		sn = exif_file_sections_add(ImageInfo, M_PSEUDO, 2, NULL);
  #ifdef EXIF_DEBUG

@@ -11,7 +11,7 @@ index 8606bdd926..9e09aafe68 100644
  			return FALSE;
 +	#else
 +		#ifdef MAGMA_ENABLE_CANARIES
-+			MAGMA_LOG("MAE010", pos >=ImageInfo->Thumbnail.size);
++			MAGMA_LOG("MAE010", pos >= ImageInfo->Thumbnail.size);
 +		#endif
 +	#endif
  		length = php_jpg_get16(data+pos);

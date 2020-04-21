@@ -23,7 +23,7 @@ index 9b21eb7e2a..d0092ab528 100644
  
  		PHAR_GET_32(buffer, entry.filename_len);
  
-@@ -1074,10 +1085,18 @@ static int phar_parse_pharfile(php_stream *fp, char *fname, size_t fname_len, ch
+@@ -1074,10 +1085,20 @@ static int phar_parse_pharfile(php_stream *fp, char *fname, size_t fname_len, ch
  		if (entry.is_persistent) {
  			entry.manifest_pos = manifest_index;
  		}
@@ -33,12 +33,14 @@ index 9b21eb7e2a..d0092ab528 100644
  			MAPPHAR_FAIL("internal corruption of phar \"%s\" (truncated manifest entry)");
  		}
 +	#else
++		#ifdef MAGMA_ENABLE_CANARIES
++			MAGMA_LOG("MAE020",entry.filename_len > INT_MAX - 20);
++			MAGMA_LOG("MAE020",MAGMA_AND(entry.filename_len > (size_t)(endbuffer - buffer - 24),
++								entry.filename_len <= (size_t)(endbuffer - buffer - 20));
++		#endif
 +		if (entry.filename_len + 20 > endbuffer - buffer) {
 +			MAPPHAR_FAIL("internal corruption of phar \"%s\" (truncated manifest entry)");
 +		}
-+		#ifdef MAGMA_ENABLE_CANARIES
-+			MAGMA_LOG("MAE020",entry.filename_len > INT_MAX - 20);
-+		#endif
 +	#endif
  
  		if ((manifest_ver & PHAR_API_VER_MASK) >= PHAR_API_MIN_DIR && buffer[entry.filename_len - 1] == '/') {

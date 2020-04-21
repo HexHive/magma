@@ -22,10 +22,10 @@ index 8606bdd926..091e32d058 100644
 +                decode = "UCS-2BE";
 +                szValuePtr = szValuePtr+2;
 +              	ByteCount -= 2;
-+			} else if (!memcmp(szValuePtr, "\xFF\xFE", 2)) { 
++			} else if (!memcmp(szValuePtr, "\xFF\xFE", 2)) {
 +				#ifdef MAGMA_ENABLE_CANARIES
 +					MAGMA_LOG("MAE007",!ByteCount < 2);
-+				#endif                   
++				#endif
 +                decode = "UCS-2LE";
 +                szValuePtr = szValuePtr+2;
 +                ByteCount -= 2;

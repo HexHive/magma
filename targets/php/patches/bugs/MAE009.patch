@@ -11,10 +11,10 @@ index 26603c26a4..db10c8e50d 100644
  									--str_left;
  								}
 +							#else
-+								--str_left
 +								#ifdef MAGMA_ENABLE_CANARIES
-+									MAGMA_LOG("MAE009",str_left <= 0);
++									MAGMA_LOG("MAE009", str_left <= 1);
 +								#endif
++								--str_left;
 +							#endif
  							}
  

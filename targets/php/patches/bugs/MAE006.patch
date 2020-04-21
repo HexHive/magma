@@ -13,7 +13,7 @@ index 8606bdd926..71981ae2e8 100644
  	}
 +#else
 +	#ifdef MAGMA_ENABLE_CANARIES
-+			MAGMA_LOG("MAE006",ImageInfo->Thumbnail.size < 4 && data);
++		MAGMA_LOG("MAE006", MAGMA_AND((bool)data, ImageInfo->Thumbnail.size < 4));
 +	#endif
 +	if (!data) {
 +		return FALSE; /* nothing to do here */

@@ -11,11 +11,11 @@ index c566f4e6ae..0d3be92204 100644
          /* No data in the response - nothing to do */
          return NULL;
      }
-+   	#else
++	#else
 +    	#ifdef MAGMA_ENABLE_CANARIES
 +    		MAGMA_LOG("MAE012", dlen == 0);
 +    	#endif
-+   	#endif
++	#endif
      if (type_to_fetch != DNS_T_ANY && type != type_to_fetch) {
  		cp += dlen;
  		return cp;

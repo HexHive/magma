@@ -9,10 +9,10 @@ index 9b21eb7e2a..a6f0176b6e 100644
 +	#ifdef MAGMA_ENABLE_FIXES
  		pos = memchr(pos + 1, '.', filename_len - (pos - filename) - 1);
 +	#else
-+		pos = memchr(pos + 1, '.', filename_len - (pos - filename) + 1);
 +		#ifdef MAGMA_ENABLE_CANARIES
-+			MAGMA_LOG("MAE002", pos - filename + 1 => filename_len);
++			MAGMA_LOG("MAE002", memchr(pos + 1, '.', filename_len - (pos - filename) - 1) == NULL);
 +		#endif
++		pos = memchr(pos + 1, '.', filename_len - (pos - filename) + 1);
 +	#endif
  		if (!pos) {
  			return FAILURE;
