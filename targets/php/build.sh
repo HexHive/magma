@@ -56,6 +56,6 @@ for fuzzerName in $FUZZERS; do
 done
 
 for fuzzerName in `ls sapi/fuzzer/corpus`; do
-    mkdir -p "$TARGET/corpus/${fuzzerName}"
-    cp sapi/fuzzer/corpus/${fuzzerName}/* "$TARGET/corpus/${fuzzerName}/"
+    mkdir -p "$TARGET/corpus/php-fuzz-${fuzzerName}"
+    cp sapi/fuzzer/corpus/${fuzzerName}/* "$TARGET/corpus/php-fuzz-${fuzzerName}/"
 done

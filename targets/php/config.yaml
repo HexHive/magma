@@ -1,6 +1,5 @@
 programs:
   - php-fuzz-json
   - php-fuzz-exif
-  - php-fuzz-mbstring
   - php-fuzz-unserialize
   - php-fuzz-parser
