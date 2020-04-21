@@ -1,4 +1,7 @@
 programs:
   - asn1
   - asn1parse
+  - bignum
   - server
+  - client
+  - x509
