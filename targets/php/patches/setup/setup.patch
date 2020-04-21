@@ -1,0 +1,13 @@
+diff --git a/sapi/fuzzer/config.m4 b/sapi/fuzzer/config.m4
+index 37945b8e9e..3c22df0605 100644
+--- a/sapi/fuzzer/config.m4
++++ b/sapi/fuzzer/config.m4
+@@ -60,7 +60,7 @@ if test "$PHP_FUZZER" != "no"; then
+     ])
+   else
+     FUZZING_LIB="$LIB_FUZZING_ENGINE"
+-    FUZZING_CC="$CXX -stdlib=libc++"
++    FUZZING_CC="$CXX"
+   fi
+   PHP_SUBST(FUZZING_LIB)
+   PHP_SUBST(FUZZING_CC)

@@ -1,0 +1,20 @@
+diff --git a/ext/xmlrpc/libxmlrpc/base64.c b/ext/xmlrpc/libxmlrpc/base64.c
+index 7383c911e5..41a74ed0ec 100644
+--- a/ext/xmlrpc/libxmlrpc/base64.c
++++ b/ext/xmlrpc/libxmlrpc/base64.c
+@@ -163,8 +163,14 @@ void base64_decode_xmlrpc(struct buffer_st *bfr, const char *source, int length)
+ 	      */
+ 		return;
+ 	    }
+-
++    #ifdef MAGMA_ENABLE_FIXES
+ 	    if (dtable[(unsigned char)c] & 0x80) {
++    #else
++      #ifdef MAGMA_ENABLE_CANARIES
++        MAGMA_LOG("MAE013", c < 0);
++      #endif
++      if (dtable[c] & 0x80) {
++    #endif
+ 	      /*
+ 	      fprintf(stderr, "Offset %i length %i\n", offset, length);
+ 	      fprintf(stderr, "character '%c:%x:%c' in input file.\n", c, c, dtable[c]);
