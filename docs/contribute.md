@@ -29,7 +29,7 @@ git diff>./PATH
 
 Patches that implement a bug that is not triggerable can be moved to `targets/$LIBRARY/patches/graveyard`
 
-Please provide as well the following informations about the bug:
+Also, please provide the following informations about the bug:
 
 * CVE ID
 * The vulnerability type (e.g. Heap-buffer overflow, 0-pointer dereference)
@@ -39,7 +39,7 @@ Please provide as well the following informations about the bug:
 * The link/s to the fix/es
 * Any useful comments (e.g. bug only works for 32-bit machine)
 
-Note: please provide those informations even if a bug couldn't be implemented and state in the comments why it couldn't be implemented (e.g. code disappeared).
+Note: please provide those informations even if a bug couldn't be implemented and state also in the comments why it couldn't be implemented (e.g. code disappeared).
 
 ## Warnings
 
