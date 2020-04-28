@@ -1,6 +1,6 @@
 <table border="1" class="dataframe">
   <thead>
-    <tr style="text-align: right;">
+    <tr style="text-align: center;">
       <th>CVE ID</th>
       <th>Vulnerability Type</th>
       <th>Ported</th>
@@ -15,7 +15,7 @@
     <tr>
       <td>CVE-2019-7310</td>
       <td>Heap buffer overflow</td>
-      <td><p style="text-align: center;">&#10003;</p></td>
+      <td><div align="center">&#10003;</div></td>
       <td>poppler</td>
       <td>JCH201</td>
       <td>Report <a href="https://gitlab.freedesktop.org/poppler/poppler/issues/717">link</a></td>
@@ -25,7 +25,7 @@
     <tr>
       <td>CVE-2018-21009</td>
       <td>Integer overflow</td>
-      <td><p style="text-align: center;">&#10003;</p></td>
+      <td><div align="center">&#10003;</div></td>
       <td>poppler</td>
       <td>JCH202</td>
       <td>Report <a href="https://lists.debian.org/debian-lts-announce/2019/09/msg00033.html">link</a></td>
@@ -35,7 +35,7 @@
     <tr>
       <td>CVE-2018-20650</td>
       <td>Type confusion</td>
-      <td><p style="text-align: center;">&#10003;</p></td>
+      <td><div align="center">&#10003;</div></td>
       <td>poppler</td>
       <td>JCH203</td>
       <td>Report <a href="https://gitlab.freedesktop.org/poppler/poppler/issues/704">link</a></td>
@@ -45,7 +45,7 @@
     <tr>
       <td>CVE-2018-20481</td>
       <td>0-pointer dereference</td>
-      <td><p style="text-align: center;">&#10003;</p></td>
+      <td><div align="center">&#10003;</div></td>
       <td>poppler</td>
       <td>JCH204</td>
       <td>Report <a href="https://gitlab.freedesktop.org/poppler/poppler/issues/692">link</a></td>
@@ -55,7 +55,7 @@
     <tr>
       <td>CVE-2018-16646</td>
       <td>Infinite recursion</td>
-      <td><p style="text-align: center;">&#10007;</p></td>
+      <td><div align="center">&#10007;</div></td>
       <td></td>
       <td></td>
       <td>Report <a href="https://bugzilla.redhat.com/show_bug.cgi?id=1622951">link</a></td>
@@ -65,7 +65,7 @@
     <tr>
       <td>CVE-2018-19058</td>
       <td>Type confusion</td>
-      <td><p style="text-align: center;">&#10003;</p></td>
+      <td><div align="center">&#10003;</div></td>
       <td>poppler</td>
       <td>JCH206</td>
       <td>Report <a href="https://gitlab.freedesktop.org/poppler/poppler/issues/659">link</a></td>
@@ -75,7 +75,7 @@
     <tr>
       <td>CVE-2018-13988</td>
       <td>Out of bounds, incorect memory access</td>
-      <td><p style="text-align: center;">&#10003;</p></td>
+      <td><div align="center">&#10003;</div></td>
       <td>poppler</td>
       <td>JCH207</td>
       <td>Report <a href="https://bugzilla.redhat.com/show_bug.cgi?id=1602838">link</a></td>
@@ -85,7 +85,7 @@
     <tr>
       <td></td>
       <td></td>
-      <td><p style="text-align: center;">&#10007;</p></td>
+      <td><div align="center">&#10003;</div></td>
       <td></td>
       <td></td>
       <td></td>
@@ -95,7 +95,7 @@
     <tr>
       <td>CVE-2019-12360</td>
       <td>Stack buffer overflow</td>
-      <td><p style="text-align: center;">&#10003;</p></td>
+      <td><div align="center">&#10003;</div></td>
       <td>poppler</td>
       <td>JCH208</td>
       <td>Report <a href="https://bugzilla.suse.com/show_bug.cgi?id=1136620">link</a></td>
@@ -105,7 +105,7 @@
     <tr>
       <td>CVE-2018-10768</td>
       <td>0-pointer dereference</td>
-      <td><p style="text-align: center;">&#10003;</p></td>
+      <td><div align="center">&#10003;</div></td>
       <td>poppler</td>
       <td>JCH209</td>
       <td>Report <a href="https://bugs.freedesktop.org/show_bug.cgi?id=106408">link</a></td>
@@ -115,7 +115,7 @@
     <tr>
       <td>CVE-2017-9776</td>
       <td>Integer overflow</td>
-      <td><p style="text-align: center;">&#10003;</p></td>
+      <td><div align="center">&#10003;</div></td>
       <td>poppler</td>
       <td>JCH210</td>
       <td>Report <a href="https://bugs.freedesktop.org/show_bug.cgi?id=101541">link</a></td>
@@ -125,7 +125,7 @@
     <tr>
       <td>CVE-2017-18267</td>
       <td>Stack overflow</td>
-      <td><p style="text-align: center;">&#10003;</p></td>
+      <td><div align="center">&#10003;</div></td>
       <td>poppler</td>
       <td>JCH211</td>
       <td>Report <a href="https://bugs.freedesktop.org/show_bug.cgi?id=103238">link</a></td>
@@ -135,7 +135,7 @@
     <tr>
       <td>CVE-2017-14617</td>
       <td>Floating point exception</td>
-      <td><p style="text-align: center;">&#10003;</p></td>
+      <td><div align="center">&#10003;</div></td>
       <td>poppler</td>
       <td>JCH212</td>
       <td>Report <a href="https://bugs.freedesktop.org/show_bug.cgi?id=102854">link</a></td>
@@ -145,7 +145,7 @@
     <tr>
       <td>CVE-2017-14926</td>
       <td>0-pointer dereference</td>
-      <td><p style="text-align: center;">&#10007;</p></td>
+      <td><div align="center">&#10007;</div></td>
       <td>poppler</td>
       <td></td>
       <td>Report <a href="https://bugs.freedesktop.org/show_bug.cgi?id=102601">link</a></td>
@@ -155,7 +155,7 @@
     <tr>
       <td>CVE-2018-14929</td>
       <td>Memory corruption</td>
-      <td><p style="text-align: center;">&#10007;</p></td>
+      <td><div align="center">&#10007;</div></td>
       <td>poppler</td>
       <td></td>
       <td>Report <a href="https://bugs.freedesktop.org/show_bug.cgi?id=102969">link</a></td>
@@ -165,7 +165,7 @@
     <tr>
       <td>CVE-2017-7511</td>
       <td>0-pointer dereference</td>
-      <td><p style="text-align: center;">&#10003;</p></td>
+      <td><div align="center">&#10003;</div></td>
       <td>poppler</td>
       <td>JCH213</td>
       <td>Report <a href="https://bugs.freedesktop.org/show_bug.cgi?id=101149">link</a></td>
@@ -175,7 +175,7 @@
     <tr>
       <td>CVE-2019-12493</td>
       <td>Stack overflow</td>
-      <td><p style="text-align: center;">&#10003;</p></td>
+      <td><div align="center">&#10003;</div></td>
       <td>poppler</td>
       <td>JCH214</td>
       <td>Report <a href="https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-12493">link</a></td>
