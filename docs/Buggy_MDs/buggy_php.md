@@ -15,7 +15,7 @@
     <tr>
       <td>CVE-2019-9020</td>
       <td>Out of bound read or read after free</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td>ext</td>
       <td>MAE001</td>
       <td>Secadv  <a href="https://security.netapp.com/advisory/ntap-20190321-0001/">link</a></td>
@@ -25,17 +25,17 @@
     <tr>
       <td>CVE-2019-9021</td>
       <td>Heap buffer over-read</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td>ext</td>
       <td>MAE002</td>
-      <td>Git <a href="<a href="https://bugs.php.net/bug.php?id=77247">link</a>,Trigger">link</a> <a href="https://bugs.php.net/bug.php?id=77247">link</a></td>
+      <td>Git <a href="<a href="https://bugs.php.net/bug.php?id=77247">link</a>">link</a> Trigger <a href="<a href="https://bugs.php.net/bug.php?id=77247">link</a>">link</a></td>
       <td></td>
       <td></td>
     </tr>
     <tr>
       <td>CVE-2019-9023</td>
       <td>Heap buffer over-read</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td>ext</td>
       <td></td>
       <td>Git <a href="http://git.php.net/?p=php-src.git;a=blobdiff;f=ext/mbstring/oniguruma/regparse.c;h=252ca187120238a77055ca51b40f7e5f14250d9c;hp=d2925f1e81b0bb827db02b260cca1058355135d2;hb=20407d06ca3cb5eeb10f876a812b40c381574bcc;hpb=a918020c03880e12ac9f38e11a4a3789491a5f85,Git">link</a> <a href="http://git.php.net/?p=php-src.git;a=commit;h=9d6c59eeea88a3e9d7039cb4fed5126ef704593a,Git">link</a> <a href="http://git.php.net/?p=php-src.git;a=commitdiff;h=28362ed4fae6969b5a8878591a5a06eadf114e03;hp=20407d06ca3cb5eeb10f876a812b40c381574bcc">link</a></td>
@@ -45,7 +45,7 @@
     <tr>
       <td>CVE-2019-9025</td>
       <td>Buffer overflow</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td>ext</td>
       <td>MAE003</td>
       <td>Trigger <a href="https://bugs.php.net/bug.php?id=77381">link</a></td>
@@ -55,7 +55,7 @@
     <tr>
       <td>CVE-2019-9641</td>
       <td>Uninitialized read (only in 32bit builds)</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td>ext</td>
       <td>MAE004</td>
       <td>Trigger <a href="https://bugs.php.net/bug.php?id=77509">link</a></td>
@@ -65,7 +65,7 @@
     <tr>
       <td>CVE-2019-6977</td>
       <td>Heap buffer overflow</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td>ext</td>
       <td>MAE005</td>
       <td>Trigger <a href="https://bugs.php.net/bug.php?id=77270">link</a></td>
@@ -75,7 +75,7 @@
     <tr>
       <td>CVE-2019-9675</td>
       <td>Buffer overflow (practical attack is usally impossible)</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td></td>
       <td></td>
       <td></td>
@@ -85,7 +85,7 @@
     <tr>
       <td>CVE-2019-11041</td>
       <td>Buffer over-read</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td>ext</td>
       <td>MAE006</td>
       <td>Trigger <a href="https://bugs.php.net/bug.php?id=78222">link</a></td>
@@ -95,7 +95,7 @@
     <tr>
       <td>CVE-2019-11042</td>
       <td>Buffer over-read can lead to crash</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td>ext</td>
       <td>MAE007</td>
       <td>Trigger <a href="https://bugs.php.net/bug.php?id=78256">link</a></td>
@@ -105,7 +105,7 @@
     <tr>
       <td>CVE-2019-11034</td>
       <td>Buffer over-read can lead to crash</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td>ext</td>
       <td>MAE008</td>
       <td>Trigger <a href="https://bugs.php.net/bug.php?id=78256">link</a></td>
@@ -115,7 +115,7 @@
     <tr>
       <td>CVE-2019-11035</td>
       <td>buffer over-read can lead to crash</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td></td>
       <td></td>
       <td></td>
@@ -125,7 +125,7 @@
     <tr>
       <td>CVE-2019-11036</td>
       <td>Heap buffer overflow</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td>ext</td>
       <td></td>
       <td></td>
@@ -135,7 +135,7 @@
     <tr>
       <td>CVE-2019-11039</td>
       <td>Out of bound read</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td>ext</td>
       <td>MAE009</td>
       <td>Trigger <a href="https://bugs.php.net/bug.php?id=77950">link</a></td>
@@ -145,7 +145,7 @@
     <tr>
       <td>CVE-2019-11040</td>
       <td>Heap buffer overflow, out of bound read</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td>ext</td>
       <td>MAE010</td>
       <td>Trigger <a href="https://bugs.php.net/bug.php?id=77950">link</a></td>
@@ -155,7 +155,7 @@
     <tr>
       <td>CVE-2017-7189</td>
       <td>Security issue</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td></td>
       <td></td>
       <td></td>
@@ -165,7 +165,7 @@
     <tr>
       <td>CVE-2018-20783</td>
       <td>Read out of bound</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td>ext</td>
       <td>MAE011</td>
       <td>Trigger <a href="https://bugs.php.net/bug.php?id=77143">link</a></td>
@@ -175,7 +175,7 @@
     <tr>
       <td>CVE-2019-9022</td>
       <td>Read out of bound</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td>ext</td>
       <td>MAE012</td>
       <td>Trigger <a href="https://bugs.php.net/bug.php?id=77369">link</a></td>
@@ -185,7 +185,7 @@
     <tr>
       <td>CVE-2019-9024</td>
       <td>Read out of bound</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td>ext</td>
       <td>MAE013</td>
       <td>Trigger <a href="https://bugs.php.net/bug.php?id=77380">link</a></td>
@@ -195,7 +195,7 @@
     <tr>
       <td>CVE-2019-9637</td>
       <td>File is briefly accessible with the wrong permissions</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td></td>
       <td></td>
       <td></td>
@@ -205,7 +205,7 @@
     <tr>
       <td>CVE-2019-9638</td>
       <td>Uninitialized read</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td>ext</td>
       <td>MAE014</td>
       <td>Trigger <a href="https://bugs.php.net/bug.php?id=77563">link</a></td>
@@ -215,7 +215,7 @@
     <tr>
       <td>CVE-2019-9639</td>
       <td>Uninitialized read</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td>ext</td>
       <td></td>
       <td></td>
@@ -225,7 +225,7 @@
     <tr>
       <td>CVE-2019-9640</td>
       <td>Invalid read</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td>ext</td>
       <td>MAE015</td>
       <td>Trigger <a href="https://bugs.php.net/bug.php?id=77540">link</a></td>
@@ -235,7 +235,7 @@
     <tr>
       <td>CVE-2019-11038</td>
       <td></td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td></td>
       <td></td>
       <td></td>
@@ -245,7 +245,7 @@
     <tr>
       <td>CVE-2018-19935</td>
       <td>Null ptr deref and crash</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td>ext</td>
       <td></td>
       <td></td>
@@ -255,7 +255,7 @@
     <tr>
       <td>CVE-2018-19396</td>
       <td>Null pointer dereference and application crash</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td></td>
       <td></td>
       <td></td>
@@ -265,7 +265,7 @@
     <tr>
       <td>CVE-2018-19395</td>
       <td></td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td></td>
       <td></td>
       <td></td>
@@ -275,7 +275,7 @@
     <tr>
       <td>CVE-2018-17082</td>
       <td></td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td></td>
       <td></td>
       <td></td>
@@ -285,7 +285,7 @@
     <tr>
       <td>CVE-2018-14883</td>
       <td>Heap-based buffer over-read</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td>ext</td>
       <td>MAE016</td>
       <td>Trigger <a href="https://bugs.php.net/bug.php?id=76423">link</a></td>
@@ -295,7 +295,7 @@
     <tr>
       <td>CVE-2018-7584</td>
       <td>Stack-based buffer under-read</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td>ext</td>
       <td>MAE017</td>
       <td>Trigger <a href="https://bugs.php.net/bug.php?id=75981">link</a></td>
@@ -305,7 +305,7 @@
     <tr>
       <td>CVE-2017-9120</td>
       <td>Buffer overflow and application crash</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td>ext</td>
       <td></td>
       <td></td>
@@ -315,7 +315,7 @@
     <tr>
       <td>CVE-2017-11362</td>
       <td>Stack-based buffer overflow</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td>ext</td>
       <td>MAE018</td>
       <td>Trigger <a href="https://bugs.php.net/bug.php?id=74603">link</a></td>
@@ -325,7 +325,7 @@
     <tr>
       <td>CVE-2014-9912</td>
       <td>Buffer overflow</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td>ext</td>
       <td>MAE019</td>
       <td>Trigger <a href="https://bugs.php.net/bug.php?id=67397">link</a></td>
@@ -335,7 +335,7 @@
     <tr>
       <td>CVE-2016-10159</td>
       <td>Integer overflow</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td>ext</td>
       <td>MAE020</td>
       <td>Trigger <a href="https://bugs.php.net/bug.php?id=73764">link</a></td>
@@ -345,7 +345,7 @@
     <tr>
       <td>CVE-2016-7414</td>
       <td></td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td>ext</td>
       <td>MAE021</td>
       <td>Trigger <a href="https://bugs.php.net/bug.php?id=72928">link</a></td>

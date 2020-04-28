@@ -15,7 +15,7 @@
     <tr>
       <td>CVE-2019-9936</td>
       <td>Heap buffer overflow</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td>sqlite3</td>
       <td>JCH214</td>
       <td>Report <a href="https://sqlite.org/src/info/b3fa58dd7403dbd4">link</a></td>
@@ -25,7 +25,7 @@
     <tr>
       <td>CVE-2019-20218</td>
       <td>Stack unwinding</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td>sqlite3</td>
       <td>JCH215</td>
       <td>Report <a href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-20218">link</a></td>
@@ -35,7 +35,7 @@
     <tr>
       <td>CVE-2019-19923</td>
       <td>Mishandles can cause 0-pointer dereference</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td>sqlite3</td>
       <td>JCH216</td>
       <td>Report <a href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-19923">link</a></td>
@@ -45,7 +45,7 @@
     <tr>
       <td>CVE-2019-19959</td>
       <td>Embedded \0 can lead to memory error</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td>sqlite3</td>
       <td>JCH217</td>
       <td>Report <a href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-19959">link</a></td>
@@ -55,7 +55,7 @@
     <tr>
       <td>CVE-2019-19925</td>
       <td>Null pointer</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td>sqlite3</td>
       <td>JCH218</td>
       <td>Report <a href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-19925">link</a></td>
@@ -65,7 +65,7 @@
     <tr>
       <td>CVE-2019-19244</td>
       <td>Improper input validation</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td>sqlite3</td>
       <td>JCH219</td>
       <td>Report <a href="https://github.com/sqlite/sqlite/commit/e59c562b3f6894f84c715772c4b116d7b5c01348">link</a></td>
@@ -75,7 +75,7 @@
     <tr>
       <td>CVE-2018-8740</td>
       <td>0-pointer dereference</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td>sqlite3</td>
       <td>JCH220</td>
       <td>Report <a href="https://bugs.launchpad.net/ubuntu/+source/sqlite3/+bug/1756349">link</a></td>
@@ -85,7 +85,7 @@
     <tr>
       <td>CVE-2017-15286</td>
       <td>0-pointer dereference</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td>sqlite3</td>
       <td>JCH221</td>
       <td>Report <a href="https://github.com/Ha0Team/crash-of-sqlite3/blob/master/poc.md">link</a></td>
@@ -95,7 +95,7 @@
     <tr>
       <td>CVE-2017-2520</td>
       <td>Heap buffer overflow</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td>sqlite3</td>
       <td>JCH222</td>
       <td>Report <a href="https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=384.">link</a></td>
@@ -105,7 +105,7 @@
     <tr>
       <td>CVE-2017-2518</td>
       <td>Use after free</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td>sqlite3</td>
       <td>JCH223</td>
       <td>Report <a href="https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=199">link</a></td>
@@ -115,7 +115,7 @@
     <tr>
       <td>CVE-2017-2513</td>
       <td>Use after free</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td>sqlite3</td>
       <td>JCH224</td>
       <td>Report <a href="https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=171">link</a></td>
@@ -125,7 +125,7 @@
     <tr>
       <td>CVE-2017-2519</td>
       <td>Unknown read</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td>sqlite3</td>
       <td></td>
       <td>Report <a href="https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=288">link</a></td>
@@ -135,7 +135,7 @@
     <tr>
       <td>CVE-2017-10989</td>
       <td>Heap buffer overflow</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td>sqlite3</td>
       <td>JCH225</td>
       <td>Report <a href="https://bugs.launchpad.net/ubuntu/+source/sqlite3/+bug/1700937">link</a></td>
@@ -145,7 +145,7 @@
     <tr>
       <td>CVE-2019-19646</td>
       <td>Mishandles not null</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td>sqlite3</td>
       <td>JCH226</td>
       <td>Report <a href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-19646">link</a></td>
@@ -155,7 +155,7 @@
     <tr>
       <td>CVE-2013-7443</td>
       <td>Buffer overflow</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td>sqlite3</td>
       <td>JCH227</td>
       <td>Report <a href="https://www.openwall.com/lists/oss-security/2015/07/14/5">link</a></td>
@@ -165,7 +165,7 @@
     <tr>
       <td>CVE-2019-19926</td>
       <td>Mishandles certain errors during parsing</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td>sqlite3</td>
       <td>JCH228</td>
       <td>Report <a href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-19926">link</a></td>
@@ -175,7 +175,7 @@
     <tr>
       <td>CVE-2019-19317</td>
       <td>Omits bits</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td>sqlite3</td>
       <td>JCH229</td>
       <td>Report <a href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-19317">link</a></td>
@@ -185,7 +185,7 @@
     <tr>
       <td>CVE-2015-3415</td>
       <td>Does not properly implement comparison operators</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td>sqlite3</td>
       <td>JCH230</td>
       <td>Report <a href="https://seclists.org/bugtraq/2015/Apr/97">link</a></td>
@@ -195,7 +195,7 @@
     <tr>
       <td>CVE-2020-9327</td>
       <td>0-pointer dereference</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td>sqlite3</td>
       <td>JCH231</td>
       <td>Report <a href="https://security-tracker.debian.org/tracker/CVE-2020-9327">link</a></td>
@@ -205,7 +205,7 @@
     <tr>
       <td>CVE-2015-3414</td>
       <td>Does not properly implement the dequoting of collation-sequence names</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td>sqlite3</td>
       <td>JCH232</td>
       <td>Report <a href="https://seclists.org/bugtraq/2015/Apr/97">link</a></td>
@@ -215,7 +215,7 @@
     <tr>
       <td>CVE-2015-3416</td>
       <td>Stack buffer overflow</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td>sqlite3</td>
       <td>JCH233</td>
       <td>Report <a href="https://seclists.org/bugtraq/2015/Apr/97">link</a></td>
@@ -225,7 +225,7 @@
     <tr>
       <td>CVE-2019-19880</td>
       <td>Invalid pointer dereference</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td>sqlite3</td>
       <td>JCH234</td>
       <td>Report <a href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-19880">link</a></td>

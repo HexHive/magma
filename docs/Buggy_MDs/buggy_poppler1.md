@@ -15,7 +15,7 @@
     <tr>
       <td>CVE-2019-14494</td>
       <td>Divide-by-zero</td>
-      <td>True</td>
+      <td><center>&#10004</center></td>
       <td>poppler</td>
       <td>AAH042</td>
       <td>Report <a href="https://gitlab.freedesktop.org/poppler/poppler/issues/802">link</a></td>
@@ -25,7 +25,7 @@
     <tr>
       <td>CVE-2019-9959</td>
       <td>Resource exhaustion (memory)</td>
-      <td>True</td>
+      <td><center>&#10004</center></td>
       <td>poppler</td>
       <td>AAH043</td>
       <td>Report <a href="https://gitlab.freedesktop.org/poppler/poppler/issues/805">link</a></td>
@@ -35,7 +35,7 @@
     <tr>
       <td>CVE-2019-9631</td>
       <td>Heap buffer overflow</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td>poppler</td>
       <td>AAH044</td>
       <td>Report <a href="https://gitlab.freedesktop.org/poppler/poppler/issues/736">link</a></td>
@@ -45,7 +45,7 @@
     <tr>
       <td>CVE-2018-20662</td>
       <td>Sigabrt</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td>pdfunite</td>
       <td></td>
       <td>Report <a href="https://gitlab.freedesktop.org/poppler/poppler/issues/706">link</a></td>
@@ -55,7 +55,7 @@
     <tr>
       <td>CVE-2018-18897</td>
       <td>Memory leak</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td>poppler</td>
       <td></td>
       <td>Report <a href="https://gitlab.freedesktop.org/poppler/poppler/issues/654">link</a></td>
@@ -65,7 +65,7 @@
     <tr>
       <td>CVE-2017-9865</td>
       <td>Stack buffer overflow</td>
-      <td>True</td>
+      <td><center>&#10004</center></td>
       <td>poppler</td>
       <td>AAH045</td>
       <td>Report <a href="https://bugs.freedesktop.org/show_bug.cgi?id=100774">link</a></td>
@@ -75,7 +75,7 @@
     <tr>
       <td>CVE-2019-10873</td>
       <td>0-pointer dereference</td>
-      <td>True</td>
+      <td><center>&#10004</center></td>
       <td>poppler</td>
       <td>AAH046</td>
       <td>Report <a href="https://gitlab.freedesktop.org/poppler/poppler/issues/748">link</a></td>
@@ -85,7 +85,7 @@
     <tr>
       <td>CVE-2019-10871</td>
       <td>Heap buffer overread</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td>poppler</td>
       <td></td>
       <td>Report <a href="https://gitlab.freedesktop.org/poppler/poppler/issues/751">link</a></td>
@@ -95,7 +95,7 @@
     <tr>
       <td>CVE-2019-12293</td>
       <td>Heap buffer overread</td>
-      <td>True</td>
+      <td><center>&#10004</center></td>
       <td>poppler</td>
       <td>AAH047</td>
       <td>Report <a href="https://gitlab.freedesktop.org/poppler/poppler/issues/768">link</a></td>
@@ -105,7 +105,7 @@
     <tr>
       <td>CVE-2019-10872</td>
       <td>Heap buffer overflow</td>
-      <td>True</td>
+      <td><center>&#10004</center></td>
       <td>poppler</td>
       <td>AAH048</td>
       <td>Report <a href="https://gitlab.freedesktop.org/poppler/poppler/issues/750.">link</a></td>
@@ -115,7 +115,7 @@
     <tr>
       <td>CVE-2019-9903</td>
       <td>Stack overflow - recursion</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td>poppler</td>
       <td></td>
       <td>Report <a href="https://gitlab.freedesktop.org/poppler/poppler/issues/741">link</a></td>
@@ -125,7 +125,7 @@
     <tr>
       <td>CVE-2019-11026</td>
       <td>Stack overflow</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td>poppler</td>
       <td></td>
       <td>Report <a href="https://gitlab.freedesktop.org/poppler/poppler/issues/752">link</a></td>
@@ -135,7 +135,7 @@
     <tr>
       <td>CVE-2019-9200</td>
       <td>Heap buffer underwrite</td>
-      <td>True</td>
+      <td><center>&#10004</center></td>
       <td>poppler</td>
       <td>AAH049</td>
       <td>Report <a href="https://gitlab.freedesktop.org/poppler/poppler/issues/728">link</a></td>
@@ -145,7 +145,7 @@
     <tr>
       <td>CVE-2018-20551</td>
       <td>Sigabrt</td>
-      <td>False</td>
+      <td><center>&#10007;</center></td>
       <td>poppler</td>
       <td></td>
       <td>Report <a href="https://gitlab.freedesktop.org/poppler/poppler/issues/703">link</a></td>
@@ -155,7 +155,7 @@
     <tr>
       <td>Bug #106061</td>
       <td>Divide-by-zero</td>
-      <td>True</td>
+      <td><center>&#10004</center></td>
       <td>poppler</td>
       <td>AAH050</td>
       <td>Report <a href="https://bugs.freedesktop.org/show_bug.cgi?id=106061">link</a></td>
@@ -165,7 +165,7 @@
     <tr>
       <td>ossfuzz/8499</td>
       <td>Integer overflow</td>
-      <td>True</td>
+      <td><center>&#10004</center></td>
       <td>poppler</td>
       <td>AAH051</td>
       <td>Report <a href="https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=8499">link</a></td>
@@ -175,7 +175,7 @@
     <tr>
       <td>Bug #101366</td>
       <td>0-pointer dereference</td>
-      <td>True</td>
+      <td><center>&#10004</center></td>
       <td>poppler</td>
       <td>AAH052</td>
       <td>Report <a href="https://bugs.freedesktop.org/show_bug.cgi?id=101366">link</a></td>
