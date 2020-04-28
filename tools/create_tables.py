@@ -56,19 +56,27 @@ def csv_to_html(name, output):
                 justify="center", na_rep="")
 
 
-path_input = "/Users/cosmejordan/Desktop/BachelorProject/_Code/Buggy_CSVs/"
-path_output = "/Users/cosmejordan/Desktop/BachelorProject/_Code/Buggy_MDs/"
-files = []
-for r, d, f in os.walk(path_input):
-    for file in f:
-        files.append(os.path.join(r, file))
+def create_files_from_folder(input_path, output_path, function, extension):
+    '''
+    ex = "extension"
+    '''
 
-for f in files:
-    base = os.path.basename(f)
-    output_name = path_output + os.path.splitext(base)[0]
+    files = []
+    for r, d, f in os.walk(input_path):
+        for file in f:
+            files.append(os.path.join(r, file))
 
-    csv_to_html(f,
-                output_name + ".md")
+    for f in files:
+        base = os.path.basename(f)
+        output_name = output_path + os.path.splitext(base)[0]
 
-    csv_to_html(f,
-                output_name + ".html")
+        function(f, output_name + extension)
+
+
+input_path = "/Users/cosmejordan/Desktop/BachelorProject/_Code/Buggy_CSVs/"
+output_path = "/Users/cosmejordan/Desktop/BachelorProject/_Code/Buggy_MDs/"
+HTML = ".html"
+MD = ".md"
+
+create_files_from_folder(input_path, output_path, csv_to_html, HTML)
+create_files_from_folder(input_path, output_path, csv_to_html, MD)
