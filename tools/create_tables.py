@@ -60,7 +60,6 @@ def csv_to_html(name, output):
 
 def create_files_from_folder(input_path, output_path, function, extension):
     '''
-    ex = "extension"
     '''
 
     files = []
