@@ -1,0 +1,18 @@
+CVE ID,Vulnerability Type,Ported,Component,Bug ID,Report,Fix,Notes
+CVE-2019-7310,Heap buffer overflow,True,poppler,JCH201,Report https://gitlab.freedesktop.org/poppler/poppler/issues/717,Fix https://gitlab.freedesktop.org/poppler/poppler/commit/b54e1fc3e0d2600621a28d50f9f085b9e38619c2,
+CVE-2018-21009,Integer overflow,True,poppler,JCH202,Report https://lists.debian.org/debian-lts-announce/2019/09/msg00033.html,Fix https://gitlab.freedesktop.org/poppler/poppler/commit/0868c499a9f5f37f8df5c9fef03c37496b40fc8a,
+CVE-2018-20650,Type confusion,True,poppler,JCH203,Report https://gitlab.freedesktop.org/poppler/poppler/issues/704,Fix https://gitlab.freedesktop.org/poppler/poppler/commit/de0c0b8324e776f0b851485e0fc9622fc35695b7,
+CVE-2018-20481,0-pointer dereference,True,poppler,JCH204,Report https://gitlab.freedesktop.org/poppler/poppler/issues/692,Fix https://gitlab.freedesktop.org/poppler/poppler/commit/39a251b1b3a3343400a08e2f03c5518a26624626, 32-bit.
+CVE-2018-16646,Infinite recursion,False,,,Report https://bugzilla.redhat.com/show_bug.cgi?id=1622951,Fix https://gitlab.freedesktop.org/poppler/poppler/commit/3d35d209c19c1d3b09b794a0c863ba5de44a9c0a,Not even sure what caused the bug. Lots of changes to make.
+CVE-2018-19058,Type confusion,True,poppler,JCH206,Report https://gitlab.freedesktop.org/poppler/poppler/issues/659,Fix https://gitlab.freedesktop.org/poppler/poppler/commit/6912e06d9ab19ba28991b5cab3319d61d856bd6d,
+CVE-2018-13988,"Out of bounds, incorect memory access",True,poppler,JCH207,Report https://bugzilla.redhat.com/show_bug.cgi?id=1602838,Fix https://cgit.freedesktop.org/poppler/poppler/commit/?id=004e3c10df0abda214f0c293f9e269fdd979c5ee,
+,,,,,,,
+CVE-2019-12360,Stack buffer overflow,True,poppler,JCH208,Report https://bugzilla.suse.com/show_bug.cgi?id=1136620,Fix https://gitlab.freedesktop.org/poppler/poppler/commit/bf4aae25a244b1033a2479b9a8f633224f7d5de5,
+CVE-2018-10768,0-pointer dereference,True,poppler,JCH209,Report https://bugs.freedesktop.org/show_bug.cgi?id=106408,Fix https://cgit.freedesktop.org/poppler/poppler/commit/?id=942adfc25e7a00ac3cf032ced2d8949e99099f70,
+CVE-2017-9776,Integer overflow,True,poppler,JCH210,Report https://bugs.freedesktop.org/show_bug.cgi?id=101541,Fix https://gitlab.freedesktop.org/poppler/poppler/commit/55db66c69fd56826b8523710046deab1a8d14ba2,
+CVE-2017-18267,Stack overflow,True,poppler,JCH211,Report https://bugs.freedesktop.org/show_bug.cgi?id=103238,Fix https://cgit.freedesktop.org/poppler/poppler/commit/?id=60b4fe65bc9dc9b82bbadf0be2e3781be796a13d,
+CVE-2017-14617,Floating point exception,True,poppler,JCH212,Report https://bugs.freedesktop.org/show_bug.cgi?id=102854,Fix https://cgit.freedesktop.org/poppler/poppler/commit/?id=939465c40902d72e0c05d4f3a27ee67e4a007ed7,
+CVE-2017-14926,0-pointer dereference,False,poppler,,Report https://bugs.freedesktop.org/show_bug.cgi?id=102601,Fix https://cgit.freedesktop.org/poppler/poppler/commit/?id=2532df6060092e9fab7f041ae9598aff9cdd94bb,The code no longer exists. Lots of changes to make.
+CVE-2018-14929,Memory corruption,False,poppler,,Report https://bugs.freedesktop.org/show_bug.cgi?id=102969,Fix https://cgit.freedesktop.org/poppler/poppler/commit/?id=2c92c7b6a828c9db8a38f079ea7a3d51c12a481d,Lots of changes to make.
+CVE-2017-7511,0-pointer dereference,True,poppler,JCH213,Report https://bugs.freedesktop.org/show_bug.cgi?id=101149,Fix https://cgit.freedesktop.org/poppler/poppler/commit/?id=5c9b08a875b07853be6c44e43ff5f7f059df666a,
+CVE-2019-12493,Stack overflow,True,poppler,JCH214,Report https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-12493,Fix https://gitlab.freedesktop.org/poppler/poppler/commit/37840827c4073dedfd37915a74eb8fe0c44843c3,  

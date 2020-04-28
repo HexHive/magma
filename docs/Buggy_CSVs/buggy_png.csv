@@ -1,0 +1,22 @@
+CVE ID,Vulnerability Type,Ported,Component,Bug ID,Report,Fix,Notes
+CVE-2019-6129,Memory leak,False,pngcp,,,,pngcp fails to free allocated info struct upon error. Not a core bug.
+CVE-2019-7317,Use-after-free,True,libpng,AAH002,,,Only triggered if the application uses the simplified API (png_image_begin_read...).
+CVE-2018-14048,Use-after-free,False,pnm2png,,,,A specially-crafted input can crash a sample program in a place that's outside of the scope of libpng.
+CVE-2018-13785,"Integer overflow, divide by zero",True,libpng,AAH001,,,
+CVE-2016-10087,0-pointer dereference,False,libpng,,,,"Context-dependent. To be vulnerable, an application has to load a text chunk into the png structure, then delete all text, then add another text chunk to the same png structure. Highly unlikely to be triggered by a crafted PNG file."
+CVE-2016-3751,Unspecified,False,android/libpng,,,,No released information.
+CVE-2015-8540,"Integer underflow, OOB read",False,libpng,,,,"Vulnerability in pngwutil.c, which is not used when reading a file. Cannot be triggered by a crafted PNG file."
+CVE-2015-8472,API inconsistency,True,libpng,AAH003,,,
+CVE-2015-7981,"Integer underflow, OOB read",False,libpng,,,,Bug in png_convert_to_rfc1123() which is never called within libpng. Only applications that call this function are vulnerable.
+CVE-2015-0973,Integer overflow,True,libpng,AAH004,,,PoC not available due to size constraints.
+CVE-2014-9495,"Integer overflow, Buffer overflow",True,libpng,AAH005,,,
+CVE-2014-0333,Infinite loop (DoS),False,libpng,,,,Only applications using the progressive reader are affected.
+CVE-2013-7354,"Integer overflow, Buffer overflow",False,libpng,,,,libpng calls vulnerable function internally only with num_unknowns==1. Cannot be triggered by a crafted PNG file.
+CVE-2013-6954,0-pointer dereference,True,libpng,AAH008,,,Only triggered if application applies the EXPAND transformation (expands the palette over the samples).
+CVE-2012-3425,"Integer underflow, OOB read",False,libpng,,,,Vulnerable function was entirely removed since libpng-1.2.48.
+CVE-2011-3464,Off-by-one buffer overflow,False,libpng,,,,png_formatted_warning() function was drastically refactored to avoid the overflow. (git diff v1.5.7 v1.5.8beta01 -- pngerror.c).
+CVE-2011-3048,0-pointer dereference,True,libpng,AAH006,,,
+(Unspecified),Memory leak,True,libpng,AAH007,,,
+CVE-2019-17371,Memory leak,False,gif2png,,,,Not a core bug.
+CVE-2018-14550,Stack buffer overflow,False,pnm2png,,,,Not a core bug.
+CVE-2017-12652,Improper input validation,False,libpng,,,,Way too many changes.

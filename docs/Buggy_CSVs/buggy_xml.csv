@@ -1,0 +1,52 @@
+CVE ID,Vulnerability Type,Ported,Component,Bug ID,Report,Fix,Notes
+CVE-2017-16931,Heap buffer overflow,False,libxml2,AAH023,Original bug report 781205 (https://www.openwall.com/lists/oss-security/2017/05/15/1),Fix https://gitlab.gnome.org/GNOME/libxml2/commit/e26630548e7d138d2c560844c43820b6767251e3.,xmllint --oldxml10
+CVE-2017-9047,Stack buffer overflow,True,libxml2,AAH024,Original bug report 781333 (https://www.openwall.com/lists/oss-security/2017/05/15/1),Fix https://gitlab.gnome.org/GNOME/libxml2/commit/932cc9896ab41475d4aa429c27d9afd175959d74.xmllint --valid. Discovered by AFLGo.
+CVE-2017-0663,Type confusion,True,libxml2,AAH025,Original bug report 780228,Fix https://gitlab.gnome.org/GNOME/libxml2/commit/92b9e8c8b3787068565a1820ba575d042f9eec66.,Discovered by oss-fuzz.
+CVE-2017-7375,Xml external entity,True,libxml2,AAH026,Original bug report 780691,Fix https://gitlab.gnome.org/GNOME/libxml2/commit/90ccb58242866b0ba3edbef8fe44214a101c2b3e,
+CVE-2017-15412,Heap corruption,False,libxml2,,Original bug report 783160,Fix https://gitlab.gnome.org/GNOME/libxml2/commit/0f3b843b3534784ef57a4f9b874238aa1fda5a73,Not enough knowledge. To be considered later.
+CVE-2018-14567,Resource exhaustion,True,libxml2,AAH027,Original bug report 794914,Fix https://gitlab.gnome.org/GNOME/libxml2/commit/2240fbf5912054af025fb6e01e26375100275e74,xmllint (compiled with liblzma-dev installed).
+CVE-2016-9596,,False,libxml2,,,,Possibly platform-dependent.
+CVE-2016-9598,,False,libxml2,,,,Possibly platform-dependent.
+CVE-2016-9597,,False,libxml2,,,,Possibly platform-dependent.
+CVE-2018-14404,0-pointer dereference,False,libxml2,,,,Not entirely sure how to trigger this. To be considered later.
+CVE-2017-18258,Resource exhaustion (memory),False,libxml2,,Original bug report 786696,Fix https://git.gnome.org/browse/libxml2/commit/?id=e2a9122b8dde53d320750451e9907a7dcb2ca8bb,Seems rather broad. No specific condition to trigger it.
+CVE-2018-9251,Resource exhaustion,False,libxml2,,,,Duplicate of CVE-2018-14567
+CVE-2017-7376,Buffer overflow,False,libxml2,,Original bug report 780690,Fix https://github.com/GNOME/libxml2/commit/5dca9eea1bd4,Not sure how to trigger it. To be considered later.
+CVE-2017-5130,"Integer overflow, heap corruption",True,libxml2,AAH028,Original bug report 783026,Fix https://gitlab.gnome.org/GNOME/libxml2/commit/897dffbae322b46b83f99a607d527058a72c51ed,xmllint --maxmem. ./configure --with-mem-debug. Check debian security tracker.
+CVE-2017-7010,Oob read,False,ios,,,,Not a core bug.
+CVE-2017-7013,Oob read,False,ios,,,,Not a core bug.
+CVE-2017-9048,Stack buffer overflow,True,libxml2,AAH029,,,
+CVE-2017-9049,Heap buffer overflow,False,libxml2,AAH023,,,Child of AAH023
+CVE-2017-9050,Heap buffer overflow,False,libxml2,AAH023,,,Child of AAH023
+CVE-2017-8872,Oob read,True,libxml2,AAH030,Original bug report 775200,Fix https://gitlab.gnome.org/GNOME/libxml2/commit/123234f2cfcd9e9b9f83047eee1dc17b4c3f4407,xmllint --html --push
+ISSUE #58 (gitlab),Oob read,True,libxml2,AAH031,,Fix https://gitlab.gnome.org/GNOME/libxml2/commit/3c0d62b4193c5c1fe15a143a138f76ffa1278779,
+CVE-2017-5969,0-pointer dereference,False,libxml2,,Original bug report 778519,Fix https://gitlab.gnome.org/GNOME/libxml2/commit/94691dc884d1a8ada39f073408b4bb92fe7fe882,"Not security critical, since the --recover flag is not supposed to be used with untrusted inputs."
+CVE-2016-4483,Oob read,False,libxml2,,Original bug report 766414,Fix https://gitlab.gnome.org/GNOME/libxml2/commit/c97750d11bb8b6f3303e7131fe526a61ac65bcfd,"Not security critical, since the --recover flag is not supposed to be used with untrusted inputs."
+CVE-2016-9318,Xml external entity,False,libxml2,,Original bug report 772726,,Too confusing.
+CVE-2016-4658,Use-after-free,False,libxml2,,,Fix https://gitlab.gnome.org/GNOME/libxml2/commit/c1d1f7121194036608bf555f08d3062a36fd344b,Too many changes.
+CVE-2016-5131,Use-after-free,False,libxml2,,Original bug report https://bugs.chromium.org/p/chromium/issues/detail?id=623378,Fix https://gitlab.gnome.org/GNOME/libxml2/commit/9ab01a277d71f54d3143c2cf333c5c2e9aaedd9e,Too many changes.
+CVE-2015-8317,Oob read,True,libxml2,AAH032,Original bug report 751631,Fix https://gitlab.gnome.org/GNOME/libxml2/commit/709a952110e98621c9b78c4f26462a9d8333102e,
+,Oob read,False,libxml2,,Original bug report 751603,Fix https://gitlab.gnome.org/GNOME/libxml2/commit/9aa37588ee78a06ca1379a9d9356eab16686099c,Triggering condition not clear.
+CVE-2016-4614,Memory corruption,False,libxml2,,,,Apple-specific CVE. No information available.
+CVE-2016-4615,Memory corruption,False,libxml2,,,,Apple-specific CVE. No information available.
+CVE-2016-4616,Memory corruption,False,libxml2,,,,Apple-specific CVE. No information available.
+CVE-2016-4447,Heap buffer underread,False,libxml2,,Original bug report 759573,Fix https://gitlab.gnome.org/GNOME/libxml2/commit/00906759053986b8079985644172085f74331f83,Unclear. To be considered later.
+CVE-2016-4448,Format string,False,libxml2,,Original bug report 761029,,Too many changes.
+CVE-2016-4449,Xml external entity,True,libxml2,AAH033,Original bug report 761430,Fix https://gitlab.gnome.org/GNOME/libxml2/commit/b1d34de46a11323fccffa9fadeb33be670d602f5,
+CVE-2016-1833,Heap buffer overread,False,libxml2,,Original bug report 758606,Fix https://gitlab.gnome.org/GNOME/libxml2/commit/0bcd05c5cd83dec3406c8f68b769b1d610c72f76,Too many changes.
+CVE-2016-1834,Heap buffer overflow,True,libxml2,AAH034,Original bug report 763071,Fix https://gitlab.gnome.org/GNOME/libxml2/commit/8fbbf5513d609c1770b391b99e33314cd0742704,
+CVE-2016-1835,Use-after-free,False,libxml2,,Original bug report 759020,Fix https://gitlab.gnome.org/GNOME/libxml2/commit/38eae571111db3b43ffdeb05487c9f60551906fb,"Function was refactored, making the bug non-portable."
+CVE-2016-1836,Use-after-free,True,libxml2,AAH035,Original bug report 759398,Fix https://git.gnome.org/browse/libxml2/commit/?id=45752d2c334b50016666d8f0ec3691e2d680f0a0,
+CVE-2016-1837,Use-after-free,True,libxml2,AAH036,Original bug report 760263,Fix https://gitlab.gnome.org/GNOME/libxml2/commit/11ed4a7a90d5ce156a18980a4ad4e53e77384852,
+CVE-2016-1838,Heap buffer overread,True,libxml2,AAH037,Original bug report 758588,Fix https://gitlab.gnome.org/GNOME/libxml2/commit/db07dd613e461df93dde7902c6505629bf0734e9,
+CVE-2016-1839,Heap buffer overread,True,libxml2,AAH038,Original bug report 758605,Fix https://gitlab.gnome.org/GNOME/libxml2/commit/a820dbeac29d330bae4be05d9ecd939ad6b4aa33,
+BUG 758518,Heap buffer overread,True,libxml2,AAH039,Original bug report 758518,Fix https://gitlab.gnome.org/GNOME/libxml2/commit/beca86e8c86984b967a6efa05a9653470253edda,
+CVE-2016-1840,Heap buffer overflow,True,libxml2,AAH040,Original bug report 757711,Fix https://gitlab.gnome.org/GNOME/libxml2/commit/cbb271655cadeb8dbb258a64701d9a3a0c4835b4,
+CVE-2016-3627,Resource exhaustion,False,libxml2,,Original bug report 762100,Fix https://gitlab.gnome.org/GNOME/libxml2/commit/bdd66182ef53fe1f7209ab6535fda56366bd7ac9,"Not security critical, since the --recover flag is not supposed to be used with untrusted inputs."
+CVE-2016-3705,Resource exhaustion,False,libxml2,,Original bug report 765207,Fix https://git.gnome.org/browse/libxml2/commit/?id=8f30bdff69edac9075f4663ce3b56b0c52d48ce6,"Not security critical, since the --recover flag is not supposed to be used with untrusted inputs."
+CVE-2015-6837,0-pointer dereference,False,php,,,,Not a core bug.
+CVE-2015-6838,0-pointer dereference,False,php,,,,Not a core bug.
+CVE-2015-8806,Heap buffer overread,False,libxml2,,,,Duplicate of CVE-2016-1839.
+CVE-2015-8710,Oob read,False,libxml2,,Original bug report 746048,Fix https://gitlab.gnome.org/GNOME/libxml2/commit/e724879d964d774df9b7969fc846605aa1bac54c,Too many changes.
+CVE-2016-1761,Memory corruption,False,libxml2,,,,Apple-specific CVE. No information available.
+CVE-2016-1762,Heap buffer overread,True,libxml2,AAH041,,,
