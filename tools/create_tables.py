@@ -8,6 +8,8 @@ XML_PARSER = "lxml"
 YES_BOX = "&#10003;"
 NO_BOX = "&#10007;"
 PORTED = "Ported"
+HTML = ".html"
+MD = ".md"
 
 
 def html_to_csv(name, output):
@@ -41,7 +43,7 @@ def csv_to_html(name, output):
 
     # Making sure that tick boxes are centered in the table
     # Formating the ported column
-    formatter = {PORTED: lambda x: "<div align=\"center\">" + x + "</div>"}
+    formatter = {PORTED: lambda e: "<div align=\"center\">" + e + "</div>"}
 
     # na_rep="", because we want to avoid having literal "NaN"
     # values in the tables when converting to html. So we replace it with empty
@@ -71,12 +73,3 @@ def create_files_from_folder(input_path, output_path, function, extension):
         output_name = output_path + os.path.splitext(base)[0]
 
         function(f, output_name + extension)
-
-
-input_path = "/Users/cosmejordan/Desktop/BachelorProject/_Code/Buggy_CSVs/"
-output_path = "/Users/cosmejordan/Desktop/BachelorProject/_Code/Buggy_MDs/"
-HTML = ".html"
-MD = ".md"
-
-create_files_from_folder(input_path, output_path, csv_to_html, HTML)
-create_files_from_folder(input_path, output_path, csv_to_html, MD)
