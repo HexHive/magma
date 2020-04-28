@@ -12,4 +12,4 @@ if [ ! -d "$FUZZER/repo" ]; then
 fi
 
 cd "$FUZZER/repo"
-make -j $(nproc)
+CC=clang CXX=clang++ make -j $(nproc)

@@ -3,7 +3,7 @@ set -e
 
 apt-get update && \
     apt-get install -y make git wget binutils-dev libunwind-dev \
-        clang-9 llvm-9-dev build-essential
+        clang-9 llvm-9-dev build-essential libblocksruntime-dev
 
 update-alternatives \
   --install /usr/lib/llvm              llvm             /usr/lib/llvm-9  20 \
