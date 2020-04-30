@@ -1,4 +1,4 @@
-<table border="1" class="dataframe">
+<table border="0" class="dataframe">
   <thead>
     <tr style="text-align: center;">
       <th>CVE ID</th>
@@ -80,16 +80,6 @@
       <td>JCH207</td>
       <td>Report <a href="https://bugzilla.redhat.com/show_bug.cgi?id=1602838">link</a></td>
       <td>Fix <a href="https://cgit.freedesktop.org/poppler/poppler/commit/?id=004e3c10df0abda214f0c293f9e269fdd979c5ee">link</a></td>
-      <td></td>
-    </tr>
-    <tr>
-      <td></td>
-      <td></td>
-      <td><div align="center">&#10003;</div></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
       <td></td>
     </tr>
     <tr>

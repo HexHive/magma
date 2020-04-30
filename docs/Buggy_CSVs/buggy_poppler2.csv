@@ -6,7 +6,6 @@ CVE-2018-20481,0-pointer dereference,True,poppler,JCH204,Report https://gitlab.f
 CVE-2018-16646,Infinite recursion,False,,,Report https://bugzilla.redhat.com/show_bug.cgi?id=1622951,Fix https://gitlab.freedesktop.org/poppler/poppler/commit/3d35d209c19c1d3b09b794a0c863ba5de44a9c0a,Not even sure what caused the bug. Lots of changes to make.
 CVE-2018-19058,Type confusion,True,poppler,JCH206,Report https://gitlab.freedesktop.org/poppler/poppler/issues/659,Fix https://gitlab.freedesktop.org/poppler/poppler/commit/6912e06d9ab19ba28991b5cab3319d61d856bd6d,
 CVE-2018-13988,"Out of bounds, incorect memory access",True,poppler,JCH207,Report https://bugzilla.redhat.com/show_bug.cgi?id=1602838,Fix https://cgit.freedesktop.org/poppler/poppler/commit/?id=004e3c10df0abda214f0c293f9e269fdd979c5ee,
-,,,,,,,
 CVE-2019-12360,Stack buffer overflow,True,poppler,JCH208,Report https://bugzilla.suse.com/show_bug.cgi?id=1136620,Fix https://gitlab.freedesktop.org/poppler/poppler/commit/bf4aae25a244b1033a2479b9a8f633224f7d5de5,
 CVE-2018-10768,0-pointer dereference,True,poppler,JCH209,Report https://bugs.freedesktop.org/show_bug.cgi?id=106408,Fix https://cgit.freedesktop.org/poppler/poppler/commit/?id=942adfc25e7a00ac3cf032ced2d8949e99099f70,
 CVE-2017-9776,Integer overflow,True,poppler,JCH210,Report https://bugs.freedesktop.org/show_bug.cgi?id=101541,Fix https://gitlab.freedesktop.org/poppler/poppler/commit/55db66c69fd56826b8523710046deab1a8d14ba2,

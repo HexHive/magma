@@ -1,4 +1,4 @@
-<table border="1" class="dataframe">
+<table border="0" class="dataframe">
   <thead>
     <tr style="text-align: center;">
       <th>CVE ID</th>
@@ -28,7 +28,7 @@
       <td><div align="center">&#10007;</div></td>
       <td>ext</td>
       <td>MAE002</td>
-      <td>Git <a href="<a href="https://bugs.php.net/bug.php?id=77247">link</a>">link</a> Trigger <a href="<a href="https://bugs.php.net/bug.php?id=77247">link</a>">link</a></td>
+      <td>Git <a href="https://bugs.php.net/bug.php?id=77247">link</a> Trigger <a href="https://bugs.php.net/bug.php?id=77247">link</a></td>
       <td></td>
       <td></td>
     </tr>
@@ -38,7 +38,7 @@
       <td><div align="center">&#10007;</div></td>
       <td>ext</td>
       <td></td>
-      <td>Git <a href="http://git.php.net/?p=php-src.git;a=blobdiff;f=ext/mbstring/oniguruma/regparse.c;h=252ca187120238a77055ca51b40f7e5f14250d9c;hp=d2925f1e81b0bb827db02b260cca1058355135d2;hb=20407d06ca3cb5eeb10f876a812b40c381574bcc;hpb=a918020c03880e12ac9f38e11a4a3789491a5f85,Git">link</a> <a href="http://git.php.net/?p=php-src.git;a=commit;h=9d6c59eeea88a3e9d7039cb4fed5126ef704593a,Git">link</a> <a href="http://git.php.net/?p=php-src.git;a=commitdiff;h=28362ed4fae6969b5a8878591a5a06eadf114e03;hp=20407d06ca3cb5eeb10f876a812b40c381574bcc">link</a></td>
+      <td>Git <a href="http://git.php.net/?p=php-src.git;a=blobdiff;f=ext/mbstring/oniguruma/regparse.c;h=252ca187120238a77055ca51b40f7e5f14250d9c;hp=d2925f1e81b0bb827db02b260cca1058355135d2;hb=20407d06ca3cb5eeb10f876a812b40c381574bcc;hpb=a918020c03880e12ac9f38e11a4a3789491a5f85">link</a> Git <a href="http://git.php.net/?p=php-src.git;a=commit;h=9d6c59eeea88a3e9d7039cb4fed5126ef704593a">link</a> Git <a href="http://git.php.net/?p=php-src.git;a=commitdiff;h=28362ed4fae6969b5a8878591a5a06eadf114e03;hp=20407d06ca3cb5eeb10f876a812b40c381574bcc">link</a></td>
       <td></td>
       <td>ext/mbstring/oniguruma folder not present anymore.</td>
     </tr>
