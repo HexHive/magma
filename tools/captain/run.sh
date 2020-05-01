@@ -50,10 +50,12 @@ get_next_cid()
     if [ ${#campaigns[@]} -eq 0 ]; then
         echo 0
     else
-        cids=($(sort -n < <(basename -a -s .tar "${campaigns[@]}")))
+        cids=($(sort -n < <(basename -a "${campaigns[@]}")))
         for ((i=0;;i++)); do
             if [ -z ${cids[i]} ] || [ ${cids[i]} -ne $i ]; then
                 echo $i
+                # ensure the directory is created to prevent races
+                mkdir -p "$1/$i"
                 break
             fi
         done
@@ -88,7 +90,7 @@ start_campaign()
     if [ -z $MAGMA_NO_ARCHIVE ]; then
         # only one tar job runs at a time, to prevent out-of-storage errors
         sem --id "magma_tar" --fg -j 1 \
-          tar -cf "${ARDIR}/${CID}.tar" -C "$SHARED" . 1>/dev/null 2>&1 && \
+          tar -cf "${ARDIR}/${CID}/${CID}.tar" -C "$SHARED" . 1>/dev/null 2>&1 && \
         rm -rf "$SHARED"
     else
         mv "$SHARED" "${ARDIR}/${CID}"
