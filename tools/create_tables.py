@@ -28,7 +28,6 @@ def html_to_csv(name, output):
 
     # Open file on mode reading
     f = open(name, "r")
-    print(name)
 
     # Using soup with XML_PARSER
     soup = bs.BeautifulSoup(f, XML_PARSER)
