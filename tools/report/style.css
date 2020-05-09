@@ -1,0 +1,36 @@
+
+
+
+body {
+  background-color: lightgrey;
+}
+
+h1 {
+  color: black;
+  text-align: center;
+  
+}
+
+h2 {
+ color: black;
+ text-align: left
+}
+
+p {
+  
+  font-size: 16px;
+  font-family: "Trebuchet MS", Verdana, sans-serif;
+}
+
+a:link {
+  color: blue
+}
+
+a{
+	font-size: 16px;
+}
+li{
+
+	font-size: 16px;
+}
+

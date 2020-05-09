@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+
+{% macro sentence_case(text) %}
+    {{ text[0]|upper}}{{text[1:] }}
+{% endmacro %}
+<head>
+    <title>
+        {{library_name}}
+    </title>
+
+    <link rel="stylesheet" href="style.css">
+  
+</head>
+
+<body>
+
+        <h1>
+            {{sentence_case(library_name)}}
+        </h1>
+
+        <div class=targets>
+            <span>
+                In table bellow you will find all the implemented bugs in the {{library_name}} library.
+            </span>
+
+            <h2>Benchmark Result</h2>
+             <-- insert here table -->
+        </div>
+
+  
+
+</body>
+</html>
