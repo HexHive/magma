@@ -1,5 +1,6 @@
-from Render import Render
-from Path import Path
+from Code.Path import Path
+from Code.Render import Render
+
 import os # TODO Shouldn't be needed
 
 
