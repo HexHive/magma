@@ -82,14 +82,14 @@ class FuzzerTemplate(Render):
             The file to get the directory from
         '''
 
-        self.path = path
+        super(FuzzerTemplate, self).__init__(path)
         # Set paths for templates, output and images
         self.template_dir = path.template_dir
         self.output_dir = path.output_dir
         self.tables_dir = path.tables_dir
         self.plot_dir = path.plot_dir
 
-    def render(self, file_name, output_file_name, description):
+    def render(self, file_name, output_file_name):
         '''
         Generate (write to html file) and render reports (html, bugs reports,
         tables,...)
@@ -106,6 +106,9 @@ class FuzzerTemplate(Render):
             The corresponding description
         '''
 
+        splitted_output_file_name = output_file_name.split(".")
+
+        description = fuzzer_descriptions[splitted_output_file_name[0]]
         # TODO Generate bugs reports, tables, graphs
         template = self.path.get_template(file_name)
 
@@ -134,5 +137,4 @@ fuzzer_template = FuzzerTemplate(path)
 #     fuzzer_template.render("template.html",
 #                            fuzzer_descriptions[fuzzer])
 
-fuzzer_template.render("fuzzerTemplate.html", "afl.html",
-                       fuzzer_descriptions["afl"])
+fuzzer_template.render("fuzzerTemplate.html", "afl.html")
