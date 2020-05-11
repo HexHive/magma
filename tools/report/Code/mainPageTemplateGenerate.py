@@ -8,7 +8,8 @@ class MainPageTemplate(Render):
     '''
        A class to represent a the main report page
     '''
-    def __init__(self, path):
+
+    def __init__(self, path,fuzzers,libraries):
         '''
         Parameters
         ----------
@@ -18,15 +19,17 @@ class MainPageTemplate(Render):
         _file_:
             The file to get the directory from
         '''
-        self.path = path
+        self.fuzzers = fuzzers
+        self.libraries = libraries
+        super(MainPageTemplate, self).__init__(path)
         # Set paths for templates, output and images
         self.template_dir = path.template_dir
         self.output_dir = path.output_dir
         self.tables_dir = path.tables_dir
         self.plot_dir = path.plot_dir
 
-    def render(self, file_name, output_file_name, description):
-        '''
+    def render(self, file_name, output_file_name):
+        """
         Generate (write to html file) and render reports (html, bugs reports,
         tables,...)
 
@@ -40,27 +43,20 @@ class MainPageTemplate(Render):
 
         description (FuzzerDescription):
             The corresponding description
-        '''
-
-        # TODO fix the inheritance for description whcih in libraryGenerate and MainPageGenerate makes no sense
+        """
 
         template = self.path.get_template(file_name)
 
         '''
-        target_list (list of string) ;
-            The target libraries name
-        
+
         total_bugs (int) :
             total number of implemented bugs
-            
-        fuzzer_list (list of string) :
-            The benchmarked fuzzers
+    
         '''
-        target_list = []
+
         total_bugs = 0
-        fuzzer_list = []
         # TODO Get all the above information from the json passed as argument
-        rendering = template.render(target_list=target_list, total_bugs=total_bugs, fuzzer_list=fuzzer_list)
+        rendering = template.render(target_list=self.libraries, total_bugs=total_bugs, fuzzer_list=self.fuzzers)
 
         self.path.write(output_file_name, rendering)
 

@@ -16,9 +16,6 @@ class Render:
 
         output_file_name (string):
             The name of the html file to write to. (example: "afl")
-
-        description (Description):
-            The corresponding description
         '''
 
         pass
