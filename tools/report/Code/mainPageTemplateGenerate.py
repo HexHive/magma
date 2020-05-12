@@ -1,7 +1,7 @@
 from jinja2 import Environment, FileSystemLoader, Template
 import os
 
-from Code.Render import Render
+from Render import Render
 
 
 class MainPageTemplate(Render):
@@ -46,17 +46,20 @@ class MainPageTemplate(Render):
         """
 
         template = self.path.get_template(file_name)
+        TARGET_DIR = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../../targets"))
+        FUZZER_DIR = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../../fuzzers"))
+        fuzzer_list = [f.name for f in os.scandir(FUZZER_DIR) if f.is_dir()]
+        target_list = [f.name for f in os.scandir(TARGET_DIR) if f.is_dir()]
+        target_number_of_bug_list = []
+        for target in target_list:
+            patch_path = os.path.join(TARGET_DIR, target, "patches/bugs")
+            number_of_bugs = len([name for name in os.listdir(patch_path)])
+            target_number_of_bug_list.append(number_of_bugs)
+        total_bugs = sum(target_number_of_bug_list)
+        target_list = zip(target_list, target_number_of_bug_list)
 
-        '''
-
-        total_bugs (int) :
-            total number of implemented bugs
-    
-        '''
-
-        total_bugs = 0
         # TODO Get all the above information from the json passed as argument
-        rendering = template.render(target_list=self.libraries, total_bugs=total_bugs, fuzzer_list=self.fuzzers)
+        rendering = template.render(target_list=target_list, total_bugs=total_bugs, fuzzer_list=fuzzer_list)
 
         self.path.write(output_file_name, rendering)
 

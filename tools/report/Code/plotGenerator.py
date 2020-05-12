@@ -7,15 +7,38 @@ class Plots:
     REACHED = "reached"
     TRIGGERED = "triggered"
 
-    def __init__(self, data):
-        '''
-        Parameters
-        ----------
-        data (Dictionnary):
-            Th data contained in a dictionnary
-        '''
-
+    def __init__(self, data,path):
         self.data = data
+        super(Plots, self).__init__(path)
+
+    def generate(self):
+        df = pd.DataFrame(self.extractAllBugsWithNoTimeForEachLibraryFuzzerPair()).transpose()
+        reached_unique, triggered_unique = self.uniqueBugs(df)
+        for col in triggered_unique:
+            triggered_unique[col] = triggered_unique[col].apply(lambda x: len(x))
+            reached_unique[col] = reached_unique[col].apply(lambda x: len(x))
+        # self.boxplot(reached_unique, "Repartition of unique bugs reached by all fuzzer in a tested libraries")
+        for librarie in df:
+            self.barplotReachedVsTriggeredBugsByFuzzersForALibrary(reached_unique, triggered_unique, librarie,
+                                                                   "Reached and Triggered unique bug count for each fuzzer in " + librarie)
+
+    def extractAllBugsWithNoTimeForEachLibraryFuzzerPair(self):
+        simplified_data = {}
+        for fuzzer in self.data:
+            simplified_data[fuzzer] = {}
+            for librarie in self.data[fuzzer]:
+                simplified_data[fuzzer][librarie] = ([], [])
+                for sublibraries in self.data[fuzzer][librarie]:
+                    for campaign in self.data[fuzzer][librarie][sublibraries]:
+                        for conditions in self.data[fuzzer][librarie][sublibraries][campaign]:
+                            if conditions == self.REACHED:
+                                for reached_bugs in self.data[fuzzer][librarie][sublibraries][campaign][conditions]:
+                                    simplified_data[fuzzer][librarie][0].append(reached_bugs)
+
+                            elif conditions == self.TRIGGERED:
+                                for triggered_bugs in self.data[fuzzer][librarie][sublibraries][campaign][conditions]:
+                                    simplified_data[fuzzer][librarie][1].append(triggered_bugs)
+        return simplified_data
 
     def nonUniqueBugs(self, data):
         reached = data.copy()
@@ -52,46 +75,6 @@ class Plots:
         df.plot.bar()
         plt.title(title)
         plt.savefig(library + ".svg", format="svg")
-
-    """
-    Groups all the different campaign results
-    Also ignores the sublibrary fuzzer
-    """
-    def simplifiyDataStructure(self):
-        simplified_data = {}
-        for fuzzer in self.data:
-            simplified_data[fuzzer] = {}
-            for librarie in self.data[fuzzer]:
-                simplified_data[fuzzer][librarie] = ([], [])
-                for sublibraries in self.data[fuzzer][librarie]:
-                    for campaign in self.data[fuzzer][librarie][sublibraries]:
-                        for conditions in self.data[fuzzer][librarie][sublibraries][campaign]:
-                            if conditions == self.REACHED:
-                                for reached_bugs in self.data[fuzzer][librarie][sublibraries][campaign][conditions]:
-                                    simplified_data[fuzzer][librarie][0].append(reached_bugs)
-
-                            elif conditions == self.TRIGGERED:
-                                for triggered_bugs in self.data[fuzzer][librarie][sublibraries][campaign][conditions]:
-                                    simplified_data[fuzzer][librarie][1].append(triggered_bugs)
-        return simplified_data
-
-    def generate(self):
-        df = pd.DataFrame(self.data).transpose()
-        reached_non_unique, triggered_non_unique = self.nonUniqueBugs(df)
-        reached_unique, triggered_unique = self.uniqueBugs(df)
-        for col in triggered_non_unique:
-            triggered_non_unique[col] = triggered_non_unique[col].apply(lambda x: len(x))
-            reached_non_unique[col] = reached_non_unique[col].apply(lambda x: len(x))
-            triggered_unique[col] = triggered_unique[col].apply(lambda x: len(x))
-            reached_unique[col] = reached_unique[col].apply(lambda x: len(x))
-
-
-        #self.boxplot(reached_unique, "Repartition of unique bugs reached by all fuzzer in a tested libraries")
-        for librarie in df :
-            self.barplotReachedVsTriggeredBugsByFuzzersForALibrary(reached_unique, triggered_unique, librarie,
-                                             "Reached and Triggered unique bug count for each fuzzer in " + librarie)
-
-
 
     def add_to_map_reach(self, bug, time, reached_map):
         if bug in reached_map:
@@ -148,7 +131,7 @@ class Plots:
 
         return reached_map, triggered_map
 
-    def get_list_of_all_bugs(self,fuzzer_name, library_name):
+    def get_list_of_all_bugs(self, fuzzer_name, library_name):
         reached_map_all, triggered_map_all = self.get_all_bugs(fuzzer_name, library_name)
         reached = []
         triggered = []
@@ -159,10 +142,10 @@ class Plots:
         for key, value in triggered_map_all:
             triggered.append(key)
 
-        return reached,triggered
+        return reached, triggered
 
     """
-    
+
        fuzzer_name = "moptafl"
     library_name = "poppler"
     reached_map_all, triggered_map_all = get_all_bugs(fuzzer_name, library_name)
@@ -175,3 +158,4 @@ class Plots:
     plt.savefig("test.svg", format="svg")
 
     """
+

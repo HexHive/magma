@@ -1,4 +1,4 @@
-from Code.Render import Render
+from Render import Render
 
 
 class LibraryDescription:
@@ -57,7 +57,8 @@ library_descriptions = {
                                   "Open-source",
                                   "https://github.com/sqlite/sqlite"),
 
-    "vanilla": LibraryDescription("Vanilla", "", "", "", "")
+
+
 }
 
 
