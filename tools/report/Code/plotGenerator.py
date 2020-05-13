@@ -7,8 +7,9 @@ class Plots:
     REACHED = "reached"
     TRIGGERED = "triggered"
 
-    def __init__(self, data, path):
+    def __init__(self, data,path):
         self.data = data
+        super(Plots, self).__init__(path)
 
     def generate(self):
         df = pd.DataFrame(self.extractAllBugsWithNoTimeForEachLibraryFuzzerPair()).transpose()
@@ -75,88 +76,80 @@ class Plots:
         plt.title(title)
         plt.savefig(library + ".svg", format="svg")
 
-
-def add_to_map_reach(self, bug, time, reached_map):
-    if bug in reached_map:
-        reached_map[bug].append(time)
-    else:
-        reached_map[bug] = [time]
-
-
-def merge(self, map_one, map_two):
-    # Merge map {campaign_number -> {BUG_NAME: [204, 330, 439]}}
-    for key, v in map_two.items():
-        if key in map_one:
-            for bug, time in v.items():
-                if bug in map_one[key]:
-                    map_one[key][bug].append(time)
-                else:
-                    map_one[key][bug] = [time]
+    def add_to_map_reach(self, bug, time, reached_map):
+        if bug in reached_map:
+            reached_map[bug].append(time)
         else:
-            for bug, time in v.items():
-                map_one[key] = {bug: [time]}
+            reached_map[bug] = [time]
 
-
-def get_data(self, bug_map):
-    reached_map_list = {}
-
-    for key, value in bug_map.items():
-        for bug, time in value.items():
-            if bug in reached_map_list:
-                reached_map_list[bug].append(time)
+    def merge(self, map_one, map_two):
+        # Merge map {campaign_number -> {BUG_NAME: [204, 330, 439]}}
+        for key, v in map_two.items():
+            if key in map_one:
+                for bug, time in v.items():
+                    if bug in map_one[key]:
+                        map_one[key][bug].append(time)
+                    else:
+                        map_one[key][bug] = [time]
             else:
-                reached_map_list[bug] = [time]
+                for bug, time in v.items():
+                    map_one[key] = {bug: [time]}
 
-    return reached_map_list
+    def get_data(self, bug_map):
+        reached_map_list = {}
 
+        for key, value in bug_map.items():
+            for bug, time in value.items():
+                if bug in reached_map_list:
+                    reached_map_list[bug].append(time)
+                else:
+                    reached_map_list[bug] = [time]
 
-def get_all_bugs(self, fuzzer_name, library_name):
-    reached_map = {}
-    triggered_map = {}
+        return reached_map_list
 
-    for driver in self.data[fuzzer_name][library_name].keys():
-        reached_map_list, triggered_map_list = self.get_bugs_for_driver(fuzzer_name, library_name, driver)
-        self.merge(reached_map, reached_map_list)
-        self.merge(triggered_map, triggered_map_list)
+    def get_all_bugs(self, fuzzer_name, library_name):
+        reached_map = {}
+        triggered_map = {}
 
-    return reached_map, triggered_map
+        for driver in self.data[fuzzer_name][library_name].keys():
+            reached_map_list, triggered_map_list = self.get_bugs_for_driver(fuzzer_name, library_name, driver)
+            self.merge(reached_map, reached_map_list)
+            self.merge(triggered_map, triggered_map_list)
 
+        return reached_map, triggered_map
 
-def get_bugs_for_driver(self, fuzzer_name, library_name, driver):
-    reached_map = {}
-    triggered_map = {}
+    def get_bugs_for_driver(self, fuzzer_name, library_name, driver):
+        reached_map = {}
+        triggered_map = {}
 
-    for key, value in self.data[fuzzer_name][library_name][driver].items():
-        for kv, uv in value.items():
-            if kv == self.REACHED:
-                reached_map[key] = uv
-            elif kv == self.TRIGGERED:
-                triggered_map[key] = uv
+        for key, value in self.data[fuzzer_name][library_name][driver].items():
+            for kv, uv in value.items():
+                if kv == self.REACHED:
+                    reached_map[key] = uv
+                elif kv == self.TRIGGERED:
+                    triggered_map[key] = uv
 
-    return reached_map, triggered_map
+        return reached_map, triggered_map
 
+    def get_list_of_all_bugs(self, fuzzer_name, library_name):
+        reached_map_all, triggered_map_all = self.get_all_bugs(fuzzer_name, library_name)
+        reached = []
+        triggered = []
 
-def get_list_of_all_bugs(self, fuzzer_name, library_name):
-    reached_map_all, triggered_map_all = self.get_all_bugs(fuzzer_name, library_name)
-    reached = []
-    triggered = []
+        for key, value in reached_map_all:
+            reached.append(key)
 
-    for key, value in reached_map_all:
-        reached.append(key)
+        for key, value in triggered_map_all:
+            triggered.append(key)
 
-    for key, value in triggered_map_all:
-        triggered.append(key)
+        return reached, triggered
 
-    return reached, triggered
-
-
-fuzzer_name = "moptafl"
-library_name = "poppler"
-reached_map_all, triggered_map_all = get_all_bugs(fuzzer_name, library_name)
-
-reached_map, triggered_map = get_bugs_for_driver(fuzzer_name, library_name,
-                                                 "pdf_fuzzer")
-
-reached_map_list = get_data(reached_map)
-
-# plt.savefig("test.svg", format="svg")
+    """
+       fuzzer_name = "moptafl"
+    library_name = "poppler"
+    reached_map_all, triggered_map_all = get_all_bugs(fuzzer_name, library_name)
+    reached_map, triggered_map = get_bugs_for_driver(fuzzer_name, library_name,
+                                                     "pdf_fuzzer")
+    reached_map_list = get_data(reached_map)
+    plt.savefig("test.svg", format="svg")
+    """

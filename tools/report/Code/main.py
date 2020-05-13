@@ -22,7 +22,7 @@ def main(argv):
     plot_dir = os.path.join(output_dir, PLOTS)
     tables_dir = os.path.join(output_dir, TABLES)
 
-    json_path = get_json() # TODO Use in Plots
+    json_path = get_json()  # TODO Use in Plots
 
     library_template = LibraryTemplate(Path(template_dir, libraries_dir, tables_dir, plot_dir))
     main_template = MainPageTemplate(Path(template_dir, output_dir, tables_dir, plot_dir), ["afl"], ["php"])
