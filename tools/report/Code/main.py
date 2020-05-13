@@ -1,24 +1,41 @@
 from libraryTemplateGenerate import LibraryTemplate
 from Path import Path
 from mainPageTemplateGenerate import MainPageTemplate
+
 import os
+import sys
 
-TEMPLATES = "templates"
-OUTPUTS = "outputs"
-PLOTS = "plots"
-TABLES = "tables"
-LIBRARIES = "libraries"
 
-current_path = os.path.dirname(__file__)
-# Set paths for templates, output and images
-output_dir = os.path.join(current_path, OUTPUTS)
-libraries_dir = os.path.join(output_dir, LIBRARIES)
-template_dir = os.path.join(current_path, TEMPLATES)
-plot_dir = os.path.join(output_dir, PLOTS)
-tables_dir = os.path.join(output_dir, TABLES)
+def main(argv):
 
-library_template = LibraryTemplate(Path(template_dir, libraries_dir, tables_dir, plot_dir))
-main_template = MainPageTemplate(Path(template_dir, output_dir, tables_dir, plot_dir), ["afl"], ["php"])
+    TEMPLATES = "templates"
+    OUTPUTS = "outputs"
+    PLOTS = "plots"
+    TABLES = "tables"
+    LIBRARIES = "libraries"
 
-library_template.render("library_template.html", "libpng.html")
-main_template.render("report_template.html", "report.html")
+    current_path = os.path.dirname(__file__)
+    # Set paths for templates, output and images
+    output_dir = os.path.join(current_path, OUTPUTS)
+    libraries_dir = os.path.join(output_dir, LIBRARIES)
+    template_dir = os.path.join(current_path, TEMPLATES)
+    plot_dir = os.path.join(output_dir, PLOTS)
+    tables_dir = os.path.join(output_dir, TABLES)
+
+    json_path = get_json() # TODO Use in Plots
+
+    library_template = LibraryTemplate(Path(template_dir, libraries_dir, tables_dir, plot_dir))
+    main_template = MainPageTemplate(Path(template_dir, output_dir, tables_dir, plot_dir), ["afl"], ["php"])
+
+    library_template.render("library_template.html", "libpng.html")
+    main_template.render("report_template.html", "report.html")
+
+
+def get_json():
+    if(len(sys.argv) == 1):
+        raise Exception("The program need a json as an argument")
+
+    return sys.argv[1]
+
+
+main()
