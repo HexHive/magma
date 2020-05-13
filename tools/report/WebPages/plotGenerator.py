@@ -188,6 +188,6 @@ class Plots:
 # reached_map, triggered_map = plot.get_bugs_for_driver(fuzzer_name, library_name,
 #                                                       "pdf_fuzzer")
 
-r, t = plot.get_list_of_all_bugs(fuzzer_name, library_name)
+# r, t = plot.get_list_of_all_bugs(fuzzer_name, library_name)
 # plot.bugs_plot_line(reached_map)
 # plot.box_plot(r)
