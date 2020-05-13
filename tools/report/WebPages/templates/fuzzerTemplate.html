@@ -22,33 +22,12 @@
           <li><a href={{ fuzzer.link }}>site</a></li>
       </ul>
     </div>
-    <div>
-      <img src={{ graph }} alt=imagePath.description>
-    </div>
-    <div>
-    <table style="width:100%">
-      <tr>
-        <th>Bug</th>
-        <th>Type</th> 
-        <th>Time</th>
-      </tr>
-      {% for bug in bugs %}
-      <tr>
-        <td>{{ bug.name }}</td>
-        <td>{{ bug.type }}</td>
-        {% for time in bug.times %}
-        <td>{{ time }}</td>
-        {% endfor %}
-      </tr>
-      {% endfor %}
-    </table>
-    </div>
     <div id="some_id" class="some_class">
       {% for image in images %}
       <h3>
         {{ image.library }}
       </h3>
-      <img src={{ image.src }} alt={{ image.boxPlot }}>
+      <img src={{ image.library }}_{{ image.src }}_plot.svg alt="">
       {% endfor %}
     </div>
   </body>

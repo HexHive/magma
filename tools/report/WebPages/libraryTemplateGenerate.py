@@ -56,14 +56,10 @@ library_descriptions = {
     "sqlite3": LibraryDescription("Sqlite3",
                                   "Open-source",
                                   "https://github.com/sqlite/sqlite"),
-
-
-
 }
 
 
 class LibraryTemplate(Render):
-    LIBRARY_TEMPLATE = "library_template.html"
     '''
         A class to represent a library
     '''

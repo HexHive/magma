@@ -1,4 +1,3 @@
-from jinja2 import Environment, FileSystemLoader, Template
 import os
 
 from Render import Render
@@ -9,15 +8,16 @@ class MainPageTemplate(Render):
        A class to represent a the main report page
     '''
 
-    def __init__(self, path,fuzzers,libraries):
+    def __init__(self, path, fuzzers, libraries):
         '''
         Parameters
         ----------
         path(Path):
             of class Path, used to have all the useful paths
 
-        _file_:
-            The file to get the directory from
+        fuzzers:
+
+        libraries:
         '''
         self.fuzzers = fuzzers
         self.libraries = libraries
@@ -37,12 +37,8 @@ class MainPageTemplate(Render):
         ----------
         file_name (string):
             The file to get the directory from
-
         output_file_name (string):
             The name of the html file to write to. (example: "afl")
-
-        description (FuzzerDescription):
-            The corresponding description
         """
 
         template = self.path.get_template(file_name)
@@ -51,6 +47,7 @@ class MainPageTemplate(Render):
         fuzzer_list = [f.name for f in os.scandir(FUZZER_DIR) if f.is_dir()]
         target_list = [f.name for f in os.scandir(TARGET_DIR) if f.is_dir()]
         target_number_of_bug_list = []
+
         for target in target_list:
             patch_path = os.path.join(TARGET_DIR, target, "patches/bugs")
             number_of_bugs = len([name for name in os.listdir(patch_path)])
@@ -82,5 +79,4 @@ class MainPageTemplate(Render):
         total_bugs = sum(target_number_of_bug_list)
         target_list = zip(target_list,target_number_of_bug_list)
         template.stream(target_list=target_list,total_bugs=total_bugs,fuzzer_list=fuzzer_list).dump('report.html')
-
     '''
