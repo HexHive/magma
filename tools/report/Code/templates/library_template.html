@@ -1,12 +1,9 @@
 <!DOCTYPE html>
 <html>
 
-{% macro sentence_case(text) %}
-    {{ text[0]|upper}}{{text[1:] }}
-{% endmacro %}
 <head>
     <title>
-        {{library_name}}
+        {{library.name}}
     </title>
 
     <link rel="stylesheet" href="style.css">
@@ -16,8 +13,10 @@
 <body>
 
         <h1>
-            {{sentence_case(library_name)}}
+            {{library.name}}
         </h1>
+
+        <a href={{ library.link }}>repository</a>
 
         <div class=targets>
             <span>
@@ -26,6 +25,11 @@
 
             <h2>Benchmark Result</h2>
              <-- insert here table -->
+
+
+
+            <h2>Number of bugs</h2>
+                <img src=>
         </div>
 
   

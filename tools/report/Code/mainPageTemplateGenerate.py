@@ -19,11 +19,9 @@ class MainPageTemplate(Render):
 
         libraries:
         '''
-
         self.fuzzers = fuzzers
         self.libraries = libraries
         super(MainPageTemplate, self).__init__(path)
-
         # Set paths for templates, output and images
         self.template_dir = path.template_dir
         self.output_dir = path.output_dir
