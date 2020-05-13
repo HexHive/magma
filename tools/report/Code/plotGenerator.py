@@ -1,3 +1,5 @@
+from math import sqrt
+
 import matplotlib.pyplot as plt
 import pandas as pd
 from pandas import DataFrame
@@ -7,56 +9,103 @@ class Plots:
     REACHED = "reached"
     TRIGGERED = "triggered"
 
-    def __init__(self, data,path):
+    def __init__(self, data, path):
         self.data = data
         super(Plots, self).__init__(path)
 
     def generate(self):
-        df = pd.DataFrame(self.extractAllBugsWithNoTimeForEachLibraryFuzzerPair()).transpose()
-        reached_unique, triggered_unique = self.uniqueBugs(df)
-        for col in triggered_unique:
-            triggered_unique[col] = triggered_unique[col].apply(lambda x: len(x))
-            reached_unique[col] = reached_unique[col].apply(lambda x: len(x))
-        # self.boxplot(reached_unique, "Repartition of unique bugs reached by all fuzzer in a tested libraries")
-        for librarie in df:
-            self.barplotReachedVsTriggeredBugsByFuzzersForALibrary(reached_unique, triggered_unique, librarie,
-                                                                   "Reached and Triggered unique bug count for each fuzzer in " + librarie)
+        return
 
-    def extractAllBugsWithNoTimeForEachLibraryFuzzerPair(self):
+    def violinPlot(self, fuzzer):
+        meanR, meanT = self.meanAndDeviationOfNumberOfBugsAcrossXCampaigns(10)
+
+        print(meanR)
+        df = DataFrame(meanR[fuzzer])
+        fig, axes = plt.subplots()
+
+        axes.violinplot(dataset=df)
+
+        axes.set_title('')
+        axes.yaxis.grid(True)
+        axes.set_xlabel('')
+        axes.set_ylabel('')
+
+        plt.show()
+
+    def combineSublibrarysFuzzerResults(self):
         simplified_data = {}
         for fuzzer in self.data:
             simplified_data[fuzzer] = {}
-            for librarie in self.data[fuzzer]:
-                simplified_data[fuzzer][librarie] = ([], [])
-                for sublibraries in self.data[fuzzer][librarie]:
-                    for campaign in self.data[fuzzer][librarie][sublibraries]:
-                        for conditions in self.data[fuzzer][librarie][sublibraries][campaign]:
+            for library in self.data[fuzzer]:
+                simplified_data[fuzzer][library] = {}
+                for sublibraries in self.data[fuzzer][library]:
+                    for campaign in self.data[fuzzer][library][sublibraries]:
+                        if campaign not in simplified_data[fuzzer][library]:
+                            simplified_data[fuzzer][library][campaign] = ([], [])
+                        for conditions in self.data[fuzzer][library][sublibraries][campaign]:
                             if conditions == self.REACHED:
-                                for reached_bugs in self.data[fuzzer][librarie][sublibraries][campaign][conditions]:
-                                    simplified_data[fuzzer][librarie][0].append(reached_bugs)
+                                for reached_bugs, times in self.data[fuzzer][library][sublibraries][campaign][
+                                    conditions].items():
+                                    if reached_bugs not in [i[0] for i in
+                                                            simplified_data[fuzzer][library][campaign][0]]:
+                                        simplified_data[fuzzer][library][campaign][0].append(
+                                            (reached_bugs, times))
 
                             elif conditions == self.TRIGGERED:
-                                for triggered_bugs in self.data[fuzzer][librarie][sublibraries][campaign][conditions]:
-                                    simplified_data[fuzzer][librarie][1].append(triggered_bugs)
+                                for triggered_bugs, times in self.data[fuzzer][library][sublibraries][campaign][
+                                    conditions].items():
+                                    if triggered_bugs not in [i[0] for i in
+                                                              simplified_data[fuzzer][library][campaign][1]]:
+                                        simplified_data[fuzzer][library][campaign][1].append(
+                                            (triggered_bugs, times))
+
         return simplified_data
 
-    def nonUniqueBugs(self, data):
-        reached = data.copy()
-        triggered = data.copy()
-        for col in data:
-            reached[col] = reached[col].apply(lambda x: x[0])
-            triggered[col] = triggered[col].apply(lambda x: x[1])
-        return reached, triggered
+    def totalNumberofUniqueBugsAcrossXCampaigns(self):
+        d = self.combineSublibrarysFuzzerResults()
 
-    # ...
+        totalBugsReached = {}
+        totalBugsTriggered = {}
+        for fuzzer, libraries in d.items():
+            totalBugsReached[fuzzer] = {}
+            totalBugsTriggered[fuzzer] = {}
+            for library, campaigns in libraries.items():
+                unique_reached = []
+                unique_triggered = []
+                for campaignNum, result in campaigns.items():
+                    unique_triggered += [i[0] for i in result[1]]
+                    unique_reached += [i[0] for i in result[0]]
 
-    def uniqueBugs(self, data):
-        reached = data.copy()
-        triggered = data.copy()
-        for col in data:
-            reached[col] = reached[col].apply(lambda x: set(x[0]))
-            triggered[col] = triggered[col].apply(lambda x: set(x[1]))
-        return reached, triggered
+                totalBugsReached[fuzzer][library] = len(set(unique_reached))
+                totalBugsTriggered[fuzzer][library] = len(set(unique_triggered))
+
+        return totalBugsReached, totalBugsTriggered
+
+    def meanAndDeviationOfNumberOfBugsAcrossXCampaigns(self, numberOfCampaings):
+        d = self.combineSublibrariesFuzzerResults()
+        mean_deviation_reached = d.copy()
+        mean_deviation_triggered = d.copy()
+        for fuzzer, libraries in d.items():
+            for library, campaigns in libraries.items():
+                total_reached = 0
+                total_triggered = 0
+                var_reached = 0
+                var_triggered = 0
+                for campaignNum, result in campaigns.items():
+                    total_reached = total_reached + len(result[0])
+                    total_triggered = total_triggered + len(result[1])
+
+                meanR = total_reached / numberOfCampaings
+                meanT = total_triggered / numberOfCampaings
+
+                for campaignNum, result in campaigns.items():
+                    var_reached = var_reached + pow((len(result[0]) - meanR), 2)
+                    var_triggered = var_triggered + pow((len(result[1]) - meanT), 2)
+
+                mean_deviation_reached[fuzzer][library] = (meanR, sqrt(var_reached / numberOfCampaings))
+                mean_deviation_triggered[fuzzer][library] = (meanT, sqrt(var_triggered / numberOfCampaings))
+
+        return mean_deviation_reached, mean_deviation_triggered
 
     def boxplot(self, data, title):
         fig = plt.figure()
@@ -132,15 +181,17 @@ class Plots:
         return reached_map, triggered_map
 
     def get_list_of_all_bugs(self, fuzzer_name, library_name):
+        if (fuzzer_name == "moptafl" and library_name == "libpng"):
+            print(self.get_all_bugs(fuzzer_name, library_name))
         reached_map_all, triggered_map_all = self.get_all_bugs(fuzzer_name, library_name)
         reached = []
         triggered = []
 
-        for key, value in reached_map_all:
-            reached.append(key)
+        for key, value in reached_map_all.items():
+            reached.append(value)
 
-        for key, value in triggered_map_all:
-            triggered.append(key)
+        for key, value in triggered_map_all.items():
+            triggered.append(value)
 
         return reached, triggered
 
@@ -158,4 +209,3 @@ class Plots:
     plt.savefig("test.svg", format="svg")
 
     """
-
