@@ -33,7 +33,7 @@ def main(argv):
 
 def get_json():
     if(len(sys.argv) == 1):
-        raise Exception("The program need a json as an argument")
+        raise Exception("The program need a json as the first argument")
 
     return sys.argv[1]
 
