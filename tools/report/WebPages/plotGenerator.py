@@ -2,14 +2,16 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from pandas import DataFrame
 
+import json  # TODO Delete
+from Path import Path
+
 
 class Plots:
     REACHED = "reached"
     TRIGGERED = "triggered"
 
-    def __init__(self, data,path):
+    def __init__(self, data, path):
         self.data = data
-        super(Plots, self).__init__(path)
 
     def generate(self):
         df = pd.DataFrame(self.extractAllBugsWithNoTimeForEachLibraryFuzzerPair()).transpose()
@@ -145,11 +147,10 @@ class Plots:
         return reached, triggered
 
     """
-       fuzzer_name = "moptafl"
-    library_name = "poppler"
-    reached_map_all, triggered_map_all = get_all_bugs(fuzzer_name, library_name)
-    reached_map, triggered_map = get_bugs_for_driver(fuzzer_name, library_name,
-                                                     "pdf_fuzzer")
+    
+
     reached_map_list = get_data(reached_map)
     plt.savefig("test.svg", format="svg")
     """
+
+
