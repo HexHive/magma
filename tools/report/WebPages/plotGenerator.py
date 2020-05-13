@@ -134,23 +134,60 @@ class Plots:
         return reached_map, triggered_map
 
     def get_list_of_all_bugs(self, fuzzer_name, library_name):
-        reached_map_all, triggered_map_all = self.get_all_bugs(fuzzer_name, library_name)
-        reached = []
-        triggered = []
+        reached_map = {}
+        triggered_map = {}
 
-        for key, value in reached_map_all:
-            reached.append(key)
+        for value in self.data[fuzzer_name][library_name].values():
+            for kv, uv in value.items():
+                for k, u in uv.items():
+                    for bug, time in u.items():
+                        if k == self.REACHED:
+                            if bug in reached_map:
+                                reached_map[bug].append(time)
+                            else:
+                                reached_map[bug] = [time]
+                        elif k == self.TRIGGERED:
+                            if bug in triggered_map:
+                                triggered_map[bug].append(time)
+                            else:
+                                triggered_map[bug] = [time]
+        return reached_map, triggered_map
 
-        for key, value in triggered_map_all:
-            triggered.append(key)
+    def box_plot(self, dictionary):
+        df = pd.DataFrame(dict([(k, pd.Series(v)) for k, v in dictionary.items()]))
+        # df.to_html("name.html", index=True)
+        df.boxplot()
+        plt.show()
+        # plt.savefig
 
-        return reached, triggered
+    def bugs_plot_line(self, dictionnary):
+        df = pd.DataFrame.from_dict(dictionnary)
 
-    """
-    
+        df = df.T
+        df.plot(subplots=True)
+        plt.show()
 
-    reached_map_list = get_data(reached_map)
-    plt.savefig("test.svg", format="svg")
-    """
+    def save_plot_tables(self, dictionnary, name):
+        # Note that we use dtype to avoid having to deal with a pandas gotcha with floats and ints
+        df = pd.DataFrame.from_dict(dictionnary, dtype='Int64')
+        df = df.reindex(sorted(df.columns), axis=1)
+        df.to_html(name)
 
 
+# data = {}
+
+# with open("../../../../../20200501_24h.json") as f:
+#     data = json.load(f)
+
+
+# plot = Plots(data, Path("to_deleleeeeeeetttee", "fucke222", "../WebPages/outputs/plots", "../WebPages/outputs/tables"))
+
+# fuzzer_name = "moptafl"
+# library_name = "poppler"
+# reached_map_all, triggered_map_all = plot.get_all_bugs(fuzzer_name, library_name)
+# reached_map, triggered_map = plot.get_bugs_for_driver(fuzzer_name, library_name,
+#                                                       "pdf_fuzzer")
+
+r, t = plot.get_list_of_all_bugs(fuzzer_name, library_name)
+# plot.bugs_plot_line(reached_map)
+# plot.box_plot(r)

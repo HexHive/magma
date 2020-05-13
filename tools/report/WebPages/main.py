@@ -4,6 +4,7 @@ from mainPageTemplateGenerate import MainPageTemplate
 
 import os
 import sys
+import json
 
 
 def main(argv):
@@ -22,7 +23,7 @@ def main(argv):
     plot_dir = os.path.join(output_dir, PLOTS)
     tables_dir = os.path.join(output_dir, TABLES)
 
-    json_path = get_json()  # TODO Use in Plots
+    json_data = get_data()  # TODO Use in Plots
 
     library_template = LibraryTemplate(Path(template_dir, libraries_dir, tables_dir, plot_dir))
     main_template = MainPageTemplate(Path(template_dir, output_dir, tables_dir, plot_dir), ["afl"], ["php"])
@@ -31,11 +32,12 @@ def main(argv):
     main_template.render("report_template.html", "report.html")
 
 
-def get_json():
+def get_data():
     if(len(sys.argv) == 1):
         raise Exception("The program need a json as the first argument")
 
-    return sys.argv[1]
+    with open(sys.argv[2]) as f:
+        return json.load(f)
 
 
 main()
