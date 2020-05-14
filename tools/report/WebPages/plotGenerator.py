@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from pandas import DataFrame
 
+import numpy as np
 import json  # TODO Delete
 from Path import Path
 
@@ -14,6 +15,7 @@ class Plots:
 
     def __init__(self, data, path):
         self.data = data
+        self.path = path
 
     def generate(self):
         return
@@ -224,50 +226,55 @@ class Plots:
                                 triggered_map[campaign][time] = 1
         return reached_map, triggered_map
 
-    def line_plot_bug_number(self, dictionary):
+    def to_html(self, dataframe, output_name):
+        df = pd.DataFrame(dataframe)
+        df.to_html(self.path.tables_dir + "/" + output_name + ".html", index=True)
+
+    def to_html_without_decimal(self, dataframe, output_name):
+        df = pd.DataFrame(dataframe)
+        df = df.astype('Int64').astype(str).replace("<NA>", "")
+        df.to_html(self.path.tables_dir + "/" + output_name + ".html", index=True)
+
+    def line_plot_bug_number(self, dictionary, output_name):
         df = pd.DataFrame(dictionary)
-        # df = df.reindex(sorted(df.columns), axis=1)
-        # df.to_html("name.html", index=True)
+
         df = df.T
         df = df.reindex(sorted(df.columns), axis=1)
         df = df.T
-        # for i in range(0, len(df.index.values)-1):
-        #    print(i)
-        #    df.iloc[i].interpolate(method='linear').plot()
-        df.interpolate(method='linear').plot(subplots=True, marker='o')
-        plt.show()
-        # plt.savefig
 
-    def box_plot_bug_number(self, dictionary):
+        df.interpolate(method='linear').plot(subplots=True, marker='o')
+        self.to_html_without_decimal(df, output_name)
+        # plt.savefig("test.svg", format="svg")
+
+    def box_plot_bug_number(self, dictionary, output_name):
         df = pd.DataFrame(dictionary)
-        # df = df.reindex(sorted(df.columns), axis=1)
-        #df = df.reindex(sorted(df.columns), axis=0)
-        # df.to_html("name.html", index=True)
         df = df.T
         df = df.reindex(sorted(df.columns), axis=1)
         df.plot(marker='o')
-        plt.show()
-        # plt.savefig
+        self.to_html_without_decimal(df, output_name)
+        # plt.savefig("test.svg", format="svg")
 
-    def box_plot(self, dictionary):
+    def box_plot(self, dictionary, output_name):
         df = pd.DataFrame(dict([(k, pd.Series(v)) for k, v in dictionary.items()]))
-        # df.to_html("name.html", index=True)
         df.boxplot()
-        plt.show()
-        # plt.savefig
+        self.to_html_without_decimal(df, output_name)
+        # plt.savefig("test.svg", format="svg")
 
-    def bugs_plot_line(self, dictionnary):
+    def bugs_plot_line(self, dictionnary, output_name):
         df = pd.DataFrame.from_dict(dictionnary)
 
         df = df.T
-        df.plot(subplots=True, style='.-')
-        plt.show()
+        df.plot(subplots=True, marker='o')
+        self.to_html_without_decimal(df, output_name)
+        # df.to_html("name.html", index=True, na_rep="")
+        # plt.savefig("test.svg", format="svg")
 
-    def save_plot_tables(self, dictionnary, name):
+    def save_plot_tables(self, dictionnary, output_name):
         # Note that we use dtype to avoid having to deal with a pandas gotcha with floats and ints
-        df = pd.DataFrame.from_dict(dictionnary, dtype='Int64')
+        df = pd.DataFrame.from_dict(dictionnary)
         df = df.reindex(sorted(df.columns), axis=1)
-        df.to_html(name)
+        # df.to_html("name.html", index=True, na_rep="")
+        # plt.savefig("test.svg", format="svg")
 
 
 data = {}
@@ -276,10 +283,11 @@ with open("../../../../../20200501_24h.json") as f:
     data = json.load(f)
 
 
-plot = Plots(data, Path("random_delete", "random_delete_2", "../WebPages/outputs/plots", "../WebPages/outputs/tables"))
+plot = Plots(data, Path("random_delete", "random_delete_2",
+                        "../WebPages/outputs/tables", "../WebPages/outputs/plots"))
 
 fuzzer_name = "moptafl"
-# library_name = "poppler"
+library_name = "poppler"
 # library_name = "libpng"
 # library_name = "libtiff"
 # library_name = "libxml2"
@@ -289,11 +297,11 @@ fuzzer_name = "moptafl"
 # reached_map, triggered_map = plot.get_bugs_for_driver(fuzzer_name, library_name,
 #                                                      "pdf_fuzzer")
 
-# r, t = plot.get_list_of_all_bugs_time(fuzzer_name, library_name)
+r, t = plot.get_list_of_all_bugs_time(fuzzer_name, library_name)
 
 # r, t = plot.get_list_of_all_bugs(fuzzer_name, library_name)
 # plot.bugs_plot_line(reached_map)
 # plot.box_plot(r)
 
-# plot.line_plot_bug_number(r)
+plot.line_plot_bug_number(r, fuzzer_name + "_" + library_name)
 # plot.line_plot_bug_number(t)
