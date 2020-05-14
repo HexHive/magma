@@ -202,6 +202,53 @@ class Plots:
                                 triggered_map[bug] = [time]
         return reached_map, triggered_map
 
+    def get_list_of_all_bugs_time(self, fuzzer_name, library_name):
+        reached_map = {}
+        triggered_map = {}
+
+        for value in self.data[fuzzer_name][library_name].values():
+            for campaign, uv in value.items():
+                reached_map[campaign] = {}
+                triggered_map[campaign] = {}
+                for k, u in uv.items():
+                    for bug, time in u.items():
+                        if k == self.REACHED:
+                            if time in reached_map[campaign]:
+                                reached_map[campaign][time] += 1
+                            else:
+                                reached_map[campaign][time] = 1
+                        elif k == self.TRIGGERED:
+                            if time in triggered_map[campaign]:
+                                triggered_map[campaign][time] += 1
+                            else:
+                                triggered_map[campaign][time] = 1
+        return reached_map, triggered_map
+
+    def line_plot_bug_number(self, dictionary):
+        df = pd.DataFrame(dictionary)
+        # df = df.reindex(sorted(df.columns), axis=1)
+        # df.to_html("name.html", index=True)
+        df = df.T
+        df = df.reindex(sorted(df.columns), axis=1)
+        df = df.T
+        # for i in range(0, len(df.index.values)-1):
+        #    print(i)
+        #    df.iloc[i].interpolate(method='linear').plot()
+        df.interpolate(method='linear').plot(subplots=True, marker='o')
+        plt.show()
+        # plt.savefig
+
+    def box_plot_bug_number(self, dictionary):
+        df = pd.DataFrame(dictionary)
+        # df = df.reindex(sorted(df.columns), axis=1)
+        #df = df.reindex(sorted(df.columns), axis=0)
+        # df.to_html("name.html", index=True)
+        df = df.T
+        df = df.reindex(sorted(df.columns), axis=1)
+        df.plot(marker='o')
+        plt.show()
+        # plt.savefig
+
     def box_plot(self, dictionary):
         df = pd.DataFrame(dict([(k, pd.Series(v)) for k, v in dictionary.items()]))
         # df.to_html("name.html", index=True)
@@ -213,7 +260,7 @@ class Plots:
         df = pd.DataFrame.from_dict(dictionnary)
 
         df = df.T
-        df.plot(subplots=True)
+        df.plot(subplots=True, style='.-')
         plt.show()
 
     def save_plot_tables(self, dictionnary, name):
@@ -223,23 +270,30 @@ class Plots:
         df.to_html(name)
 
 
-# data = {}
+data = {}
 
-# with open("../../../../../20200501_24h.json") as f:
-#     data = json.load(f)
+with open("../../../../../20200501_24h.json") as f:
+    data = json.load(f)
 
 
-# plot = Plots(data, Path("to_deleleeeeeeetttee", "fucke222", "../WebPages/outputs/plots", "../WebPages/outputs/tables"))
+plot = Plots(data, Path("random_delete", "random_delete_2", "../WebPages/outputs/plots", "../WebPages/outputs/tables"))
 
-    """
-=======
-# fuzzer_name = "moptafl"
+fuzzer_name = "moptafl"
 # library_name = "poppler"
+# library_name = "libpng"
+# library_name = "libtiff"
+# library_name = "libxml2"
+# library_name = "sqlite3"
+# library_name = "php"
 # reached_map_all, triggered_map_all = plot.get_all_bugs(fuzzer_name, library_name)
 # reached_map, triggered_map = plot.get_bugs_for_driver(fuzzer_name, library_name,
-#                                                       "pdf_fuzzer")
+#                                                      "pdf_fuzzer")
+
+# r, t = plot.get_list_of_all_bugs_time(fuzzer_name, library_name)
 
 # r, t = plot.get_list_of_all_bugs(fuzzer_name, library_name)
 # plot.bugs_plot_line(reached_map)
 # plot.box_plot(r)
 
+# plot.line_plot_bug_number(r)
+# plot.line_plot_bug_number(t)
