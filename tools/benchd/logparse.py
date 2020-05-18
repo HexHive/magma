@@ -5,6 +5,8 @@ import argparse
 import pandas as pd
 from config import *
 from formatters import format_latex_tabular
+from collections import defaultdict
+import json
 
 def walklevel(some_dir, level=1):
     some_dir = some_dir.rstrip(os.path.sep)
@@ -16,57 +18,55 @@ def walklevel(some_dir, level=1):
         if num_sep + level <= num_sep_this:
             del dirs[:]
 
-def parse_campaign_log(campaign):
-    reached = dict.fromkeys(MAGMA_TARGETS[campaign["target"]]["bugs"])
-    triggered = dict.fromkeys(MAGMA_TARGETS[campaign["target"]]["bugs"])
+def parse_campaign_log(log_path):
+    reached = {}
+    triggered = {}
 
-    df = pd.read_csv(campaign["m_path"], sep='\t', header=0, index_col="TIME")
-    for bug in MAGMA_TARGETS[campaign["target"]]["bugs"]:
-        bid = str(bug).zfill(3)
-        R = df[df[f"{bid}_R"] > 0]
+    df = pd.read_csv(log_path, sep=',', header=0, index_col="TIME")
+    bugs = set(x[:-2] for x in df.columns)
+    for bug in bugs:
+        R = df[df[f"{bug}_R"] > 0]
         if not R.empty:
-            reached[bug] = R.index[0]
-        T = df[df[f"{bid}_T"] > 0]
+            reached[bug] = int(R.index[0])
+        T = df[df[f"{bug}_T"] > 0]
         if not T.empty:
-            triggered[bug] = T.index[0]
+            triggered[bug] = int(T.index[0])
 
     return reached, triggered
 
 def parse_fuzzer_campaigns(fuzzer_dir, parse_logs=True):
-    for root,campaign_dirs,_ in os.walk(fuzzer_dir):
-        break
-    campaigns = [(os.path.join(root, dirname),dirname.split('_')) for dirname in campaign_dirs]
-    campaigns = [
-        {
-            "fuzzer": c_params[0],
-            "target": c_params[1],
-            "program": c_params[2],
-            "run": c_params[3],
-            "uid": c_params[4],
-            "c_path": c_path,
-            "m_path": os.path.join(c_path, "monitor.txt")
-        } for c_path, c_params in campaigns
-    ]
+    def path_split_last(path, n):
+        sp = []
+        for i in range(n):
+            path, tmp = os.path.split(path)
+            sp = [tmp] + sp
+        return sp
+    def default_to_regular(d):
+        if isinstance(d, defaultdict):
+            d = {k: default_to_regular(v) for k, v in d.items()}
+        return d
 
-    targets = set(c["target"] for c in campaigns)
-    fuzzer = dict.fromkeys(targets)
-    for t in fuzzer:
-        fuzzer[t] = dict.fromkeys(set(c["program"] for c in campaigns if c["target"] == t))
-        for p in fuzzer[t]:
-            fuzzer[t][p] = dict.fromkeys(set(c["run"] for c in campaigns if c["target"] == t and c["program"] == p))
-            for r in fuzzer[t][p]:
-                c = next(c for c in campaigns
-                        if c["target"] == t and c["program"] == p and c["run"] == r)
-                fuzzer[t][p][r] = c
-                if parse_logs:
-                    reached, triggered = parse_campaign_log(c)
-                    fuzzer[t][p][r].update(
-                        {
-                            "reached": reached,
-                            "triggered": triggered
-                        }
-                    )
-    return fuzzer
+    ddr = lambda: defaultdict(ddr)
+    logs = []
+    for root,dirs,files in os.walk(fuzzer_dir):
+        if not dirs:
+            logs.extend(os.path.join(root, file) for file in files)
+    fuzzerdict = ddr()
+    for log in logs:
+        fuzzer, target, program, run, _ = path_split_last(log, 5)
+        if parse_logs:
+            reached, triggered = parse_campaign_log(log)
+            fuzzerdict[target][program][run] = {
+                "fuzzer": fuzzer,
+                "reached": reached,
+                "triggered": triggered
+            }
+        else:
+            fuzzerdict[target][program][run] = {
+                "fuzzer": fuzzer,
+                "m_path": log
+            }
+    return default_to_regular(fuzzerdict)
 
 def parse_all_fuzzers(work_dir, parse_logs=True):
     fuzzers = {}
@@ -82,17 +82,27 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("work_dir",
         help="The path to the directory where all fuzzers' campaigns are stored.")
-    parser.add_argument("--out_format",
-        choices=["latex"],
+    parser.add_argument("--out-format",
+        choices=["latex", "json"],
         default="latex",
         help="The format with which to print the parsed outputs.")
+    parser.add_argument("--out-file",
+        default="-",
+        help="The file to which the output will be written, or - for stdout.")
     args = parser.parse_args()
 
     fuzzers = parse_all_fuzzers(args.work_dir, parse_logs=True)
     if args.out_format == "latex":
         order = ["afl", "aflfast", "moptafl", "fairfuzz", "honggfuzz", "angora"]
-        print(format_latex_tabular(fuzzers, order))
-    pass
+        data = format_latex_tabular(fuzzers, order).encode()
+    elif args.out_format == "json":
+        data = json.dumps(fuzzers).encode()
+
+    if args.out_file == "-":
+        sys.stdout.buffer.write(data)
+    else:
+        with open(args.out_file, "wb") as f:
+            f.write(data)
 
 if __name__ == '__main__':
     main()
