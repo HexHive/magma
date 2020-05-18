@@ -29,22 +29,24 @@ git diff>./PATH
 
 Patches that implement a bug that is not triggerable can be moved to `targets/$LIBRARY/patches/graveyard`
 
-Also, please provide the following informations about the bug:
+Also, please provide the following information about the bug:
 
 * CVE ID
 * The vulnerability type (e.g. Heap-buffer overflow, 0-pointer dereference)
-* The component
-* The bug identifier (e.g. Bug RAM042)
-* The link/s to the bug report/s
-* The link/s to the fix/es
+* The library component where the bug exists
+* The bug identifier (e.g. Bug ABC123)
+* The link(s) to the bug report(s)
+* The link(s) to the fix(es)
 * Any useful comments (e.g. bug only works for 32-bit machine)
 
-Note: please provide those informations even if a bug couldn't be implemented and state also in the comments why it couldn't be implemented (e.g. code disappeared).
+To prevent duplication of efforts, please also mention bugs which could not be
+implemented, and state why that was difficult or not possible (e.g. major code
+changes).
 
 ## Warnings
 
 Be careful about the following things before making a pull request:
 
 * The validity of your patch
-* Try as well to apply the patch and compile the library you are working on
-* Do not add any side effects
+* Try to apply the patch and compile the library you are working on
+* Do not introduce any side effects
