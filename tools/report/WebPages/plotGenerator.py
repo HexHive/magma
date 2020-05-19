@@ -1,9 +1,10 @@
-from math import sqrt
-
 import matplotlib.pyplot as plt
 import pandas as pd
 from pandas import DataFrame
-
+from math import sqrt
+import seaborn as sns
+import statistics
+import math
 import numpy as np
 import json  # TODO Delete
 from Path import Path
@@ -18,23 +19,10 @@ class Plots:
         self.path = path
 
     def generate(self):
-        return
 
-    def violinPlot(self, fuzzer):
-        meanR, meanT = self.meanAndDeviationOfNumberOfBugsAcrossXCampaigns(10)
-
-        print(meanR)
-        df = DataFrame(meanR[fuzzer])
-        fig, axes = plt.subplots()
-
-        axes.violinplot(dataset=df)
-
-        axes.set_title('')
-        axes.yaxis.grid(True)
-        axes.set_xlabel('')
-        axes.set_ylabel('')
-
-        plt.show()
+        # self.barplot_mean_and_variance_of_bugs_found()
+        # self.barplot_reached_vs_triggered_bugs_by_each_fuzzer_in_a_library()
+        self.heat_map_expected_time_to_bug()
 
     def combineSublibrarysFuzzerResults(self):
         simplified_data = {}
@@ -52,16 +40,14 @@ class Plots:
                                     conditions].items():
                                     if reached_bugs not in [i[0] for i in
                                                             simplified_data[fuzzer][library][campaign][0]]:
-                                        simplified_data[fuzzer][library][campaign][0].append(
-                                            (reached_bugs, times))
+                                        simplified_data[fuzzer][library][campaign][0].append((reached_bugs, times))
 
                             elif conditions == self.TRIGGERED:
                                 for triggered_bugs, times in self.data[fuzzer][library][sublibraries][campaign][
                                     conditions].items():
                                     if triggered_bugs not in [i[0] for i in
                                                               simplified_data[fuzzer][library][campaign][1]]:
-                                        simplified_data[fuzzer][library][campaign][1].append(
-                                            (triggered_bugs, times))
+                                        simplified_data[fuzzer][library][campaign][1].append((triggered_bugs, times))
 
         return simplified_data
 
@@ -86,7 +72,7 @@ class Plots:
         return totalBugsReached, totalBugsTriggered
 
     def meanAndDeviationOfNumberOfBugsAcrossXCampaigns(self, numberOfCampaings):
-        d = self.combineSublibrariesFuzzerResults()
+        d = self.combineSublibrarysFuzzerResults()
         mean_deviation_reached = d.copy()
         mean_deviation_triggered = d.copy()
         for fuzzer, libraries in d.items():
@@ -111,23 +97,143 @@ class Plots:
 
         return mean_deviation_reached, mean_deviation_triggered
 
-    def boxplot(self, data, title):
+    def remove_non_triggered_bugs(self):
+        d = self.combineSublibrarysFuzzerResults()
+        for fuzzer, libraries in d.items():
+            for library, campaigns in libraries.items():
+                for campaignNum, result in campaigns.items():
+                    d[fuzzer][library][campaignNum] = self.intersect_bug_id(result[0], result[1])
+
+        return d
+
+    def intersect_bug_id(self, reached_bugs, triggered_bugs):
+        intersected_reached_bugs = [r_bug for r_bug in reached_bugs if
+                                    r_bug[0] in [t_bug[0] for t_bug in triggered_bugs]]
+        return intersected_reached_bugs, triggered_bugs
+
+    def time_to_trigger_per_bug(self):
+        d = self.remove_non_triggered_bugs()
+
+        for fuzzer, libraries in d.items():
+            for library, campaigns in libraries.items():
+                num_trigger = {}
+                for campaignNum, result in campaigns.items():
+                    result[0].sort(key=lambda x: x[0])
+                    result[1].sort(key=lambda x: x[0])
+                    for x in range(len(result[0])):
+                        bug_id = result[0][x][0]
+                        num_trigger[bug_id] = num_trigger.get(bug_id, []) + [result[1][x][1] - result[0][x][1]]
+                d[fuzzer][library] = num_trigger
+        return d
+
+    def expected_time_to_bug_for_each_fuzzer(self, num_campaigns, campaign_duration):
+        d = self.time_to_trigger_per_bug()
+        expected_time_to_bug = {}
+        aggregate = {}
+        for fuzzer, library in d.items():
+            expected_time_to_bug[fuzzer] = {}
+            for bugs in library.values():
+                for bug_id, time in bugs.items():
+                    aggregate[bug_id] = aggregate.get(bug_id, []) + time
+                    # ln(N/N-M)
+                    expected_time_to_bug[fuzzer][bug_id] = self.compute_expected_time_to_bug(time, num_campaigns,
+                                                                                             campaign_duration)
+
+        number_of_fuzzers = len(list(d.keys()))
+        for bug_id, times in aggregate.items():
+            aggregate[bug_id] = self.compute_expected_time_to_bug(times, num_campaigns * number_of_fuzzers,
+                                                                  campaign_duration)
+        return expected_time_to_bug, aggregate
+
+    def compute_expected_time_to_bug(self, list_of_times, num_campaigns, campaign_duration):
+        T = campaign_duration  # Secs in 24h
+        N_minus_M = num_campaigns - len(list_of_times)
+        if N_minus_M is not 0:
+            lambda_t = math.log(num_campaigns / N_minus_M)
+        else:
+            lambda_t = 1
+        expected_time_to_bug_in_seconds = (((len(list_of_times) * statistics.mean(list_of_times)) + N_minus_M * (
+                T / lambda_t)) / num_campaigns)
+        return expected_time_to_bug_in_seconds / 3600
+
+    def boxplot_unique_bugs_reached_in_all_libraries(self):
+        reached_unique, triggered_unique = self.totalNumberofUniqueBugsAcrossXCampaigns()
+        triggered = DataFrame(triggered_unique)
         fig = plt.figure()
-        fig.canvas.set_window_title(title)
-        data.boxplot(figsize=(0.34, 20))
-        plt.title(title)
+        fig.canvas.set_window_title("Repartition of unique bugs reached by all fuzzer in a tested libraries")
+        triggered.boxplot(figsize=(0.34, 20))
+        plt.title("Repartition of unique bugs reached by all fuzzer in a tested libraries")
+        plt.show()
         # plt.savefig("test.svg", format="svg")
 
-    def barplot(self, data, title):
-        data.transpose().plot.bar()
-        plt.title(title)
-        # plt.savefig("test.svg", format="svg")
+    def barplot_mean_and_variance_of_bugs_found_by_each_fuzzer(self):
+        reached, triggered = self.meanAndDeviationOfNumberOfBugsAcrossXCampaigns(10)
+        for fuzzer, libData in triggered.items():
+            mean_values = []
+            libraries = []
+            variance = []
+            print(fuzzer)
+            for lib, meanVar in libData.items():
+                mean_values.append(meanVar[0])
+                variance.append(pow(meanVar[1], 2))
+                libraries.append(lib)
+                print(lib)
+                print(meanVar[1])
+            x_pos = list(range(len(libraries)))
+            plt.bar(x_pos, mean_values, yerr=variance, align='center', alpha=0.5)
+            plt.grid()
+            plt.ylabel('Number of Bugs Triggered')
+            plt.xticks(x_pos, libraries)
+            plt.title("Mean number of bugs found by " + fuzzer + " for each target library")
+            plt.show()
+            # plt.savefig("test.svg", format="svg")
 
-    def barplotReachedVsTriggeredBugsByFuzzersForALibrary(self, reached, triggered, library, title):
-        df = DataFrame({'Reached': reached[library], 'Triggered': triggered[library]})
-        df.plot.bar()
-        plt.title(title)
-        plt.savefig(library + ".svg", format="svg")
+    def barplot_reached_vs_triggered_bugs_by_each_fuzzer_in_a_library(self):
+        reached_unique, triggered_unique = self.totalNumberofUniqueBugsAcrossXCampaigns()
+        triggered = DataFrame(triggered_unique).transpose()
+        reached = DataFrame(reached_unique).transpose()
+        for library in reached:
+            df = DataFrame({'Reached': reached[library], 'Triggered': triggered[library]})
+            df.plot.bar()
+            plt.title("Number of reached and triggered bugs in " + library + " by all fuzzers")
+            # plt.show()
+            plt.savefig("test.svg", format="svg")
+
+    def heat_map_expected_time_to_bug(self):
+        data, aggregate = self.expected_time_to_bug_for_each_fuzzer(10, 83400)
+        data["aggregate"] = aggregate
+        data = DataFrame(data)
+        data.sort_values(by='aggregate', inplace=True)
+
+        data = data.drop(labels='aggregate', axis=1)
+        fuzzers = list(data.columns)
+        bug_id = list(data.index)
+        data = np.array(data)
+
+        fig, ax = plt.subplots(figsize=(10, 10))
+        heat_map = sns.heatmap(data, cmap="YlGnBu", annot=True, xticklabels=fuzzers, yticklabels=bug_id, fmt='.1f',
+                               ax=ax)
+        ax.set_title("Exptected time-to-trigger-bug for each fuzzer in hours", fontsize=20)
+        plt.show()
+        # plt.savefig("Expected_time_to_bug.svg", format="svg")
+
+    def heat_map_aggregate(self):
+        fuzzers, aggregate = self.expected_time_to_bug_for_each_fuzzer(10, 83400)
+        data = DataFrame(fuzzers)
+        agg = {}
+        agg["aggregate"] = aggregate
+        aggregate = DataFrame(agg)
+        aggregate.sort_values(by='aggregate', inplace=True)
+        bug_id = list(data.index)
+        data = np.array(aggregate)
+        print(data)
+        fig, ax = plt.subplots(figsize=(8, 7))
+        heat_map = sns.heatmap(data, cmap="YlGnBu", annot=True, yticklabels=bug_id, xticklabels=["Aggregate time"],
+                               fmt='.1f', ax=ax)
+        ax.set_title("Aggregate time for each bug in hours", fontsize=20)
+        plt.ylabel("Triggered Bugs")
+        plt.show()
+        # plt.savefig("Aggregate_time_per_bug.svg", format="svg")
 
     def add_to_map_reach(self, bug, time, reached_map):
         if bug in reached_map:
@@ -281,7 +387,6 @@ data = {}
 
 with open("../../../../../20200501_24h.json") as f:
     data = json.load(f)
-
 
 plot = Plots(data, Path("random_delete", "random_delete_2",
                         "../WebPages/outputs/tables", "../WebPages/outputs/plots"))
