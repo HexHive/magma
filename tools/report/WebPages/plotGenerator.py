@@ -30,8 +30,6 @@ class Plots:
         df = DataFrame(self.data)
         return list(df.index),list(df.columns)
 
-
-
     def combineSublibrarysFuzzerResults(self):
         simplified_data = {}
         for fuzzer in self.data:
@@ -79,7 +77,7 @@ class Plots:
 
         return totalBugsReached, totalBugsTriggered
 
-    def mean_and_deviation_of_numner_of_bugs_AcrossXCampaigns(self, numberOfCampaings):
+    def meanAndDeviationOfNumberOfBugsAcrossXCampaigns(self, numberOfCampaings):
         d = self.combineSublibrarysFuzzerResults()
         mean_deviation_reached = d.copy()
         mean_deviation_triggered = d.copy()
@@ -162,18 +160,20 @@ class Plots:
             lambda_t = 1
         expected_time_to_bug_in_seconds = (((len(list_of_times) * statistics.mean(list_of_times)) + N_minus_M * (
                     T / lambda_t)) / num_campaigns)
-        return expected_time_to_bug_in_seconds / 3600
+        return expected_time_to_bug_in_seconds
 
     def boxplot_unique_bugs_reached_in_all_libraries(self):
         reached_unique, triggered_unique = self.totalNumberofUniqueBugsAcrossXCampaigns()
         triggered = DataFrame(triggered_unique)
         fig = plt.figure()
+        fig.canvas.set_window_title("Repartition of unique bugs reached by all fuzzer in a tested libraries")
         triggered.boxplot(figsize=(0.34, 20))
-        plt.title("Repartition of unique bugs reached for all fuzzers in all tested libraries")
-        plt.savefig(self.path.plot_dir+"/"+"unique_reached_bugs_box.svg", format="svg")
+        plt.title(title)
+        plt.show()
+        # plt.savefig("test.svg", format="svg")
 
     def barplot_mean_and_variance_of_bugs_found_by_each_fuzzer(self):
-        reached, triggered = self.mean_and_deviation_of_numner_of_bugs_AcrossXCampaigns(10)
+        reached, triggered = self.meanAndDeviationOfNumberOfBugsAcrossXCampaigns(self.NUMBER_OF_CAMPAIGNS_PER_LIBRARY)
         for fuzzer, libData in triggered.items():
             mean_values = []
             libraries = []
@@ -188,8 +188,8 @@ class Plots:
             plt.ylabel('Number of Bugs Triggered')
             plt.xticks(x_pos, libraries)
             plt.title("Mean number of bugs found by " + fuzzer + " for each target library")
-            plt.savefig(self.path.plot_dir + "/" + "mean_var_" + fuzzer + "bar.svg", format="svg")
-            plt.clf()
+            plt.show()
+            # plt.savefig("test.svg", format="svg")
 
     def barplot_reached_vs_triggered_bugs_by_each_fuzzer_in_a_library(self):
         reached_unique, triggered_unique = self.totalNumberofUniqueBugsAcrossXCampaigns()
@@ -199,41 +199,88 @@ class Plots:
             df = DataFrame({'Reached': reached[library], 'Triggered': triggered[library]})
             df.plot.bar(figsize=(8, 6), rot=0)
             plt.title("Number of reached and triggered bugs in " + library + " by all fuzzers")
-            plt.savefig(self.path.plot_dir+"/"+library+"_bar.svg", format="svg")
+            plt.show()
+            # plt.savefig("test.svg", format="svg")
 
     def heat_map_expected_time_to_bug(self):
-        data, aggregate = self.expected_time_to_bug_for_each_fuzzer(10, 83400)
+        data, aggregate = self.expected_time_to_bug_for_each_fuzzer(self.NUMBER_OF_CAMPAIGNS_PER_LIBRARY,
+                                                                    self.CAMPAIGN_DURATION)
+        fuzzer_order = self.get_fuzzer_from_most_to_less_triggered_bugs(data)
         data["aggregate"] = aggregate
-        data = DataFrame(data)
-        data.sort_values(by='aggregate', inplace=True)
-        data = data.drop(labels='aggregate', axis=1)
-        fuzzers = list(data.columns)
-        bug_id = list(data.index)
-        data = np.array(data)
+        df = DataFrame(data)
+        df.sort_values(by='aggregate', inplace=True)
+        df = df.drop(labels='aggregate', axis=1)
+        df = df[fuzzer_order]
+        fuzzers = list(df.columns)
+        bug_id = list(df.index)
+        raw_data = np.array(df)
         fig, ax = plt.subplots(figsize=(10, 10))
-        sns.heatmap(data, cmap="YlGnBu", annot=True, xticklabels=fuzzers, yticklabels=bug_id, fmt='.1f',
-                               ax=ax)
+        heat_map = sns.heatmap(raw_data, cmap="YlGnBu", annot=self.labeled_data(raw_data), xticklabels=fuzzers,
+                               yticklabels=bug_id, fmt='s',
+                               cbar_kws=dict(ticks=[]), ax=ax)
         ax.set_title("Exptected time-to-trigger-bug for each fuzzer in hours", fontsize=20)
-        plt.savefig(self.path.plot_dir + "/"+"expected_time_to_bug_heat.svg", format="svg")
+        plt.yticks(rotation=0)
+        ax.xaxis.tick_top()
+        ax.xaxis.set_label_position('top')
+        plt.show()
+        # plt.savefig("Expected_time_to_bug.svg", format="svg")
 
     def heat_map_aggregate(self):
-        fuzzers, aggregate = self.expected_time_to_bug_for_each_fuzzer(10, 83400)
+        fuzzers, aggregate = self.expected_time_to_bug_for_each_fuzzer(self.NUMBER_OF_CAMPAIGNS_PER_LIBRARY,
+                                                                       self.CAMPAIGN_DURATION)
         data = DataFrame(fuzzers)
         agg = {}
         agg["aggregate"] = aggregate
         aggregate = DataFrame(agg)
         aggregate.sort_values(by='aggregate', inplace=True)
-        bug_id = list(data.index)
+        bug_id = list(aggregate.index)
         data = np.array(aggregate)
-        print(data)
+        labelled_data = []
+        for time in data:
+            labelled_data.append([self.generate_variable_label_units(time)])
+
         fig, ax = plt.subplots(figsize=(8, 7))
-        heat_map = sns.heatmap(data, cmap="YlGnBu", annot=True, yticklabels=bug_id, xticklabels=["Aggregate time"],
-                               fmt='.1f', ax=ax)
+        heat_map = sns.heatmap(data, cmap="YlGnBu", annot=labelled_data, yticklabels=bug_id,
+                               xticklabels=["Aggregate time"], fmt='s',
+                               cbar_kws=dict(ticks=[]), ax=ax)
         ax.set_title("Aggregate time for each bug in hours", fontsize=20)
         plt.ylabel("Triggered Bugs")
-        plt.savefig(self.path.plot_dir + "/"+"aggregate_time_per_bug_heat.svg", format="svg")
+        plt.show()
+        # plt.savefig("Aggregate_time_per_bug.svg", format="svg")
 
+    def get_fuzzer_from_most_to_less_triggered_bugs(self, data):
+        most_bugs = {}
+        for fuzzers, bugs in data.items():
+            most_bugs[fuzzers] = len(bugs)
+        most_bugs = sorted(most_bugs.items(), key=lambda x: x[1], reverse=True)
+        most_bugs = [fuzzer for fuzzer, num_bugs in most_bugs]
+        return most_bugs
 
+    def labeled_data(self, to_label):
+        labelled_data = []
+        for bug in range(len(to_label)):
+            labelled_data.append([])
+            for bug_time in range(len(to_label[bug])):
+                if not self.is_nan(to_label[bug][bug_time]):
+                    labelled_data[bug].append(self.generate_variable_label_units(to_label[bug][bug_time]))
+                else:
+                    labelled_data[bug].append(to_label[bug][bug_time])
+        return labelled_data
+
+        # This function takes a numpy 2D array
+
+    def generate_variable_label_units(self, elem):
+        if self.is_nan(elem):
+            return elem
+        elif elem < 60:
+            return str(int(elem)) + " sec"
+        elif elem < 3600:
+            return str(int(elem / 60)) + " min"
+        else:
+            return str(int(elem / 3600)) + " h"
+
+    def is_nan(self, x):
+        return (x != x)
 
     def add_to_map_reach(self, bug, time, reached_map):
         if bug in reached_map:
