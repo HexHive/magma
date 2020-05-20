@@ -84,6 +84,6 @@ class LibraryTemplate(Render):
         template = self.path.get_template(file_name)
         splitted_output_file_name = output_file_name.split(".")
 
-        rendering = template.render(library=library_descriptions[splitted_output_file_name[0]])
+        rendering = template.render(library=library_descriptions[splitted_output_file_name[0]],plots_dir=self.plot_dir)
 
         self.path.write(output_file_name, rendering)

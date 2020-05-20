@@ -56,7 +56,7 @@ class MainPageTemplate(Render):
         target_list = zip(target_list, target_number_of_bug_list)
 
         # TODO Get all the above information from the json passed as argument
-        rendering = template.render(target_list=target_list, total_bugs=total_bugs, fuzzer_list=fuzzer_list)
+        rendering = template.render(target_list=target_list, total_bugs=total_bugs, fuzzer_list=fuzzer_list,plots_dir=self.plot_dir)
 
         self.path.write(output_file_name, rendering)
 

@@ -20,10 +20,17 @@ class Plots:
 
     def generate(self):
 
-        # self.barplot_mean_and_variance_of_bugs_found()
-        # self.barplot_reached_vs_triggered_bugs_by_each_fuzzer_in_a_library()
-        # self.heat_map_expected_time_to_bug()
+        self.barplot_reached_vs_triggered_bugs_by_each_fuzzer_in_a_library()
+        self.heat_map_expected_time_to_bug()
         self.barplot_mean_and_variance_of_bugs_found_by_each_fuzzer()
+        self.boxplot_unique_bugs_reached_in_all_libraries()
+
+
+    def get_all_targets_and_fuzzers(self):
+        df = DataFrame(self.data)
+        return list(df.index),list(df.columns)
+
+
 
     def combineSublibrarysFuzzerResults(self):
         simplified_data = {}
@@ -72,7 +79,7 @@ class Plots:
 
         return totalBugsReached, totalBugsTriggered
 
-    def meanAndDeviationOfNumberOfBugsAcrossXCampaigns(self, numberOfCampaings):
+    def mean_and_deviation_of_numner_of_bugs_AcrossXCampaigns(self, numberOfCampaings):
         d = self.combineSublibrarysFuzzerResults()
         mean_deviation_reached = d.copy()
         mean_deviation_triggered = d.copy()
@@ -162,12 +169,11 @@ class Plots:
         triggered = DataFrame(triggered_unique)
         fig = plt.figure()
         triggered.boxplot(figsize=(0.34, 20))
-        plt.title("Repartition of unique bugs reached by all fuzzer in a tested libraries")
-        plt.show()
-        plt.savefig("unique_reached_bugs_box.svg", format="svg")
+        plt.title("Repartition of unique bugs reached for all fuzzers in all tested libraries")
+        plt.savefig(self.path.plot_dir+"/"+"unique_reached_bugs_box.svg", format="svg")
 
     def barplot_mean_and_variance_of_bugs_found_by_each_fuzzer(self):
-        reached, triggered = self.meanAndDeviationOfNumberOfBugsAcrossXCampaigns(10)
+        reached, triggered = self.mean_and_deviation_of_numner_of_bugs_AcrossXCampaigns(10)
         for fuzzer, libData in triggered.items():
             mean_values = []
             libraries = []
@@ -182,8 +188,8 @@ class Plots:
             plt.ylabel('Number of Bugs Triggered')
             plt.xticks(x_pos, libraries)
             plt.title("Mean number of bugs found by " + fuzzer + " for each target library")
-            plt.show()
-            plt.savefig("mean_var_" + fuzzer + "_bar.svg", format="svg")
+            plt.savefig(self.path.plot_dir + "/" + "mean_var_" + fuzzer + "bar.svg", format="svg")
+            plt.clf()
 
     def barplot_reached_vs_triggered_bugs_by_each_fuzzer_in_a_library(self):
         reached_unique, triggered_unique = self.totalNumberofUniqueBugsAcrossXCampaigns()
@@ -193,8 +199,7 @@ class Plots:
             df = DataFrame({'Reached': reached[library], 'Triggered': triggered[library]})
             df.plot.bar(figsize=(8, 6), rot=0)
             plt.title("Number of reached and triggered bugs in " + library + " by all fuzzers")
-            plt.show()
-            plt.savefig(library+"_bar.svg", format="svg")
+            plt.savefig(self.path.plot_dir+"/"+library+"_bar.svg", format="svg")
 
     def heat_map_expected_time_to_bug(self):
         data, aggregate = self.expected_time_to_bug_for_each_fuzzer(10, 83400)
@@ -209,8 +214,7 @@ class Plots:
         sns.heatmap(data, cmap="YlGnBu", annot=True, xticklabels=fuzzers, yticklabels=bug_id, fmt='.1f',
                                ax=ax)
         ax.set_title("Exptected time-to-trigger-bug for each fuzzer in hours", fontsize=20)
-        plt.show()
-        plt.savefig("Expected_time_to_bug_heat.svg", format="svg")
+        plt.savefig(self.path.plot_dir + "/"+"expected_time_to_bug_heat.svg", format="svg")
 
     def heat_map_aggregate(self):
         fuzzers, aggregate = self.expected_time_to_bug_for_each_fuzzer(10, 83400)
@@ -227,8 +231,7 @@ class Plots:
                                fmt='.1f', ax=ax)
         ax.set_title("Aggregate time for each bug in hours", fontsize=20)
         plt.ylabel("Triggered Bugs")
-        plt.show()
-        plt.savefig("Aggregate_time_per_bug_heat.svg", format="svg")
+        plt.savefig(self.path.plot_dir + "/"+"aggregate_time_per_bug_heat.svg", format="svg")
 
 
 
@@ -380,16 +383,17 @@ class Plots:
         # plt.savefig("test.svg", format="svg")
 
 
-data = {}
 
-with open("../../../../../20200501_24h.json") as f:
-    data = json.load(f)
+#data = {}
 
-plot = Plots(data, Path("random_delete", "random_delete_2",
-                        "../WebPages/outputs/tables", "../WebPages/outputs/plots"))
+#with open("../../../../../20200501_24h.json") as f:
+ #   data = json.load(f)
 
-fuzzer_name = "moptafl"
-library_name = "poppler"
+#plot = Plots(data, Path("random_delete", "random_delete_2",
+                       # "../WebPages/outputs/tables", "../WebPages/outputs/plots"))
+
+#fuzzer_name = "moptafl"
+#library_name = "poppler"
 # library_name = "libpng"
 # library_name = "libtiff"
 # library_name = "libxml2"
@@ -399,11 +403,11 @@ library_name = "poppler"
 # reached_map, triggered_map = plot.get_bugs_for_driver(fuzzer_name, library_name,
 #                                                      "pdf_fuzzer")
 
-r, t = plot.get_list_of_all_bugs_time(fuzzer_name, library_name)
+#r, t = plot.get_list_of_all_bugs_time(fuzzer_name, library_name)
 
 # r, t = plot.get_list_of_all_bugs(fuzzer_name, library_name)
 # plot.bugs_plot_line(reached_map)
 # plot.box_plot(r)
 
-plot.line_plot_bug_number(r, fuzzer_name + "_" + library_name)
+#plot.line_plot_bug_number(r, fuzzer_name + "_" + library_name)
 # plot.line_plot_bug_number(t)
