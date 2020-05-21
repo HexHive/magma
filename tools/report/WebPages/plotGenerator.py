@@ -6,13 +6,16 @@ import seaborn as sns
 import statistics
 import math
 import numpy as np
-import json  # TODO Delete
+import os
+
 from Path import Path
 
 
 class Plots:
     REACHED = "reached"
     TRIGGERED = "triggered"
+    CAMPAIGN_DURATION = 83400
+    NUMBER_OF_CAMPAIGNS_PER_LIBRARY = 10
 
     def __init__(self, data, path):
         self.data = data
@@ -168,9 +171,9 @@ class Plots:
         fig = plt.figure()
         fig.canvas.set_window_title("Repartition of unique bugs reached by all fuzzer in a tested libraries")
         triggered.boxplot(figsize=(0.34, 20))
-        plt.title(title)
-        plt.show()
-        # plt.savefig("test.svg", format="svg")
+        plt.title("Repartition of unique bugs reached by all fuzzer in a tested libraries")
+        #plt.show()
+        plt.savefig(os.path.join(self.path.plot_dir,"unique_bug_box.svg"), format="svg")
 
     def barplot_mean_and_variance_of_bugs_found_by_each_fuzzer(self):
         reached, triggered = self.meanAndDeviationOfNumberOfBugsAcrossXCampaigns(self.NUMBER_OF_CAMPAIGNS_PER_LIBRARY)
@@ -188,8 +191,8 @@ class Plots:
             plt.ylabel('Number of Bugs Triggered')
             plt.xticks(x_pos, libraries)
             plt.title("Mean number of bugs found by " + fuzzer + " for each target library")
-            plt.show()
-            # plt.savefig("test.svg", format="svg")
+            #plt.show()
+            plt.savefig(os.path.join(self.path.plot_dir,lib+"_mean_variance_br.svg"), format="svg")
 
     def barplot_reached_vs_triggered_bugs_by_each_fuzzer_in_a_library(self):
         reached_unique, triggered_unique = self.totalNumberofUniqueBugsAcrossXCampaigns()
@@ -199,8 +202,8 @@ class Plots:
             df = DataFrame({'Reached': reached[library], 'Triggered': triggered[library]})
             df.plot.bar(figsize=(8, 6), rot=0)
             plt.title("Number of reached and triggered bugs in " + library + " by all fuzzers")
-            plt.show()
-            # plt.savefig("test.svg", format="svg")
+            #plt.show()
+            plt.savefig(os.path.join(self.path.plot_dir,library+"_reached_and_triggered_bar.svg"), format="svg")
 
     def heat_map_expected_time_to_bug(self):
         data, aggregate = self.expected_time_to_bug_for_each_fuzzer(self.NUMBER_OF_CAMPAIGNS_PER_LIBRARY,
@@ -222,8 +225,8 @@ class Plots:
         plt.yticks(rotation=0)
         ax.xaxis.tick_top()
         ax.xaxis.set_label_position('top')
-        plt.show()
-        # plt.savefig("Expected_time_to_bug.svg", format="svg")
+       # plt.show()
+        plt.savefig(os.path.join(self.path.plot_dir,"expected_time_to_bug_heat.svg"), format="svg")
 
     def heat_map_aggregate(self):
         fuzzers, aggregate = self.expected_time_to_bug_for_each_fuzzer(self.NUMBER_OF_CAMPAIGNS_PER_LIBRARY,
@@ -245,8 +248,8 @@ class Plots:
                                cbar_kws=dict(ticks=[]), ax=ax)
         ax.set_title("Aggregate time for each bug in hours", fontsize=20)
         plt.ylabel("Triggered Bugs")
-        plt.show()
-        # plt.savefig("Aggregate_time_per_bug.svg", format="svg")
+        #plt.show()
+        plt.savefig(os.path.join(self.path.plot_dir,"aggregate_time_per_bug.svg"), format="svg")
 
     def get_fuzzer_from_most_to_less_triggered_bugs(self, data):
         most_bugs = {}
