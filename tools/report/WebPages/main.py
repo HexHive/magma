@@ -38,7 +38,7 @@ def main():
     print("Generate plots")
     plots = Plots(json_data, path)
     plots.generate()
-    
+
     libraries, fuzzers = plots.get_all_targets_and_fuzzers()
 
     fuzzer_template = FuzzerTemplate(Path(template_dir, fuzzers_dir, tables_dir, "../"+PLOTS), libraries)
@@ -48,7 +48,7 @@ def main():
     for library in libraries:
         library_template.render("library_template.html", library+".html")
 
-    print("Create main page")    
+    print("Create main page")
     main_template = MainPageTemplate(Path(template_dir, output_dir, tables_dir, "./"+PLOTS), fuzzers, libraries)
     main_template.render("report_template.html", "report.html")
 

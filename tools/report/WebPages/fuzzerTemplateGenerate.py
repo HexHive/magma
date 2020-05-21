@@ -36,11 +36,11 @@ fuzzer_descriptions = {
                              "Mutational fuzzing", "Open-source",
                              "https://github.com/google/AFL"),
 
-    "aflplusplus": FuzzerDescription("AFL++", "Gray-box binary fuzzer",
+    "aflplusplus": FuzzerDescription("AFLPlusPlus", "Gray-box binary fuzzer",
                                      "Mutational fuzzing", "Open-source",
                                      "https://github.com/google/AFL"),
 
-    "aflfast": FuzzerDescription("AFLFast", "Gray-box binary fuzzer",
+    "aflfast": FuzzerDescription("AflFast", "Gray-box binary fuzzer",
                                  "Mutational fuzzing", "Open-source",
                                  "https://github.com/mboehme/aflfast"),
 
@@ -48,11 +48,11 @@ fuzzer_descriptions = {
                                   "Mutational fuzzing", "Open-source",
                                   "https://github.com/carolemieux/afl-rb"),
 
-    "honggfuzz": FuzzerDescription("HongFuzz", "Gray-box binary fuzzer",
+    "honggfuzz": FuzzerDescription("HonggFuzz", "Gray-box binary fuzzer",
                                    "Mutational fuzzing", "Open-source",
                                    "https://honggfuzz.dev"),
 
-    "moptafl": FuzzerDescription("Mopt-AFL", "Gray-box binary fuzzer",
+    "moptafl": FuzzerDescription("Moptafl", "Gray-box binary fuzzer",
                                  "Mutational fuzzing", "Open-source",
                                  "https://github.com/puppet-meteor/MOpt-AFL"),
 

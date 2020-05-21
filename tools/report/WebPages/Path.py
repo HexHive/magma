@@ -1,6 +1,5 @@
 import os
 import jinja2
-from enum import Enum
 
 
 class Path:
