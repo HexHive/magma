@@ -50,9 +50,9 @@
                 
             <ul id="fuzzer_list">
                   <!--here we will put an href to the eachindividual fuzzer template -->
-                {% for fuzzer in fuzzer_list %}
-                   <li>{{fuzzer}}</li>
-                {% endfor %}
+                  {% for fuzzer in fuzzer_list %}
+                   <li><a href= "fuzzers/{{fuzzer}}.html">{{fuzzer}}</a></li>
+                   {% endfor %}
             </ul>
             
         </div>

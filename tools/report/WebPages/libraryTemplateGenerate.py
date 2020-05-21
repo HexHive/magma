@@ -75,9 +75,6 @@ class LibraryTemplate(Render):
                 The file to get the directory from
             '''
         super(LibraryTemplate, self).__init__(path)
-        self.template_dir = path.template_dir
-        self.output_dir = path.output_dir
-        self.tables_dir = path.tables_dir
         self.plot_dir = path.plot_dir
 
     def render(self, file_name, output_file_name):

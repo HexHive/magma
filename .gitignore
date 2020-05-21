@@ -1,0 +1,28 @@
+
+
+# Emacs files
+*~
+\#*\#
+.\#*
+
+GTAGS
+.dumbjump
+
+# Flycheck
+flycheck_*.el
+
+# projectiles files
+.projectile
+
+# flymake-mode
+*_flymake.*
+
+
+# Python
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# MacOS files
+.DS_Store

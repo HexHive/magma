@@ -6,8 +6,6 @@ import seaborn as sns
 import statistics
 import math
 import numpy as np
-import json  # TODO Delete
-from Path import Path
 
 
 class Plots:
@@ -18,17 +16,20 @@ class Plots:
         self.data = data
         self.path = path
 
+        self.NUMBER_OF_CAMPAIGNS = 10
+        self.CAMPAIGN_DURATION = 83400
+
     def generate(self):
+        self.generate_plots_for_fuzzer()
 
-        self.barplot_reached_vs_triggered_bugs_by_each_fuzzer_in_a_library()
-        self.heat_map_expected_time_to_bug()
-        self.barplot_mean_and_variance_of_bugs_found_by_each_fuzzer()
-        self.boxplot_unique_bugs_reached_in_all_libraries()
-
+        # self.barplot_reached_vs_triggered_bugs_by_each_fuzzer_in_a_library()
+        # self.heat_map_expected_time_to_bug()
+        # self.barplot_mean_and_variance_of_bugs_found_by_each_fuzzer()
+        # self.boxplot_unique_bugs_reached_in_all_libraries()
 
     def get_all_targets_and_fuzzers(self):
         df = DataFrame(self.data)
-        return list(df.index),list(df.columns)
+        return list(df.index), list(df.columns)
 
     def combineSublibrarysFuzzerResults(self):
         simplified_data = {}
@@ -388,73 +389,36 @@ class Plots:
         df = df.astype('Int64').astype(str).replace("<NA>", "")
         df.to_html(self.path.tables_dir + "/" + output_name + ".html", index=True)
 
-    def line_plot_bug_number(self, dictionary, output_name):
-        df = pd.DataFrame(dictionary)
-
-        df = df.T
-        df = df.reindex(sorted(df.columns), axis=1)
-        df = df.T
-
-        df.interpolate(method='linear').plot(subplots=True, marker='o')
-        self.to_html_without_decimal(df, output_name)
-        # plt.savefig("test.svg", format="svg")
-
-    def box_plot_bug_number(self, dictionary, output_name):
-        df = pd.DataFrame(dictionary)
-        df = df.T
-        df = df.reindex(sorted(df.columns), axis=1)
-        df.plot(marker='o')
-        self.to_html_without_decimal(df, output_name)
-        # plt.savefig("test.svg", format="svg")
-
-    def box_plot(self, dictionary, output_name):
+    def bar_plot_bug_number(self, dictionary, fuzzer, library, reached):
         df = pd.DataFrame(dict([(k, pd.Series(v)) for k, v in dictionary.items()]))
-        df.boxplot()
-        self.to_html_without_decimal(df, output_name)
-        # plt.savefig("test.svg", format="svg")
-
-    def bugs_plot_line(self, dictionnary, output_name):
-        df = pd.DataFrame.from_dict(dictionnary)
 
         df = df.T
-        df.plot(subplots=True, marker='o')
-        self.to_html_without_decimal(df, output_name)
-        # df.to_html("name.html", index=True, na_rep="")
-        # plt.savefig("test.svg", format="svg")
-
-    def save_plot_tables(self, dictionnary, output_name):
-        # Note that we use dtype to avoid having to deal with a pandas gotcha with floats and ints
-        df = pd.DataFrame.from_dict(dictionnary)
         df = df.reindex(sorted(df.columns), axis=1)
-        # df.to_html("name.html", index=True, na_rep="")
-        # plt.savefig("test.svg", format="svg")
 
+        df.plot.bar(figsize=(10, 5), legend=None)
+        plt.title(reached + ". Fuzzer: " + fuzzer + ". Library:" + library + ". For different campaigns")
+        plt.xlabel("Bug Number")
+        plt.ylabel("Time", rotation=90)
+        plt.savefig(self.path.plot_dir + "/" + fuzzer+"_"+library+"_" + reached + "_bar.svg", format="svg")
+        plt.close()
 
+    def box_plot(self, dictionary, fuzzer, library, reached):
+        df = pd.DataFrame(dict([(k, pd.Series(v)) for k, v in dictionary.items()]))
+        df.boxplot(figsize=(10, 5))
+        plt.title(reached + ". Fuzzer: " + fuzzer + ". Library:" + library)
+        plt.xlabel("Bug Number")
+        plt.ylabel("Time", rotation=90)
 
-#data = {}
+        plt.savefig(self.path.plot_dir + "/" + fuzzer+"_"+library+"_" + reached + "_box.svg", format="svg")
+        plt.close()
 
-#with open("../../../../../20200501_24h.json") as f:
- #   data = json.load(f)
+    def generate_plots_for_fuzzer(self):
+        libraries, fuzzers = self.get_all_targets_and_fuzzers()
+        for fuzzer in fuzzers:
+            for library in libraries:
+                r, t = self.get_list_of_all_bugs(fuzzer, library)
 
-#plot = Plots(data, Path("random_delete", "random_delete_2",
-                       # "../WebPages/outputs/tables", "../WebPages/outputs/plots"))
-
-#fuzzer_name = "moptafl"
-#library_name = "poppler"
-# library_name = "libpng"
-# library_name = "libtiff"
-# library_name = "libxml2"
-# library_name = "sqlite3"
-# library_name = "php"
-# reached_map_all, triggered_map_all = plot.get_all_bugs(fuzzer_name, library_name)
-# reached_map, triggered_map = plot.get_bugs_for_driver(fuzzer_name, library_name,
-#                                                      "pdf_fuzzer")
-
-#r, t = plot.get_list_of_all_bugs_time(fuzzer_name, library_name)
-
-# r, t = plot.get_list_of_all_bugs(fuzzer_name, library_name)
-# plot.bugs_plot_line(reached_map)
-# plot.box_plot(r)
-
-#plot.line_plot_bug_number(r, fuzzer_name + "_" + library_name)
-# plot.line_plot_bug_number(t)
+                self.bar_plot_bug_number(r, fuzzer, library, self.REACHED)
+                self.bar_plot_bug_number(t, fuzzer, library, self.TRIGGERED)
+                self.box_plot(r, fuzzer, library, self.REACHED)
+                self.box_plot(t, fuzzer, library, self.TRIGGERED)

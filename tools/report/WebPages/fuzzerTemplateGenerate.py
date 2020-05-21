@@ -1,7 +1,4 @@
-from Code.Path import Path
-from Code.Render import Render
-
-import os # TODO Shouldn't be needed
+from Render import Render
 
 
 # Two classes used to simplify the input for the rendering of the template
@@ -71,24 +68,22 @@ class FuzzerTemplate(Render):
 
     FUZZER_TEMPLATE = "fuzzerTemplate.html"
 
-    def __init__(self, path):
+    def __init__(self, path, libraries):
         '''
         Parameters
         ----------
         path(Path):
             of class Path, used to have all the useful paths
 
-        _file_:
-            The file to get the directory from
+        libraries(array of string):
+            libraries
         '''
 
         super(FuzzerTemplate, self).__init__(path)
 
-        # Set paths for templates, output and images
-        self.template_dir = path.template_dir
-        self.output_dir = path.output_dir
-        self.tables_dir = path.tables_dir
-        self.plot_dir = path.plot_dir
+        self.libraries = libraries
+        self.plot_dir = self.path.plot_dir
+        # Set paths for templates, output and image
 
     def render(self, file_name, output_file_name):
         '''
@@ -114,29 +109,8 @@ class FuzzerTemplate(Render):
         # TODO Generate bugs reports, tables, graphs
         template = self.path.get_template(file_name)
 
-        rendering = template.render(fuzzer=description)
+        rendering = template.render(fuzzer=description, libraries=self.libraries,
+                                    choices=["bar", "box"],
+                                    reached_triggered=["reached", "triggered"], plot_dir=self.plot_dir)
 
         self.path.write(output_file_name, rendering)
-
-
-# TODO Delete below
-TEMPLATES = "templates"
-OUTPUTS = "outputs"
-PLOTS = "plots"
-TABLES = "tables"
-
-current_path = os.path.dirname(__file__)
-# Set paths for templates, output and images
-output_dir = os.path.join(current_path, OUTPUTS)
-template_dir = os.path.join(current_path, TEMPLATES)
-plot_dir = os.path.join(output_dir, PLOTS)
-tables_dir = os.path.join(output_dir, TABLES)
-path = Path(template_dir, output_dir, tables_dir, plot_dir)
-# This code will be used in generateReport.py
-fuzzer_template = FuzzerTemplate(path)
-
-# for fuzzer in fuzzer_list:
-#     fuzzer_template.render("template.html",
-#                            fuzzer_descriptions[fuzzer])
-
-fuzzer_template.render("fuzzerTemplate.html", "afl.html")
