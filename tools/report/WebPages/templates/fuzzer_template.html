@@ -23,14 +23,14 @@
       </ul>
     </div>
     <div id="some_id" class="some_class">
-      <img src="{{ plot_dir }}/mean_var_{{ fuzzer.name }}bar.svg" alt="">
+      <img src="{{ plot_dir }}/mean_var_{{ fuzzer.name|lower }}bar.svg" alt="">
       {% for library in libraries %}
       <h3>
         {{ library }}
       </h3>
       {% for choice in choices %}
       {% for reached in reached_triggered %}
-      <img src="{{ plot_dir }}/{{ fuzzer.name }}_{{ library }}_{{ reached }}_{{ choice }}.svg" alt="">
+      <img src="{{ plot_dir }}/{{ fuzzer.name|lower }}_{{ library |lower}}_{{ reached }}_{{ choice }}.svg" alt="">
       {% endfor %}
       {% endfor %}
       {% endfor %}
