@@ -1,4 +1,9 @@
 
+# Json files
+*json
+
+# PyCharm folder
+.idea
 
 # Emacs files
 *~
