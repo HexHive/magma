@@ -10,19 +10,6 @@
 \#*\#
 .\#*
 
-GTAGS
-.dumbjump
-
-# Flycheck
-flycheck_*.el
-
-# projectiles files
-.projectile
-
-# flymake-mode
-*_flymake.*
-
-
 # Python
 __pycache__/
 *.py[cod]
