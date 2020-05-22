@@ -1,6 +1,6 @@
 
 # Json files
-*json
+*.json
 
 # PyCharm folder
 .idea
