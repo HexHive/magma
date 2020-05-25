@@ -396,25 +396,13 @@ class Plots:
         df = df.astype('Int64').astype(str).replace("<NA>", "")
         df.to_html(self.path.tables_dir + "/" + output_name + ".html", index=True)
 
-    def bar_plot_bug_number(self, dictionary, fuzzer, library, reached):
-        df = pd.DataFrame(dict([(k, pd.Series(v)) for k, v in dictionary.items()]))
-
-        df = df.T
-        df = df.reindex(sorted(df.columns), axis=1)
-
-        df.plot.bar(figsize=(12, 10), legend=None)
-        plt.title(reached + ". Fuzzer: " + fuzzer + ". Library:" + library + ". For different campaigns")
-        plt.xlabel("Bug Number")
-        plt.ylabel("Time (seconds)", rotation=90)
-        plt.savefig(self.path.plot_dir + "/" + fuzzer+"_"+library+"_" + reached + "_bar.svg", format="svg")
-        plt.close()
-
     def box_plot(self, dictionary, fuzzer, library, reached):
         df = pd.DataFrame(dict([(k, pd.Series(v)) for k, v in dictionary.items()]))
         df.boxplot(figsize=(12, 10))
         plt.title(reached + ". Fuzzer: " + fuzzer + ". Library:" + library)
         plt.xlabel("Bug Number")
         plt.ylabel("Time (seconds)", rotation=90)
+        plt.ylim(bottom=0)
 
         plt.savefig(self.path.plot_dir + "/" + fuzzer+"_"+library+"_" + reached + "_box.svg", format="svg")
         plt.close()
@@ -425,7 +413,5 @@ class Plots:
             for library in libraries:
                 r, t = self.get_list_of_all_bugs(fuzzer, library)
 
-                self.bar_plot_bug_number(r, fuzzer, library, self.REACHED)
-                self.bar_plot_bug_number(t, fuzzer, library, self.TRIGGERED)
                 self.box_plot(r, fuzzer, library, self.REACHED)
                 self.box_plot(t, fuzzer, library, self.TRIGGERED)
