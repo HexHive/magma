@@ -101,8 +101,8 @@ FUZZER=afl TARGET=libpng PROGRAM=libpng_read_fuzzer SHARED=./workdir POLL=5 \
   TIMEOUT=24h ./start.sh
 ```
 
-To run a set of campaigns against multiple targets, the Captain toolset includes
-a script to manage these campaigns:
+To **build and run** a set of campaigns against multiple targets, the Captain
+toolset includes a script to manage these campaigns:
 ```
 mkdir -p ./workdir
 cat > ./config.yaml << EOF
