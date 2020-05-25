@@ -84,12 +84,14 @@ Then clone Magma:
 git clone https://github.com/HexHive/magma.git magma
 ```
 
-From here on, you can use the Captain scripts to build, start, and manage fuzz
-campaigns.
+From here on, you can use the Captain scripts (in `tools/captain`) to build,
+start, and manage fuzz campaigns.
 
 For instance, to run a single AFL campaign against a Magma target, follow these
 steps:
 ```
+cd tools/captain
+
 # Build the docker image for AFL and a Magma target (e.g., libpng)
 FUZZER=afl TARGET=libpng ./build.sh
 
