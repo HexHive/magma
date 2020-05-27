@@ -27,7 +27,6 @@ LIB_FUZZING_ENGINE="-Wall" ./configure \
     --disable-all \
     --enable-option-checking=fatal \
     --enable-fuzzer \
-    --enable-json \
     --enable-exif \
     --enable-mbstring \
     --without-pcre-jit \
