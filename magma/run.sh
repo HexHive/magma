@@ -35,6 +35,7 @@ find_triggered()
     ##
     awk '{print $5}' <<< "$1" | while read triggered; do
         if [ ! -z $triggered ] && [ $triggered -ne 0 ]; then
+            awk '{print $1}' <<< "$1"
             return 1
         fi
     done
@@ -45,7 +46,14 @@ for seed in "$TARGET/corpus/$PROGRAM"/*; do
     out="$($OUT/monitor --fetch watch --dump human "$FUZZER/runonce.sh" "$seed")"
     code=$?
 
-    if [ $code -ne 0 ] || ! find_triggered "$out"; then
+    bug=$(find_triggered "$out")
+    is_triggered=$?
+
+    if [ $is_triggered -ne 0 ]; then
+        echo "$seed triggers $bug"
+        rm "$seed"
+    elif [ $code -ne 0 ]; then
+        echo "$seed causes unexpected crash (exit code: $code)"
         rm "$seed"
     fi
 done

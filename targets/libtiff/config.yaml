@@ -1,3 +1,0 @@
-programs:
-  - tiff_read_rgba_fuzzer
-  - tiffcp: '-M @@ tmp.out'

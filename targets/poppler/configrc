@@ -1,0 +1,4 @@
+PROGRAMS=(pdf_fuzzer pdfimages pdftoppm)
+
+pdfimages_ARGS="@@ /tmp/out"
+pdftoppm_ARGS="-mono -cropbox @@"

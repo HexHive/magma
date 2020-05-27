@@ -1,0 +1,1 @@
+PROGRAMS=(json exif unserialize parser)

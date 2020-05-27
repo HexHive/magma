@@ -2,27 +2,21 @@
 
 ##
 # Pre-requirements:
-# + $1: path to config.yaml
-# - env WORKDIR: path to directory where shared volumes will be created
-# - env REPEAT: number of campaigns to run per program (per fuzzer)
-# + env WORKERS: number of worker threads (default: CPU cores)
-# + env TIMEOUT: time to run each campaign (default: 1m)
-# + env POLL: time (in seconds) between polls (default: 5s)
-# + env MAGMA_CACHE_ON_DISK: if defined, the cache workdir is mounted on disk
-#       instead of in-memory (default: undefined)
-# + env MAGMA_NO_ARCHIVE: if defined, campaign workdirs will not be tarballed
-#       (default: undefined)
-# + env TMPFS_SIZE: the size of the tmpfs mounted volume (default: 50g)
-# + env MAGMA: path to magma root (default: ../../)
-# + env LOGSDIR: path to logs directory
+# + $1: path to captainrc (default: ./captainrc)
 ##
+
+if [ -z $1 ]; then
+    set -- "./captainrc"
+fi
+
+# load the configuration file (captainrc)
+set -a
+source "$1"
+set +a
 
 if [ -z $WORKDIR ] || [ -z $REPEAT ]; then
     echo '$WORKDIR and $REPEAT must be specified as environment variables.'
     exit 1
-fi
-if [ -z $1 ]; then
-    set -- "config.yaml"
 fi
 MAGMA=${MAGMA:-"$(cd "$(dirname "${BASH_SOURCE[0]}")/../../" >/dev/null 2>&1 \
     && pwd)"}
@@ -38,6 +32,8 @@ export POLL=${POLL:-5}
 export TIMEOUT=${TIMEOUT:-1m}
 
 WORKDIR="$(realpath "$WORKDIR")"
+export LOGSDIR="$WORKDIR/logs"
+mkdir -p "$LOGSDIR"
 
 get_next_cid()
 {
@@ -49,6 +45,7 @@ get_next_cid()
     campaigns=("$1"/*)
     if [ ${#campaigns[@]} -eq 0 ]; then
         echo 0
+        mkdir -p "$1/0"
     else
         cids=($(sort -n < <(basename -a "${campaigns[@]}")))
         for ((i=0;;i++)); do
@@ -87,13 +84,13 @@ start_campaign()
     mkdir -p "$ARDIR"
     CID=$(sem --id magma_cid --fg -j 1 -u \
             get_next_cid "$ARDIR")
-    if [ -z $MAGMA_NO_ARCHIVE ]; then
+    if [ -z $NO_ARCHIVE ]; then
         # only one tar job runs at a time, to prevent out-of-storage errors
         sem --id "magma_tar" --fg -j 1 \
           tar -cf "${ARDIR}/${CID}/${CID}.tar" -C "$SHARED" . 1>/dev/null 2>&1 && \
         rm -rf "$SHARED"
     else
-        mv "$SHARED" "${ARDIR}/${CID}"
+        rm -rf "${ARDIR}/${CID}" && mv "$SHARED" "${ARDIR}/${CID}"
     fi
 }
 export -f start_campaign
@@ -125,7 +122,7 @@ start_ex()
         done
     else
         # release CPU allocation lock (hacky :/)
-        rm -rf ~/.parallel/semaphores/id-magma
+        sem --id "magma" --st 1 rm -rf ~/.parallel/semaphores/id-magma
         # GNU Parallel does not re-aquire the mutex when it steals it, thus the
         # following statement does not do the intended task of releasing the
         # mutex after stealing it:
@@ -146,13 +143,34 @@ contains_element () {
     return 1
 }
 
+get_var_or_default() {
+    ##
+    # Pre-requirements:
+    # - $1: variable format
+    # - $2..N: placeholders
+    ##
+    pattern="$1"
+    shift
+
+    name="$(eval echo $pattern)"
+    name="${name}[@]"
+    value="${!name}"
+    if [ -z $value ] || [ ${#value[@]} -eq 0 ]; then
+        set -- "DEFAULT" "${@:2}"
+        name="$(eval echo $pattern)"
+        name="${name}[@]"
+        value="${!name}"
+    fi
+    echo "${value[@]}"
+}
+
 # clear any stuck semaphores
-rm -rf ~/.parallel/semaphores/id-magma*
+sem --id "magma" --st 1 rm -rf ~/.parallel/semaphores/id-magma*
 
 # set up a RAM-backed fs for fast processing of canaries and crashes
 mkdir -p "$WORKDIR/cache"
 mkdir -p "$WORKDIR/ar"
-if [ -z $MAGMA_CACHE_ON_DISK ]; then
+if [ -z $CACHE_ON_DISK ]; then
     echo_time "Obtaining sudo permissions to mount tmpfs"
     if mountpoint -q -- "$WORKDIR/cache"; then
         sudo umount -f "$WORKDIR/cache"
@@ -161,54 +179,51 @@ if [ -z $MAGMA_CACHE_ON_DISK ]; then
         tmpfs "$WORKDIR/cache"
 fi
 
-mapfile -t fuzzers < <(yq r --printMode p "$1" '*')
-for FUZZER in "${fuzzers[@]}"; do
+# initialize default parameters
+pushd "$MAGMA/targets" &> /dev/null
+shopt -s nullglob
+DEFAULT_TARGETS=(*)
+shopt -u nullglob
+
+for TARGET in "${DEFAULT_TARGETS[@]}"; do
+    source "$MAGMA/targets/$TARGET/configrc"
+    PROGRAMS_str="${PROGRAMS[@]}"
+    declare -a DEFAULT_${TARGET}_PROGRAMS="($PROGRAMS_str)"
+
+    for PROGRAM in "${PROGRAMS[@]}"; do
+        varname="${PROGRAM}_ARGS"
+        declare DEFAULT_${TARGET}_${PROGRAM}_ARGS="${!varname}"
+    done
+done
+popd &> /dev/null
+
+# schedule campaigns
+for FUZZER in "${FUZZERS[@]}"; do
     export FUZZER
 
-    mapfile -t items < <(yq r --printMode p "$1" $FUZZER'[*]')
-    for item in "${items[@]}"; do
-        TARGET="$(yq r --printMode p "$1" "$item"'.*' | tr -d '[]')"
-        if [ -z "$TARGET" ]; then
-            TARGET="$(yq r "$1" "$item")"
-        else
-            mapfile -t customprgs < <(yq r "$1" "$item"'.**')
-            item="$(tr -d '[]' <<< "$item")"
-            TARGET="${TARGET/$item'.'/}"
-        fi
+    TARGETS=($(get_var_or_default '$1_TARGETS' $FUZZER))
+    for TARGET in "${TARGETS[@]}"; do
         export TARGET
 
         # build the Docker image
         IMG_NAME="magma/$FUZZER/$TARGET"
         echo_time "Building $IMG_NAME"
+        "$MAGMA"/tools/captain/build.sh &> "${LOGSDIR}/${FUZZER}_${TARGET}_build.log"
 
-    if [ -z $LOGSDIR ]; then
-        BUILD_LOGFILE="/dev/null"
-    else
-        BUILD_LOGFILE=""$LOGSDIR"/"$FUZZER"_"$TARGET"_build.log"
-    fi
-
-        "$MAGMA"/tools/captain/build.sh &> "$BUILD_LOGFILE"
-
-        mapfile -t defaultprgs < <(yq r "$MAGMA/targets/$TARGET/config.yaml" \
-            'programs[*]')
-        for prog in "${defaultprgs[@]}"; do
-            export PROGRAM="$(eval echo $(awk -F': ' '{print $1}' <<< "$prog"))"
-            export ARGS="$(eval echo $(awk -F': ' '{print $2}' <<< "$prog"))"
-            if [ ${#customprgs[@]} -ne 0 ] && \
-                    ! contains_element "$PROGRAM" "${customprgs[@]}"; then
-                continue
-            fi
+        PROGRAMS=($(get_var_or_default '$1_$2_PROGRAMS' $FUZZER $TARGET))
+        for PROGRAM in "${PROGRAMS[@]}"; do
+            export PROGRAM
+            export ARGS="$(get_var_or_default '$1_$2_$3_ARGS' $FUZZER $TARGET $PROGRAM)"
 
             echo_time "Starting campaigns for $PROGRAM $ARGS"
             for ((i=0; i<$REPEAT; i++)); do
-                NUMCPUS=1 # this can later be read from fuzzer config
+                NUMCPUS=1 # TODO this can later be read from fuzzer config
                 # acquire CPU allocation lock
                 sem --id "magma" -u \
                     start_ex $NUMCPUS "-1" \
                     start_campaign
             done
         done
-        unset customprgs
     done
 done
 
@@ -216,7 +231,7 @@ for i in $WORKERPOOL; do
     sem --id "magma_cpu_$i" --wait
 done
 
-if [ -z $MAGMA_CACHE_ON_DISK ]; then
+if [ -z $CACHE_ON_DISK ]; then
     echo_time "Obtaining sudo permissions to umount tmpfs"
     sudo umount "$WORKDIR/cache"
 fi

@@ -1,0 +1,1 @@
+PROGRAMS=(sqlite3_fuzz)

@@ -1,5 +1,0 @@
-programs:
-  - php-fuzz-json
-  - php-fuzz-exif
-  - php-fuzz-unserialize
-  - php-fuzz-parser

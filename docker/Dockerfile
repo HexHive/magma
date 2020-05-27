@@ -13,6 +13,9 @@ ARG GROUP_ID=1000
 # The Docker image must be built in the root of the magma directory
 ARG magma_root=./
 
+ARG isan
+ARG harden
+
 # Path variables inside the container
 ENV MAGMA_R /magma
 ENV MAGMA 	${MAGMA_R}/magma
@@ -44,8 +47,12 @@ RUN ${MAGMA}/prebuild.sh
 RUN ${FUZZER}/fetch.sh && ${FUZZER}/build.sh
 RUN ${TARGET}/fetch.sh && ${MAGMA}/apply_patches.sh
 
-ENV CFLAGS -include "${MAGMA}/src/canary.h -DMAGMA_ENABLE_CANARIES -DMAGMA_FATAL_CANARIES" -g -O0
-ENV CXXFLAGS -include "${MAGMA}/src/canary.h -DMAGMA_ENABLE_CANARIES -DMAGMA_FATAL_CANARIES" -g -O0
+ARG ISAN_FLAG=${isan:+-DMAGMA_FATAL_CANARIES}
+ARG HARDEN_FLAG=${harden:+-DMAGMA_HARDEN_CANARIES}
+ARG BUILD_FLAGS="-include ${MAGMA}/src/canary.h -DMAGMA_ENABLE_CANARIES ${ISAN_FLAG} ${HARDEN_FLAG} -g -O0"
+
+ENV CFLAGS ${BUILD_FLAGS}
+ENV CXXFLAGS ${BUILD_FLAGS}
 ENV LIBS -l:magma.o -lrt
 ENV LDFLAGS -L"${OUT}" -g
 

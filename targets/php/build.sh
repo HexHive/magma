@@ -52,10 +52,10 @@ sapi/cli/php sapi/fuzzer/generate_parser_corpus.php
 
 FUZZERS="php-fuzz-json php-fuzz-exif php-fuzz-mbstring php-fuzz-unserialize php-fuzz-parser"
 for fuzzerName in $FUZZERS; do
-	cp sapi/fuzzer/$fuzzerName "$OUT/"
+	cp sapi/fuzzer/$fuzzerName "$OUT/${fuzzerName/php-fuzz-/}"
 done
 
 for fuzzerName in `ls sapi/fuzzer/corpus`; do
-    mkdir -p "$TARGET/corpus/php-fuzz-${fuzzerName}"
-    cp sapi/fuzzer/corpus/${fuzzerName}/* "$TARGET/corpus/php-fuzz-${fuzzerName}/"
+    mkdir -p "$TARGET/corpus/${fuzzerName}"
+    cp sapi/fuzzer/corpus/${fuzzerName}/* "$TARGET/corpus/${fuzzerName}/"
 done

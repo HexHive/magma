@@ -14,17 +14,18 @@
 # + env LOGSDIR: path to logs directory
 ##
 
+cleanup() {
+	docker rm -f $container_id 1>/dev/null 2>&1
+}
+
+trap cleanup EXIT SIGINT
+
 if [ -z $FUZZER ] || [ -z $TARGET ] || [ -z $PROGRAM ] || [ -z $SHARED ]; then
     echo '$FUZZER, $TARGET, $PROGRAM, and $SHARED must be specified as' \
          'environment variables.'
     exit 1
 fi
 
-if [ -z $LOGSDIR ]; then
-    CONTAINER_LOGFILE="/dev/null"
-else
-    CONTAINER_LOGFILE=""$LOGSDIR"/"$FUZZER"_"$TARGET"_"$PROGRAM"_"$CID"_container.log"
-fi
 MAGMA=${MAGMA:-"$(cd "$(dirname "${BASH_SOURCE[0]}")/../../" >/dev/null 2>&1 \
     && pwd)"}
 export MAGMA
@@ -45,7 +46,7 @@ docker run -dt --volume=`realpath "$SHARED"`:/magma_shared \
 container_id=$(cut -c-12 <<< $container_id)
 echo_time "Container for $FUZZER/$TARGET/$PROGRAM/$CID started in $container_id"
 exit_code=$(docker wait $container_id)
-docker logs "$container_id" &> "$CONTAINER_LOGFILE"
+docker logs "$container_id" &> "${LOGSDIR}/${FUZZER}_${TARGET}_${PROGRAM}_${CID}_container.log"
 echo_time "Container for $FUZZER/$TARGET/$PROGRAM/$CID exited with $exit_code"
 docker rm $container_id 1>/dev/null 2>&1
 exit $exit_code

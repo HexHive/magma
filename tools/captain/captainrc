@@ -1,0 +1,60 @@
+# This file contains the configuration for the run.sh script. It follows the
+# Bash syntax and is sourced by the script to access the variables. Variables
+# are mandatory unless marked with [brackets].
+
+###
+## Configuration parameters
+###
+
+# WORKDIR: path to directory where shared volumes will be created
+WORKDIR=./workdir
+
+# REPEAT: number of campaigns to run per program (per fuzzer)
+REPEAT=3
+
+# [WORKERS]: number of worker threads (default: CPU cores)
+WORKERS=4
+
+# [TIMEOUT]: time to run each campaign. This variable supports one-letter
+# suffixes to indicate duration (s: seconds, m: minutes, h: hours, d: days)
+# (default: 1m)
+TIMEOUT=24h
+
+# [POLL]: time (in seconds) between polls (default: 5)
+POLL=5
+
+# [CACHE_ON_DISK]: if set, the cache workdir is mounted on disk instead of
+# in-memory (default: unset)
+# CACHE_ON_DISK=1
+
+# [NO_ARCHIVE]: if set, campaign workdirs will not be tarballed (default: unset)
+# NO_ARCHIVE=1
+
+# [TMPFS_SIZE]: the size of the tmpfs mounted volume. This only applies when
+# CACHE_ON_DISK is not set (default: 50g)
+# TMPFS_SIZE=16g
+
+# [MAGMA]: path to magma root (default: ../../)
+# MAGMA=/path/to/magma/
+
+# [ISAN]: if set, build the benchmark with ISAN/fatal canaries (default: unset)
+# ISAN=1
+
+# [HARDEN]: if set, build the benchmark with hardened canaries (default: unset)
+# HARDEN=1
+
+###
+## Campaigns to run
+###
+
+# FUZZERS: an array of fuzzer names (from magma/fuzzers/*) to evaluate
+FUZZERS=(afl aflfast moptafl aflplusplus fairfuzz honggfuzz)
+
+# [fuzzer_TARGETS]: an array of target names (from magma/targets/*) to fuzz with
+# `fuzzer` (default: all targets)
+# afl_TARGETS=(libpng libtiff libxml2)
+
+# [fuzzer_target_PROGRAMS]: an array of program names (from
+# magma/targets/target/configrc) to use as execution drivers when fuzzing the
+# `target`
+# afl_libtiff_PROGRAMS=(tiffcp)
