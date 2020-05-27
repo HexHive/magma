@@ -122,7 +122,7 @@ start_ex()
         done
     else
         # release CPU allocation lock (hacky :/)
-        sem --id "magma" --st 1 rm -rf ~/.parallel/semaphores/id-magma
+        sem --id "magma" --st 1 rm -rf ~/.parallel/semaphores/id-magma &> /dev/null
         # GNU Parallel does not re-aquire the mutex when it steals it, thus the
         # following statement does not do the intended task of releasing the
         # mutex after stealing it:
