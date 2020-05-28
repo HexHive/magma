@@ -1,3 +1,4 @@
+import matplotlib
 import matplotlib.pyplot as plt
 import pandas as pd
 from pandas import DataFrame
@@ -8,6 +9,8 @@ import math
 from math import inf
 import numpy as np
 import os
+import scikit_posthocs as sp
+import scipy.stats as ss
 from collections import defaultdict as dd
 
 class Plots:
@@ -23,18 +26,19 @@ class Plots:
         self.campaigns = list(str(x) for x in range(self.NUMBER_OF_CAMPAIGNS_PER_LIBRARY))
 
     def generate(self):
-        self.line_plot_unique_bugs(self.REACHED)
-        self.generate_plots_for_fuzzer()
-        self.barplot_reached_vs_triggered_bugs_by_each_fuzzer_in_a_library()
+        #self.line_plot_unique_bugs(self.REACHED)
+        #self.generate_plots_for_fuzzer()
+        #self.barplot_reached_vs_triggered_bugs_by_each_fuzzer_in_a_library()
         self.heat_map_expected_time_to_bug()
-        self.barplot_mean_and_variance_of_bugs_found_by_each_fuzzer()
-        self.boxplot_unique_bugs_reached_in_all_libraries()
+        self.heatmap_pvalue()
+        #self.barplot_mean_and_variance_of_bugs_found_by_each_fuzzer()
+        #self.boxplot_unique_bugs_reached_in_all_libraries()
 
     def get_all_targets_and_fuzzers(self):
         df = DataFrame(self.data)
         return list(df.index), list(df.columns)
 
-    def combineSublibrarysFuzzerResults(self):
+    def combine_sublibrary_fuzz_results(self):
         simplified_data = {}
         for fuzzer in self.data:
             simplified_data[fuzzer] = {}
@@ -61,8 +65,8 @@ class Plots:
 
         return simplified_data
 
-    def totalNumberofUniqueBugsAcrossXCampaigns(self):
-        d = self.combineSublibrarysFuzzerResults()
+    def get_total_number_of_unique_bugs(self):
+        d = self.combine_sublibrary_fuzz_results()
 
         totalBugsReached = {}
         totalBugsTriggered = {}
@@ -82,7 +86,7 @@ class Plots:
         return totalBugsReached, totalBugsTriggered
 
     def meanAndDeviationOfNumberOfBugsAcrossXCampaigns(self, numberOfCampaings):
-        d = self.combineSublibrarysFuzzerResults()
+        d = self.combine_sublibrary_fuzz_results()
         mean_deviation_reached = d.copy()
         mean_deviation_triggered = d.copy()
         for fuzzer, libraries in d.items():
@@ -108,7 +112,7 @@ class Plots:
         return mean_deviation_reached, mean_deviation_triggered
 
     def remove_non_triggered_bugs(self):
-        d = self.combineSublibrarysFuzzerResults()
+        d = self.combine_sublibrary_fuzz_results()
         for fuzzer, libraries in d.items():
             for library, campaigns in libraries.items():
                 for campaignNum, result in campaigns.items():
@@ -116,8 +120,8 @@ class Plots:
 
         return d
 
-    def number_of_campaigns_per_fuzzer_library(self):
-        d = self.combineSublibrarysFuzzerResults()
+    def get_number_of_campaigns_per_fuzzer_library(self):
+        d = self.combine_sublibrary_fuzz_results()
         number_of_campaings_per_fuzzer_library = {}
         for fuzzer, libraries in d.items():
             number_of_campaings_per_fuzzer_library[fuzzer] = {}
@@ -130,7 +134,7 @@ class Plots:
                                     r_bug[0] in [t_bug[0] for t_bug in triggered_bugs]]
         return intersected_reached_bugs, triggered_bugs
 
-    def time_to_trigger_per_bug(self):
+    def get_time_to_trigger_per_bug(self):
         d = self.remove_non_triggered_bugs()
 
         for fuzzer, libraries in d.items():
@@ -145,9 +149,9 @@ class Plots:
                 d[fuzzer][library] = num_trigger
         return d
 
-    def expected_time_to_bug_for_each_fuzzer(self, num_campaigns, campaign_duration):
-        d = self.time_to_trigger_per_bug()
-        number_of_campaings_per_fuzzer_library = self.number_of_campaigns_per_fuzzer_library()
+    def get_expected_time_to_bug_for_each_fuzzer(self, num_campaigns, campaign_duration):
+        d = self.get_time_to_trigger_per_bug()
+        number_of_campaings_per_fuzzer_library = self.get_number_of_campaigns_per_fuzzer_library()
         expected_time_to_bug = {}
         aggregate = {}
         library_bugs = {}
@@ -172,7 +176,7 @@ class Plots:
     def compute_expected_time_to_bug(self, list_of_times, num_campaigns, campaign_duration):
         T = campaign_duration  # Secs in 24h
         N_minus_M = num_campaigns - len(list_of_times)
-        if N_minus_M is not 0:
+        if N_minus_M != 0:
             lambda_t = math.log(num_campaigns / N_minus_M)
         else:
             lambda_t = 1
@@ -181,36 +185,29 @@ class Plots:
         return expected_time_to_bug_in_seconds
 
     def boxplot_unique_bugs_reached_in_all_libraries(self):
-        reached_unique, triggered_unique = self.totalNumberofUniqueBugsAcrossXCampaigns()
+        reached_unique, triggered_unique = self.get_total_number_of_unique_bugs()
         triggered = DataFrame(triggered_unique)
         fig = plt.figure()
         fig.canvas.set_window_title("Repartition of unique bugs reached by all fuzzer in a tested libraries")
         triggered.boxplot(figsize=(0.34, 20))
         plt.title("Repartition of unique bugs reached by all fuzzer in a tested libraries")
-        #plt.show()
         plt.savefig(os.path.join(self.path.plot_dir,"unique_bug_box.svg"), format="svg")
 
     def barplot_mean_and_variance_of_bugs_found_by_each_fuzzer(self):
         reached, triggered = self.meanAndDeviationOfNumberOfBugsAcrossXCampaigns(self.NUMBER_OF_CAMPAIGNS_PER_LIBRARY)
-        for fuzzer, libData in triggered.items():
-            mean_values = []
-            libraries = []
-            variance = []
-            for lib, meanVar in libData.items():
-                mean_values.append(meanVar[0])
-                variance.append(pow(meanVar[1], 2))
-                libraries.append(lib)
-            x_pos = list(range(len(libraries)))
-            plt.bar(x_pos, mean_values, yerr=variance, align='center', alpha=0.5)
-            plt.grid()
-            plt.ylabel('Number of Bugs Triggered')
-            plt.xticks(x_pos, libraries)
-            plt.title("Mean number of bugs found by " + fuzzer + " for each target library")
-            plt.savefig(os.path.join(self.path.plot_dir,fuzzer+"_mean_variance_bar.svg"), format="svg")
-            plt.clf()
+        df = DataFrame(reached).transpose()
+        variances = df.applymap(lambda x: x[1])
+        means = df.applymap(lambda x: x[0])
+        fig, ax = plt.subplots()
+        means.plot.bar(yerr=variances, ax=ax, figsize=(20, 10))
+        plt.ylabel('Number of Bugs Triggered')
+        plt.xlabel('Targets')
+        plt.title("Mean number of bugs found by different fuzzers for each target library")
+        plt.savefig(os.path.join(self.path.plot_dir,"mean_variance_bar.svg"), format="svg")
+        plt.clf()
 
     def barplot_reached_vs_triggered_bugs_by_each_fuzzer_in_a_library(self):
-        reached_unique, triggered_unique = self.totalNumberofUniqueBugsAcrossXCampaigns()
+        reached_unique, triggered_unique = self.get_total_number_of_unique_bugs()
         triggered = DataFrame(triggered_unique).transpose()
         reached = DataFrame(reached_unique).transpose()
         for library in reached:
@@ -222,8 +219,8 @@ class Plots:
             plt.clf()
 
     def heat_map_expected_time_to_bug(self):
-        data, aggregate = self.expected_time_to_bug_for_each_fuzzer(self.NUMBER_OF_CAMPAIGNS_PER_LIBRARY,
-                                                                    self.CAMPAIGN_DURATION)
+        data, aggregate = self.get_expected_time_to_bug_for_each_fuzzer(self.NUMBER_OF_CAMPAIGNS_PER_LIBRARY,
+                                                                        self.CAMPAIGN_DURATION)
         fuzzer_order = self.get_fuzzer_from_most_to_less_triggered_bugs(data)
         data["aggregate"] = aggregate
         df = DataFrame(data)
@@ -234,9 +231,9 @@ class Plots:
         bug_id = list(df.index)
         raw_data = np.array(df)
         fig, ax = plt.subplots(figsize=(10, 10))
-        sns.heatmap(raw_data, cmap="YlGnBu", annot=self.labeled_data(raw_data), xticklabels=fuzzers,
-                               yticklabels=bug_id, fmt='s',
-                               cbar_kws=dict(ticks=[]), ax=ax)
+        sns.heatmap(raw_data, cmap="YlGnBu", annot=self.get_labeled_data(raw_data), xticklabels=fuzzers,
+                    yticklabels=bug_id, fmt='s',
+                    cbar_kws=dict(ticks=[]), ax=ax)
         ax.patch.set(fill='True', color='grey')
         ax.set_title("Exptected time-to-trigger-bug for each fuzzer in hours", fontsize=20)
         plt.yticks(rotation=0)
@@ -246,8 +243,8 @@ class Plots:
         plt.clf()
 
     def heat_map_aggregate(self):
-        fuzzers, aggregate = self.expected_time_to_bug_for_each_fuzzer(self.NUMBER_OF_CAMPAIGNS_PER_LIBRARY,
-                                                                       self.CAMPAIGN_DURATION)
+        fuzzers, aggregate = self.get_expected_time_to_bug_for_each_fuzzer(self.NUMBER_OF_CAMPAIGNS_PER_LIBRARY,
+                                                                           self.CAMPAIGN_DURATION)
         data = DataFrame(fuzzers)
         agg = {}
         agg["aggregate"] = aggregate
@@ -257,7 +254,7 @@ class Plots:
         data = np.array(aggregate)
         labelled_data = []
         for time in data:
-            labelled_data.append([self.generate_variable_label_units(time)])
+            labelled_data.append([self.get_variable_time_unit(time)])
 
         fig, ax = plt.subplots(figsize=(8, 7))
         sns.heatmap(data, cmap="YlGnBu", annot=labelled_data, yticklabels=bug_id,
@@ -276,20 +273,20 @@ class Plots:
         most_bugs = [fuzzer for fuzzer, num_bugs in most_bugs]
         return most_bugs
 
-    def labeled_data(self, to_label):
+    def get_labeled_data(self, to_label):
         labelled_data = []
         for bug in range(len(to_label)):
             labelled_data.append([])
             for bug_time in range(len(to_label[bug])):
                 if not self.is_nan(to_label[bug][bug_time]):
-                    labelled_data[bug].append(self.generate_variable_label_units(to_label[bug][bug_time]))
+                    labelled_data[bug].append(self.get_variable_time_unit(to_label[bug][bug_time]))
                 else:
                     labelled_data[bug].append(to_label[bug][bug_time])
         return labelled_data
 
         # This function takes a numpy 2D array
 
-    def generate_variable_label_units(self, elem):
+    def get_variable_time_unit(self, elem):
         if self.is_nan(elem):
             return elem
         elif elem < 60:
@@ -301,6 +298,127 @@ class Plots:
 
     def is_nan(self, x):
         return (x != x)
+
+    def get_sig_data(self):
+        metric = "triggered"
+        sig_data = {
+            fuzzer: {
+                target: [len(set(
+                    bug for program in t_data.values() for rid, r_data in program.items() if rid == run for bug in
+                    r_data[metric])) for run in (str(x) for x in range(10))]
+                for target, t_data in f_data.items()
+            } for fuzzer, f_data in self.data.items()
+        }
+        return sig_data
+
+    def get_benchmark_snapshot_df(self):
+        df = DataFrame(columns=['fuzzer', 'target', 'bugs'])
+        for fuzzer, f_data in self.get_sig_data().items():
+            for target, t_data in f_data.items():
+                for bugs in t_data:
+                    df = df.append(pd.DataFrame({
+                        'fuzzer': [fuzzer.replace("aflplusplus", "afl++").replace("honggfuzz", "hfuzz")],
+                        'target': [target],
+                        'bugs': [bugs]
+                    }), ignore_index=True)
+        return df
+
+    def create_p_value_table(self, benchmark_snapshot_df,
+                             statistical_test,
+                             alternative="two-sided"):
+        """Given a benchmark snapshot data frame and a statistical test function,
+        returns a p-value table. The |alternative| parameter defines the alternative
+        hypothesis to be tested. Use "two-sided" for two-tailed (default), and
+        "greater" or "less" for one-tailed test.
+        The p-value table is a square matrix where each row and column represents a
+        fuzzer, and each cell contains the resulting p-value of the pairwise
+        statistical test of the fuzzer in the row and column of the cell.
+        """
+
+        def test_pair(measurements_x, measurements_y):
+            return statistical_test(measurements_x,
+                                    measurements_y,
+                                    alternative=alternative).pvalue
+
+        groups = benchmark_snapshot_df.groupby('fuzzer')
+        samples = groups['bugs'].apply(list)
+        fuzzers = samples.index
+
+        data = []
+        for f_i in fuzzers:
+            row = []
+            for f_j in fuzzers:
+                if f_i == f_j:
+                    # TODO(lszekeres): With Pandas 1.0.0+, switch to:
+                    # p_value = pd.NA
+                    p_value = np.nan
+                elif set(samples[f_i]) == set(samples[f_j]):
+                    p_value = np.nan
+                else:
+                    p_value = test_pair(samples[f_i], samples[f_j])
+                row.append(p_value)
+            data.append(row)
+
+        p_values = pd.DataFrame(data, index=fuzzers, columns=fuzzers)
+        return p_values
+
+    def two_sided_u_test(self, benchmark_snapshot_df):
+        """Returns p-value table for two-tailed Mann-Whitney U test."""
+        return self.create_p_value_table(benchmark_snapshot_df,
+                                         ss.mannwhitneyu,
+                                         alternative='two-sided')
+
+    def heatmap_pvalue(self):
+        df = self.get_benchmark_snapshot_df()
+        fig, ax = plt.subplots(nrows=1, ncols=7, figsize=(14, 7))
+        g_data = df.groupby('target')
+        for i, target in enumerate(g_data.groups):
+            figx = i // 7
+            figy = i % 7
+            #     axes = ax[figx, figy]
+            axes = ax[i]
+
+            if i != 0:
+                axes.get_yaxis().set_visible(False)
+
+            axes.set_title(target)
+            p_values = self.two_sided_u_test(g_data.get_group(target))
+            self.heatmap_plot(p_values, symmetric=False, axes=axes, labels=False, cbar_ax_bbox=[1, 0.4, 0.02, 0.2])
+
+        fig.tight_layout(pad=2.0)
+        # fig.delaxes(ax[1,3])
+        fig.savefig(os.path.join(self.path.plot_dir,'signplot.svg'), bbox_inches=matplotlib.transforms.Bbox.from_bounds(0, 0, 15, 7))
+
+    def heatmap_plot(self, p_values, axes=None, symmetric=False, **kwargs):
+        """Draws heatmap plot for visualizing statistical test results.
+        If |symmetric| is enabled, it masks out the upper triangle of the
+        p-value table (as it is redundant with the lower triangle).
+        """
+        if symmetric:
+            mask = np.zeros_like(p_values)
+            mask[np.triu_indices_from(p_values)] = True
+        heatmap_args = {
+            'linewidths': 0.5,
+            'linecolor': '0.5',
+            'clip_on': False,
+            'square': True,
+            'cbar_ax_bbox': [0.85, 0.35, 0.04, 0.3],
+            'mask': mask if symmetric else None,
+        }
+        heatmap_args.update(kwargs)
+        return sp.sign_plot(p_values, ax=axes, **heatmap_args)
+
+
+
+
+
+
+
+
+
+
+
+
 
     def add_to_map_reach(self, bug, time, reached_map):
         if bug in reached_map:
