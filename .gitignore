@@ -1,6 +1,6 @@
 
 # Json files
-*json
+*.json
 
 # PyCharm folder
 .idea
@@ -10,21 +10,7 @@
 \#*\#
 .\#*
 
-GTAGS
-.dumbjump
-
-# Flycheck
-flycheck_*.el
-
-# projectiles files
-.projectile
-
-# flymake-mode
-*_flymake.*
-
-
 # Python
-# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class

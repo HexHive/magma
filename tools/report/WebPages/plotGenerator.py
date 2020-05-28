@@ -5,11 +5,10 @@ from math import sqrt
 import seaborn as sns
 import statistics
 import math
+from math import inf
 import numpy as np
 import os
-
-from Path import Path
-
+from collections import defaultdict as dd
 
 class Plots:
     REACHED = "reached"
@@ -20,8 +19,11 @@ class Plots:
     def __init__(self, data, path):
         self.data = data
         self.path = path
+        self.ddr = lambda: dd(self.ddr)
+        self.campaigns = list(str(x) for x in range(self.NUMBER_OF_CAMPAIGNS_PER_LIBRARY))
 
     def generate(self):
+        self.line_plot_unique_bugs(self.REACHED)
         self.generate_plots_for_fuzzer()
         self.barplot_reached_vs_triggered_bugs_by_each_fuzzer_in_a_library()
         self.heat_map_expected_time_to_bug()
@@ -195,7 +197,6 @@ class Plots:
             libraries = []
             variance = []
             for lib, meanVar in libData.items():
-                print(lib)
                 mean_values.append(meanVar[0])
                 variance.append(pow(meanVar[1], 2))
                 libraries.append(lib)
@@ -205,7 +206,6 @@ class Plots:
             plt.ylabel('Number of Bugs Triggered')
             plt.xticks(x_pos, libraries)
             plt.title("Mean number of bugs found by " + fuzzer + " for each target library")
-            print("A")
             plt.savefig(os.path.join(self.path.plot_dir,fuzzer+"_mean_variance_bar.svg"), format="svg")
             plt.clf()
 
@@ -408,27 +408,15 @@ class Plots:
         df = df.astype('Int64').astype(str).replace("<NA>", "")
         df.to_html(self.path.tables_dir + "/" + output_name + ".html", index=True)
 
-    def bar_plot_bug_number(self, dictionary, fuzzer, library, reached):
-        df = pd.DataFrame(dict([(k, pd.Series(v)) for k, v in dictionary.items()]))
-
-        df = df.T
-        df = df.reindex(sorted(df.columns), axis=1)
-
-        df.plot.bar(figsize=(12, 10), legend=None)
-        plt.title(reached + ". Fuzzer: " + fuzzer + ". Library:" + library + ". For different campaigns")
-        plt.xlabel("Bug Number")
-        plt.ylabel("Time (seconds)", rotation=90)
-        plt.savefig(self.path.plot_dir + "/" + fuzzer+"_"+library+"_" + reached + "_bar.svg", format="svg")
-        plt.close()
-
-    def box_plot(self, dictionary, fuzzer, library, reached):
+    def box_plot(self, dictionary, fuzzer, library, metric):
         df = pd.DataFrame(dict([(k, pd.Series(v)) for k, v in dictionary.items()]))
         df.boxplot(figsize=(12, 10))
-        plt.title(reached + ". Fuzzer: " + fuzzer + ". Library:" + library)
+        plt.title(metric + ". Fuzzer: " + fuzzer + ". Library:" + library)
         plt.xlabel("Bug Number")
         plt.ylabel("Time (seconds)", rotation=90)
+        plt.ylim(bottom=0)
 
-        plt.savefig(self.path.plot_dir + "/" + fuzzer+"_"+library+"_" + reached + "_box.svg", format="svg")
+        plt.savefig(self.path.plot_dir + "/" + fuzzer+"_"+library+"_" + metric + "_box.svg", format="svg")
         plt.close()
 
     def generate_plots_for_fuzzer(self):
@@ -437,7 +425,112 @@ class Plots:
             for library in libraries:
                 r, t = self.get_list_of_all_bugs(fuzzer, library)
 
-                self.bar_plot_bug_number(r, fuzzer, library, self.REACHED)
-                self.bar_plot_bug_number(t, fuzzer, library, self.TRIGGERED)
                 self.box_plot(r, fuzzer, library, self.REACHED)
                 self.box_plot(t, fuzzer, library, self.TRIGGERED)
+
+    def get_minimum_ttb(self, fuzzer, library, bug, campaign, metric):
+        samples = [np.nan]
+        for program, p_data in self.data[fuzzer][library].items():
+            r_data = p_data.get(campaign, np.nan)
+            if(r_data is not np.nan):
+                samples.append(r_data[metric].get(bug, np.nan))
+        if np.all(np.isnan(samples)):
+            return np.nan
+        return np.nanmin(samples)
+
+    def get_fuzzer_lib_bugs(self, fuzzer, library):
+        bugs = set()
+        for p_data in self.data[fuzzer][library].values():
+            for r_b_t in p_data.values():
+                for b_t in r_b_t.values():
+                    for bug in b_t.keys():
+                        bugs.add(bug)
+        return bugs
+
+    def get_minimum_bugs(self, library, metric):
+        campaign_data = {}
+
+        for fuzzer in self.data.keys():
+            bugs = self.get_fuzzer_lib_bugs(fuzzer, library)
+            campaign_dict = {
+                campaign: {
+                    bug: self.get_minimum_ttb(fuzzer, library, bug, campaign, metric)
+                    for bug in bugs
+                } for p_data in self.data[fuzzer][library].values()
+                for campaign in p_data.keys()
+            }
+            campaign_data[fuzzer] = campaign_dict
+        return campaign_data
+
+    def get_step_value(self, series, x):
+        serie = series[series.index <= x]
+        if(serie.empty):
+            return 0
+        return serie.iloc[-1]
+
+    def manage_nans(self, campaign_data):
+        plot_data = self.ddr()
+        for fuzzer in self.data.keys():
+            df = pd.DataFrame.from_dict(campaign_data[fuzzer], orient='index')
+            for campaign in self.campaigns:
+                if(campaign in df.index):
+                    a = df.loc[campaign]
+                    b = a[~np.isnan(a)]
+                    plot_data[fuzzer][campaign] = b.value_counts().sort_index().cumsum()
+        return plot_data
+
+    def create_intervals(self, plot_data):
+        aggplot_data = self.ddr()
+        max_x = -1
+        max_y = -1
+        min_x = inf
+        for fuzzer, data in plot_data.items():
+            xvalues = sorted(set(index for campaign in data.values() for index in campaign.index))
+            yvalues = [[self.get_step_value(campaign, x) for campaign in data.values()] for x in xvalues]
+
+            cintervals = [1.96 * np.nanstd(i)/np.nanmean(i) for i in yvalues]
+            ymeans = [np.nanmean(i) for i in yvalues]
+
+            aggplot_data[fuzzer]["x"] = np.array(xvalues)
+            aggplot_data[fuzzer]["y"] = np.array(ymeans)
+            if(max(aggplot_data[fuzzer]["x"]) > max_x):
+                max_x = max(aggplot_data[fuzzer]["x"])
+
+            if(min(aggplot_data[fuzzer]["x"]) < min_x):
+                min_x = min(aggplot_data[fuzzer]["x"])
+
+            if(max(aggplot_data[fuzzer]["y"]) > max_y):
+                max_y = max(aggplot_data[fuzzer]["y"])
+
+            aggplot_data[fuzzer]["ci"] = np.array(cintervals)
+        return aggplot_data, max_x, max_y, min_x
+
+    def draw_plot(self, aggplot_data, max_x, max_y, min_x, library):
+        fig, ax = plt.subplots(nrows=2, ncols=3, figsize=(15, 10))
+        for i, fuzzer in enumerate(aggplot_data.keys()):
+            figx = i // 3
+            figy = i % 3
+            axes = ax[figx, figy]
+
+            x = aggplot_data[fuzzer]["x"]
+            y = aggplot_data[fuzzer]["y"]
+            ci = aggplot_data[fuzzer]["ci"]
+
+            axes.set_xscale('log')
+            axes.step(x, y)
+            axes.fill_between(x, (y-ci), (y+ci), color='b', alpha=.1)
+
+            axes.set_title(fuzzer)
+            axes.set_ylim((0, max_y + 5))
+            axes.set_xlim((min_x, max_x + 5))
+        plt.tight_layout()
+        plt.savefig(os.path.join(self.path.plot_dir, library + "_unique_bug_line_plot.svg"), format="svg")
+        plt.close()
+
+    def line_plot_unique_bugs(self, metric):
+        libraries, fuzzers = self.get_all_targets_and_fuzzers()
+        for library in libraries:
+            campaign_data = self.get_minimum_bugs(library, metric)
+            plot_data = self.manage_nans(campaign_data)
+            aggplot_data, max_x, max_y, min_x = self.create_intervals(plot_data)
+            self.draw_plot(aggplot_data, max_x, max_y, min_x, library)
