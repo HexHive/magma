@@ -39,8 +39,8 @@ pushd "$TARGET/jbigkit"
 make clean
 make lib
 
-mv "$TARGET"/jbigkit/libjbig/*.a "$WORK/lib/"
-mv "$TARGET"/jbigkit/libjbig/*.h "$WORK/include/"
+cp "$TARGET"/jbigkit/libjbig/*.a "$WORK/lib/"
+cp "$TARGET"/jbigkit/libjbig/*.h "$WORK/include/"
 popd
 
 cd "$TARGET/repo"
