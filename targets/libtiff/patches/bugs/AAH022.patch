@@ -16,7 +16,7 @@ index 1b300b0..47d6992 100644
 +        MAGMA_LOG("AAH022", MAGMA_AND(tif->tif_mode == O_RDONLY, \
 +	        MAGMA_AND(nstrips > 1000000, \
 +	        MAGMA_OR(offset >= TIFFGetFileSize(tif), \
-+	         stripbytes > (TIFFGetFileSize(tif) - offset) / (nstrips - 1)))));
++	         stripbytes * (nstrips - 1) > (TIFFGetFileSize(tif) - offset)))));
 +#endif
  
          allocChoppedUpStripArrays(tif, nstrips, stripbytes, rowsperstrip);
