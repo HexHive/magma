@@ -16,7 +16,7 @@ cleanup() {
 	docker rm -f $container_id 1>/dev/null 2>&1
 }
 
-trap cleanup EXIT SIGINT
+trap cleanup EXIT
 
 if [ -z $FUZZER ] || [ -z $TARGET ] || [ -z $PROGRAM ] || [ -z $SHARED ]; then
     echo '$FUZZER, $TARGET, $PROGRAM, and $SHARED must be specified as' \
