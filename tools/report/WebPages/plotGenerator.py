@@ -114,6 +114,15 @@ class Plots:
 
         return d
 
+    def number_of_campaigns_per_fuzzer_library(self):
+        d = self.combineSublibrarysFuzzerResults()
+        number_of_campaings_per_fuzzer_library = {}
+        for fuzzer, libraries in d.items():
+            number_of_campaings_per_fuzzer_library[fuzzer] = {}
+            for library_name, campaigns in libraries.items():
+                number_of_campaings_per_fuzzer_library[fuzzer][library_name] = len(campaigns.keys())
+        return number_of_campaings_per_fuzzer_library
+
     def intersect_bug_id(self, reached_bugs, triggered_bugs):
         intersected_reached_bugs = [r_bug for r_bug in reached_bugs if
                                     r_bug[0] in [t_bug[0] for t_bug in triggered_bugs]]
@@ -136,21 +145,26 @@ class Plots:
 
     def expected_time_to_bug_for_each_fuzzer(self, num_campaigns, campaign_duration):
         d = self.time_to_trigger_per_bug()
+        number_of_campaings_per_fuzzer_library = self.number_of_campaigns_per_fuzzer_library()
         expected_time_to_bug = {}
         aggregate = {}
-        for fuzzer, library in d.items():
+        library_bugs = {}
+        for fuzzer, libraries in d.items():
             expected_time_to_bug[fuzzer] = {}
-            for bugs in library.values():
+            for library_name, bugs in libraries.items():
                 for bug_id, time in bugs.items():
+                    library_bugs[bug_id] = library_name
                     aggregate[bug_id] = aggregate.get(bug_id, []) + time
                     # ln(N/N-M)
-                    expected_time_to_bug[fuzzer][bug_id] = self.compute_expected_time_to_bug(time, num_campaigns,
+                    expected_time_to_bug[fuzzer][bug_id] = self.compute_expected_time_to_bug(time,
+                                                                                             number_of_campaings_per_fuzzer_library
+                                                                                             [fuzzer][library_name],
                                                                                              campaign_duration)
+        df = DataFrame(number_of_campaings_per_fuzzer_library)
+        df = df.transpose().sum()
 
-        number_of_fuzzers = len(list(d.keys()))
         for bug_id, times in aggregate.items():
-            aggregate[bug_id] = self.compute_expected_time_to_bug(times, num_campaigns * number_of_fuzzers,
-                                                                  campaign_duration)
+            aggregate[bug_id] = self.compute_expected_time_to_bug(times, df[library_bugs[bug_id]], campaign_duration)
         return expected_time_to_bug, aggregate
 
     def compute_expected_time_to_bug(self, list_of_times, num_campaigns, campaign_duration):
@@ -220,17 +234,16 @@ class Plots:
         bug_id = list(df.index)
         raw_data = np.array(df)
         fig, ax = plt.subplots(figsize=(10, 10))
-        heat_map = sns.heatmap(raw_data, cmap="YlGnBu", annot=self.labeled_data(raw_data), xticklabels=fuzzers,
+        sns.heatmap(raw_data, cmap="YlGnBu", annot=self.labeled_data(raw_data), xticklabels=fuzzers,
                                yticklabels=bug_id, fmt='s',
                                cbar_kws=dict(ticks=[]), ax=ax)
-        ax.set_title("Expected time-to-trigger-bug for each fuzzer in hours", fontsize=20)
+        ax.patch.set(fill='True', color='grey')
+        ax.set_title("Exptected time-to-trigger-bug for each fuzzer in hours", fontsize=20)
         plt.yticks(rotation=0)
         ax.xaxis.tick_top()
         ax.xaxis.set_label_position('top')
-       # plt.show()
         plt.savefig(os.path.join(self.path.plot_dir,"expected_time_to_bug_heat.svg"), format="svg")
         plt.clf()
-
 
     def heat_map_aggregate(self):
         fuzzers, aggregate = self.expected_time_to_bug_for_each_fuzzer(self.NUMBER_OF_CAMPAIGNS_PER_LIBRARY,
@@ -247,12 +260,11 @@ class Plots:
             labelled_data.append([self.generate_variable_label_units(time)])
 
         fig, ax = plt.subplots(figsize=(8, 7))
-        heat_map = sns.heatmap(data, cmap="YlGnBu", annot=labelled_data, yticklabels=bug_id,
+        sns.heatmap(data, cmap="YlGnBu", annot=labelled_data, yticklabels=bug_id,
                                xticklabels=["Aggregate time"], fmt='s',
                                cbar_kws=dict(ticks=[]), ax=ax)
         ax.set_title("Aggregate time for each bug in hours", fontsize=20)
         plt.ylabel("Triggered Bugs")
-        #plt.show()
         plt.savefig(os.path.join(self.path.plot_dir,"aggregate_time_per_bug.svg"), format="svg")
         plt.clf()
 
