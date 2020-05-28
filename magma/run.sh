@@ -13,11 +13,6 @@
 # + env LOGSIZE: size (in bytes) of log file to generate (default: 1 MiB)
 ##
 
-if ! rm -rf "$SHARED"/*; then
-    echo "Failed to clean findings directory!"
-    exit 1
-fi
-
 # set default max log size to 1 MiB
 LOGSIZE=${LOGSIZE:-$[1 << 20]}
 
@@ -58,8 +53,18 @@ for seed in "$TARGET/corpus/$PROGRAM"/*; do
     fi
 done
 
+
 # launch the fuzzer in parallel with the monitor
-counter=0
+rm -f "$MONITOR/tmp"
+polls=("$MONITOR"/*)
+if [ ${#polls[@]} -eq 0 ]; then
+    counter=0
+else
+    timestamps=($(sort -n < <(basename -a "${polls[@]}")))
+    last=${timestamps[-1]}
+    counter=$(( last + POLL ))
+fi
+
 while true; do
     "$OUT/monitor" --dump row > "$MONITOR/tmp"
     if [ $? -eq 0 ]; then

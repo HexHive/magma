@@ -9,9 +9,7 @@
 # - env SHARED: path to host-local volume where fuzzer findings are saved
 # - env POLL: time (in seconds) between polls
 # - env TIMEOUT: time to run the campaign
-# - env CID: numeric campaign identifier
 # + env AFFINITY: the CPU to bind the container to (default: no affinity)
-# + env LOGSDIR: path to logs directory
 ##
 
 cleanup() {
@@ -45,8 +43,6 @@ docker run -dt --volume=`realpath "$SHARED"`:/magma_shared \
 )
 container_id=$(cut -c-12 <<< $container_id)
 echo_time "Container for $FUZZER/$TARGET/$PROGRAM/$CID started in $container_id"
+docker logs -f "$container_id" &
 exit_code=$(docker wait $container_id)
-docker logs "$container_id" &> "${LOGSDIR}/${FUZZER}_${TARGET}_${PROGRAM}_${CID}_container.log"
-echo_time "Container for $FUZZER/$TARGET/$PROGRAM/$CID exited with $exit_code"
-docker rm $container_id 1>/dev/null 2>&1
 exit $exit_code

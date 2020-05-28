@@ -74,11 +74,14 @@ start_campaign()
     export CID=$(sem --id magma_cid --fg -j 1 -u \
             get_next_cid "$CACHEDIR")
     export SHARED="$CACHEDIR/$CID"
-
-    echo_time "Started $FUZZER/$TARGET/$PROGRAM/$CID on CPU $AFFINITY"
     mkdir -p "$SHARED" && chmod 777 "$SHARED"
 
-    "$MAGMA"/tools/captain/start.sh
+    echo_time "Container $FUZZER/$TARGET/$PROGRAM/$CID started on CPU $AFFINITY"
+
+    "$MAGMA"/tools/captain/start.sh &> \
+        "${LOGSDIR}/${FUZZER}_${TARGET}_${PROGRAM}_${CID}_container.log"
+
+    echo_time "Container $FUZZER/$TARGET/$PROGRAM/$CID stopped"
 
     ARDIR="$WORKDIR/ar/$FUZZER/$TARGET/$PROGRAM"
     mkdir -p "$ARDIR"
@@ -87,7 +90,7 @@ start_campaign()
     if [ -z $NO_ARCHIVE ]; then
         # only one tar job runs at a time, to prevent out-of-storage errors
         sem --id "magma_tar" --fg -j 1 \
-          tar -cf "${ARDIR}/${CID}/${CID}.tar" -C "$SHARED" . 1>/dev/null 2>&1 && \
+          tar -cf "${ARDIR}/${CID}/${CID}.tar" -C "$SHARED" . &>/dev/null && \
         rm -rf "$SHARED"
     else
         rm -rf "${ARDIR}/${CID}" && mv "$SHARED" "${ARDIR}/${CID}"
