@@ -13,6 +13,7 @@ import scikit_posthocs as sp
 import scipy.stats as ss
 from collections import defaultdict as dd
 
+
 class Plots:
     REACHED = "reached"
     TRIGGERED = "triggered"
@@ -26,13 +27,14 @@ class Plots:
         self.campaigns = list(str(x) for x in range(self.NUMBER_OF_CAMPAIGNS_PER_LIBRARY))
 
     def generate(self):
-        #self.line_plot_unique_bugs(self.REACHED)
-        #self.generate_plots_for_fuzzer()
-        #self.barplot_reached_vs_triggered_bugs_by_each_fuzzer_in_a_library()
+        # self.line_plot_unique_bugs(self.REACHED)
+        # self.line_plot_unique_bugs(self.TRIGGERED)
+        self.generate_plots_for_fuzzer()
+        self.barplot_reached_vs_triggered_bugs_by_each_fuzzer_in_a_library()
         self.heat_map_expected_time_to_bug()
         self.heatmap_pvalue()
-        #self.barplot_mean_and_variance_of_bugs_found_by_each_fuzzer()
-        #self.boxplot_unique_bugs_reached_in_all_libraries()
+        self.barplot_mean_and_variance_of_bugs_found_by_each_fuzzer()
+        self.boxplot_unique_bugs_reached_in_all_libraries()
 
     def get_all_targets_and_fuzzers(self):
         df = DataFrame(self.data)
