@@ -49,8 +49,8 @@ class MainPageTemplate(Render):
             number_of_bugs = len([name for name in os.listdir(patch_path)])
             target_number_of_bug_list.append(number_of_bugs)
         total_bugs = sum(target_number_of_bug_list)
-        target_list = zip(target_list, target_number_of_bug_list)
+        target_list = zip(self.libraries, target_number_of_bug_list)
 
-        rendering = template.render(target_list=target_list, total_bugs=total_bugs, fuzzer_list=fuzzer_list, plots_dir=self.plot_dir)
+        rendering = template.render(target_list=target_list, total_bugs=total_bugs, fuzzer_list=self.fuzzers, plots_dir=self.plot_dir)
 
         self.path.write(output_file_name, rendering)

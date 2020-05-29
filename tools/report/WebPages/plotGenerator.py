@@ -13,7 +13,6 @@ import scikit_posthocs as sp
 import scipy.stats as ss
 from collections import defaultdict as dd
 
-
 class Plots:
     REACHED = "reached"
     TRIGGERED = "triggered"
