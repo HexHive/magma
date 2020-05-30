@@ -529,7 +529,8 @@ class Plots:
 
     def box_plot(self, dictionary, fuzzer, library, metric):
         df = pd.DataFrame(dict([(k, pd.Series(v)) for k, v in dictionary.items()]))
-        df.boxplot(figsize=(12, 10))
+        boxprops = dict(linestyle='-', linewidth=2, color='k')
+        df.boxplot(figsize=(12, 10), boxprops=boxprops)
         plt.title(metric + ". Fuzzer: " + fuzzer + ". Library:" + library)
         plt.xlabel("Bug Number")
         plt.ylabel("Time (seconds)", rotation=90)
