@@ -9,7 +9,7 @@ class MainPageTemplate(Render):
 
     def __init__(self, path, fuzzers, libraries):
         '''
-        Parameters
+d        Parameters
         ----------
         path(Path):
             of class Path, used to have all the useful paths
@@ -20,6 +20,7 @@ class MainPageTemplate(Render):
         '''
         self.fuzzers = fuzzers
         self.libraries = libraries
+        print(libraries)
         super(MainPageTemplate, self).__init__(path)
         # Set paths for templates, output and images
         self.plot_dir = path.plot_dir
@@ -42,14 +43,16 @@ class MainPageTemplate(Render):
         FUZZER_DIR = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../../fuzzers"))
         fuzzer_list = [f.name for f in os.scandir(FUZZER_DIR) if f.is_dir()]
         target_list = [f.name for f in os.scandir(TARGET_DIR) if f.is_dir()]
+        print(target_list)
         target_number_of_bug_list = []
 
         for target in target_list:
             patch_path = os.path.join(TARGET_DIR, target, "patches/bugs")
             number_of_bugs = len([name for name in os.listdir(patch_path)])
-            target_number_of_bug_list.append(number_of_bugs)
-        total_bugs = sum(target_number_of_bug_list)
-        target_list = zip(self.libraries, target_number_of_bug_list)
+            if(target in self.libraries):
+                target_number_of_bug_list.append((target, number_of_bugs))
+        total_bugs = sum(i[1] for i in target_number_of_bug_list)
+        target_list = target_number_of_bug_list
 
         rendering = template.render(target_list=target_list, total_bugs=total_bugs, fuzzer_list=self.fuzzers, plots_dir=self.plot_dir)
 
