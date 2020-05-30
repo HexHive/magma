@@ -20,7 +20,7 @@ d        Parameters
         '''
         self.fuzzers = fuzzers
         self.libraries = libraries
-        print(libraries)
+
         super(MainPageTemplate, self).__init__(path)
         # Set paths for templates, output and images
         self.plot_dir = path.plot_dir
@@ -43,7 +43,7 @@ d        Parameters
         FUZZER_DIR = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../../fuzzers"))
         fuzzer_list = [f.name for f in os.scandir(FUZZER_DIR) if f.is_dir()]
         target_list = [f.name for f in os.scandir(TARGET_DIR) if f.is_dir()]
-        print(target_list)
+
         target_number_of_bug_list = []
 
         for target in target_list:
