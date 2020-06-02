@@ -53,6 +53,14 @@ for seed in "$TARGET/corpus/$PROGRAM"/*; do
     fi
 done
 
+shopt -s nullglob
+seeds=("$1"/*)
+shopt -u nullglob
+if [ ${#seeds[@]} -eq 0 ]; then
+    echo "No seeds remaining! Campaign will not be launched."
+    exit 1
+fi
+
 
 # launch the fuzzer in parallel with the monitor
 rm -f "$MONITOR/tmp"
