@@ -43,7 +43,12 @@
           {% assign nav_pages = site.pages | where_exp:"item", "site.data.nav.urls contains item.url" %}
           {% for item in site.data.nav.urls %}
             {% assign ipage = nav_pages | where: 'url', item | first%}
-            <li><a href="{{ ipage.url | absolute_url }}">{{ ipage.title }}</a></li>
+            {% if page.url == item %}
+              {% assign item_cls = "current" %}
+            {% else %}
+              {% assign item_cls = "other" %}
+            {% endif %}
+            <li><a class="{{ item_cls }}" href="{{ ipage.url | absolute_url }}">{{ ipage.title }}</a></li>
           {% endfor %}
         </ul>
       </header>
