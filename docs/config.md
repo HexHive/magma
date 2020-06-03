@@ -1,3 +1,7 @@
+---
+title: Configuration
+---
+
 ### Magma Build Flags
 
 Magma supports a couple of flags to customize the canary configuration and

@@ -1,3 +1,7 @@
+---
+title: Contribute
+---
+
 ### Adding Bugs
 
 To add a new bug to an existing library, create a patch and add it to
