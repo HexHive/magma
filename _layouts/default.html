@@ -43,7 +43,7 @@
           {% assign nav_pages = site.pages | where_exp:"item", "site.data.nav.urls contains item.url" %}
           {% for item in site.data.nav.urls %}
             {% assign ipage = nav_pages | where: 'url', item | first%}
-            <li><a href="{{ ipage.url }}">{{ ipage.title }}</a></li>
+            <li><a href="{{ ipage.url | absolute_url }}">{{ ipage.title }}</a></li>
           {% endfor %}
         </ul>
       </header>
