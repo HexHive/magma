@@ -1,0 +1,19 @@
+
+# Json files
+*.json
+
+# PyCharm folder
+.idea
+
+# Emacs files
+*~
+\#*\#
+.\#*
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# MacOS files
+.DS_Store

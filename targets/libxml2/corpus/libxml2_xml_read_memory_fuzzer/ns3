@@ -1,3 +1,9 @@
-<?xml version="1.0"?>
-<dia:diagram dia:testattr="test"
-             xmlns:dia="http://www.lysator.liu.se/~alla/dia/"/>
+<?xml version="1.0" ?>
+<!DOCTYPE foo [
+<!ELEMENT foo EMPTY>
+<!ATTLIST foo
+    xmlns CDATA #FIXED "http://example.com/fooo"
+    xmlns:foo CDATA #REQUIRED
+    foo:info CDATA #IMPLIED>
+]>
+<foo xmlns="http://example.com/foo" xmlns:foo="http://example.com/fo" foo:info="toto"/>

@@ -1,3 +1,13 @@
-<?xml version="1.0"?>
-<dia:diagram xmlns:dia="http://www.lysator.liu.se/~alla/dia/"
-             dia:testattr="test"/>
+<!DOCTYPE doc [
+<!ELEMENT doc (#PCDATA | ns:a | ns:b)*>
+<!ATTLIST doc
+          attr  CDATA #REQUIRED
+          xmlns:ns CDATA #IMPLIED>
+<!ELEMENT a EMPTY>
+<!ELEMENT b (#PCDATA)>
+]>
+<ns:doc ns:attr="val" xmlns:ns="http://www.example.org/test/">
+   <ns:a/>
+   <ns:b>first line</ns:b>
+   <ns:b>second line</ns:b>
+</ns:doc>
