@@ -2,7 +2,7 @@
 title: Configuration
 ---
 
-### Magma Build Flags
+## Magma Build Flags
 
 Magma supports a couple of flags to customize the canary configuration and
 behavior:
@@ -20,7 +20,7 @@ For the moment, these are not configurable through a command-line argument or
 environment variable, but can be enabled by modifying CFLAGS in the Dockerfile
 and defining the macros `MAGMA_FATAL_CANARIES` and `MAGMA_HARDEN_CANARIES`.
 
-### ISAN
+## ISAN
 
 In order to speed up the fuzzing process, canaries can be configured to use ISAN
 mode, but only when applicable. It is possible to forego the overhead of runtime

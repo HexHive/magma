@@ -2,7 +2,7 @@
 title: Contribute
 ---
 
-### Adding Bugs
+## Adding Bugs
 
 To add a new bug to an existing library, create a patch and add it to
 `targets/$LIBRARY/patches/bugs` for the corresponding library.
@@ -47,7 +47,7 @@ To prevent duplication of efforts, please also mention bugs which could not be
 implemented, and state why that was difficult or not possible (e.g. major code
 changes).
 
-## Warnings
+### Warnings
 
 Be careful about the following things before making a pull request:
 
