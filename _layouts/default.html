@@ -43,7 +43,7 @@
           {% assign nav_pages = site.pages | where_exp:"item", "site.data.nav.urls contains item.url" %}
           {% for item in site.data.nav.urls %}
             {% assign ipage = nav_pages | where: 'url', item | first%}
-            {% if page.url == item %}
+            {% if page.path == ipage.path %}
               {% assign item_cls = "current" %}
             {% else %}
               {% assign item_cls = "other" %}
