@@ -257,8 +257,7 @@ class Plots:
         plt.clf()
 
     def heat_map_aggregate(self):
-        fuzzers, aggregate = self.get_expected_time_to_bug_for_each_fuzzer(self.CAMPAIGN_DURATION)
-        data = DataFrame(fuzzers)
+        fuzzers, aggregate = self.expected_time_to_bug_for_each_fuzzer(self.CAMPAIGN_DURATION)
         agg = {}
         agg["aggregate"] = aggregate
         aggregate = DataFrame(agg)
@@ -267,12 +266,18 @@ class Plots:
         data = np.array(aggregate)
         labelled_data = []
         for time in data:
-            labelled_data.append([self.get_variable_time_unit(time)])
+            labelled_data.append([self.generate_variable_label_units(time)])
 
         fig, ax = plt.subplots(figsize=(8, 7))
-        sns.heatmap(data, cmap="YlGnBu", annot=labelled_data, yticklabels=bug_id,
-                               xticklabels=["Aggregate time"], fmt='s',
-                               cbar_kws=dict(ticks=[]), ax=ax)
+
+        heat_map = sns.heatmap(data, cmap="seismic", annot=labelled_data, yticklabels=bug_id,
+                               xticklabels=["Aggregate time"], fmt='s', norm=colors.PowerNorm(gamma=0.17),
+                               cbar_kws=dict(ticks=[83400]), ax=ax)
+        ticks = [20850, 41700, 83400, 166800]
+        tick_labels = ["6h", "12h", "24h", "48h"]
+        cbar = ax.collections[0].colorbar
+        cbar.set_ticks(ticks)
+        cbar.set_ticklabels(tick_labels)
         ax.set_title("Aggregate time for each bug in hours", fontsize=20)
         plt.ylabel("Triggered Bugs")
         plt.savefig(os.path.join(self.path.plot_dir,"aggregate_time_per_bug.svg"), format="svg")
