@@ -29,11 +29,17 @@ class Plots:
         # self.line_plot_unique_bugs(self.REACHED)
         # self.line_plot_unique_bugs(self.TRIGGERED)
         self.generate_plots_for_fuzzer()
+        plt.clf()
         self.barplot_reached_vs_triggered_bugs_by_each_fuzzer_in_a_library()
+        plt.clf()
         self.heat_map_expected_time_to_bug()
+        plt.clf()
         self.heatmap_pvalue()
+        plt.clf()
         self.barplot_mean_and_variance_of_bugs_found_by_each_fuzzer()
+        plt.clf()
         self.boxplot_unique_bugs_reached_in_all_libraries()
+        plt.clf()
 
     def get_all_targets_and_fuzzers(self):
         df = DataFrame(self.data)
@@ -483,6 +489,8 @@ class Plots:
         for value in self.data[fuzzer_name][library_name].values():
             for kv, uv in value.items():
                 for k, u in uv.items():
+                    if not k in (self.REACHED, self.TRIGGERED):
+                        continue
                     for bug, time in u.items():
                         if k == self.REACHED:
                             if bug in reached_map:
