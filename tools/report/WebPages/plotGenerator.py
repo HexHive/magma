@@ -486,6 +486,18 @@ class Plots:
         return reached_map, triggered_map
 
     def get_list_of_all_bugs(self, fuzzer_name, library_name):
+        '''
+        Get all bugs and their reach and triggered time
+
+        Parameters
+        ----------
+        fuzzer_name (string):
+            From which fuzzer
+
+        library_name (string):
+            From which library
+        '''
+        
         reached_map = {}
         triggered_map = {}
 
@@ -503,28 +515,6 @@ class Plots:
                                 triggered_map[bug].append(time)
                             else:
                                 triggered_map[bug] = [time]
-        return reached_map, triggered_map
-
-    def get_list_of_all_bugs_time(self, fuzzer_name, library_name):
-        reached_map = {}
-        triggered_map = {}
-
-        for value in self.data[fuzzer_name][library_name].values():
-            for campaign, uv in value.items():
-                reached_map[campaign] = {}
-                triggered_map[campaign] = {}
-                for k, u in uv.items():
-                    for bug, time in u.items():
-                        if k == self.REACHED:
-                            if time in reached_map[campaign]:
-                                reached_map[campaign][time] += 1
-                            else:
-                                reached_map[campaign][time] = 1
-                        elif k == self.TRIGGERED:
-                            if time in triggered_map[campaign]:
-                                triggered_map[campaign][time] += 1
-                            else:
-                                triggered_map[campaign][time] = 1
         return reached_map, triggered_map
 
     def box_plot(self, dictionary, fuzzer, library, metric):
