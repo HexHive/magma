@@ -27,6 +27,7 @@ class FuzzerDescription:
             The link to the repository of the fuzzer
         '''
 
+        # We set the different variables
         self.name = name
         self.type = type
         self.use_case = use_case
