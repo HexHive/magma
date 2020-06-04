@@ -461,33 +461,9 @@ class Plots:
 
         return reached_map_list
 
-    def get_all_bugs(self, fuzzer_name, library_name):
-        reached_map = {}
-        triggered_map = {}
-
-        for driver in self.data[fuzzer_name][library_name].keys():
-            reached_map_list, triggered_map_list = self.get_bugs_for_driver(fuzzer_name, library_name, driver)
-            self.merge(reached_map, reached_map_list)
-            self.merge(triggered_map, triggered_map_list)
-
-        return reached_map, triggered_map
-
-    def get_bugs_for_driver(self, fuzzer_name, library_name, driver):
-        reached_map = {}
-        triggered_map = {}
-
-        for key, value in self.data[fuzzer_name][library_name][driver].items():
-            for kv, uv in value.items():
-                if kv == self.REACHED:
-                    reached_map[key] = uv
-                elif kv == self.TRIGGERED:
-                    triggered_map[key] = uv
-
-        return reached_map, triggered_map
-
     def get_list_of_all_bugs(self, fuzzer_name, library_name):
         '''
-        Get all bugs and their reach and triggered time
+        Get all bugs and their reached and triggered time
 
         Parameters
         ----------
@@ -497,7 +473,7 @@ class Plots:
         library_name (string):
             From which library
         '''
-        
+
         reached_map = {}
         triggered_map = {}
 
