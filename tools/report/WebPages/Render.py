@@ -13,6 +13,8 @@ class Render:
             The path class to be used
 
         '''
+
+        # Setting the path
         self.path = path
 
     def render(self, file_name, output_file_name):
