@@ -561,6 +561,18 @@ class Plots:
         return bugs
 
     def get_minimum_bugs(self, library, metric):
+        '''
+        Get all minimum time for all bugs for a fuzzer and a library
+
+        Parameters
+        ----------
+        library (string):
+            From which library
+
+        metric (string):
+            From which metric
+        '''
+
         campaign_data = {}
 
         for fuzzer in self.data.keys():
@@ -582,6 +594,15 @@ class Plots:
         return serie.iloc[-1]
 
     def manage_nans(self, campaign_data):
+        '''
+        A function to manage nan values
+
+        Parameters
+        ----------
+        campaign_data (dictionary):
+            A dictionary of data
+        '''
+
         plot_data = self.ddr()
         for fuzzer in self.data.keys():
             df = pd.DataFrame.from_dict(campaign_data[fuzzer], orient='index')
@@ -593,6 +614,15 @@ class Plots:
         return plot_data
 
     def create_intervals(self, plot_data):
+        '''
+        A function to create all the necessary intervals
+
+        Parameters
+        ----------
+        plot_data (dictionary):
+            A dictionary of data
+        '''
+
         aggplot_data = self.ddr()
         max_x = -1
         max_y = -1
@@ -620,6 +650,27 @@ class Plots:
 
     # A function to draw the plots of data and setting different constants
     def draw_plot(self, aggplot_data, max_x, max_y, min_x, library):
+        '''
+        A function to create the line plots for all libraries
+
+        Parameters
+        ----------
+        aggplot_data (dictionary):
+            The data
+
+        max_x (int):
+            max value for x axis
+
+        max_y (int):
+            max value for y axis
+
+        min_x (int):
+            min value for x axis
+
+        library (int):
+            From which library
+        '''
+
         fig, ax = plt.subplots(nrows=2, ncols=3, figsize=(15, 10))
         for i, fuzzer in enumerate(aggplot_data.keys()):
             figx = i // 3
@@ -642,6 +693,15 @@ class Plots:
         plt.close()
 
     def line_plot_unique_bugs(self, metric):
+        '''
+        A function to create the line plots for all libraries
+
+        Parameters
+        ----------
+        metric (string):
+            Which metric to use
+        '''
+
         libraries, fuzzers = self.get_all_targets_and_fuzzers()
         for library in libraries:
             campaign_data = self.get_minimum_bugs(library, metric)
