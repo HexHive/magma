@@ -22,6 +22,9 @@ class FuzzerDescription:
 
         availability (string):
             Indicates if it is open source or not
+
+        link (string):
+            The link to the repository of the fuzzer
         '''
 
         self.name = name
@@ -31,6 +34,7 @@ class FuzzerDescription:
         self.link = link
 
 
+# We initialize all different descriptions
 fuzzer_descriptions = {
     "afl": FuzzerDescription("AFL", "Gray-box binary fuzzer",
                              "Mutational fuzzing", "Open-source",
@@ -62,8 +66,8 @@ fuzzer_descriptions = {
 
 class FuzzerTemplate(Render):
     '''
-    A class to generate a template for a fuzzer. Generate its html file and its
-    plots
+    A class to generate a template for a fuzzer. It generate its html file and 
+    its plots
     '''
 
     FUZZER_TEMPLATE = "fuzzerTemplate.html"
@@ -72,10 +76,10 @@ class FuzzerTemplate(Render):
         '''
         Parameters
         ----------
-        path(Path):
+        path (Path):
             of class Path, used to have all the useful paths
 
-        libraries(array of string):
+        libraries (array of string):
             libraries
         '''
 
@@ -96,21 +100,21 @@ class FuzzerTemplate(Render):
             The file to get the directory from
 
         output_file_name (string):
-            The name of the html file to write to. (example: "afl")
-
-        description (FuzzerDescription):
-            The corresponding description
+            The name of the html file to write to. (example: "afl.html")
         '''
 
+        # We split to get the name (e.g we get afl from "afl.html")
         splitted_output_file_name = output_file_name.split(".")
 
         description = fuzzer_descriptions[splitted_output_file_name[0]]
 
-        # TODO Generate bugs reports, tables, graphs
         template = self.path.get_template(file_name)
 
-        rendering = template.render(fuzzer=description, libraries=self.libraries,
+        rendering = template.render(fuzzer=description,
+                                    libraries=self.libraries,
                                     choices=["bar", "box"],
-                                    reached_triggered=["reached", "triggered"], plot_dir=self.plot_dir)
+                                    reached_triggered=["reached", "triggered"],
+                                    plot_dir=self.plot_dir)
 
+        # We write what we have generated
         self.path.write(output_file_name, rendering)
