@@ -1,6 +1,7 @@
 import matplotlib
 import matplotlib.pyplot as plt
 import pandas as pd
+from matplotlib import colors
 from pandas import DataFrame
 from math import sqrt
 import seaborn as sns
@@ -150,7 +151,7 @@ class Plots:
                 d[fuzzer][library] = num_trigger
         return d
 
-    def get_expected_time_to_bug_for_each_fuzzer(self, num_campaigns, campaign_duration):
+    def expected_time_to_bug_for_each_fuzzer(self,campaign_duration):
         d = self.get_time_to_trigger_per_bug()
         number_of_campaings_per_fuzzer_library = self.get_number_of_campaigns_per_fuzzer_library()
         expected_time_to_bug = {}
@@ -164,9 +165,10 @@ class Plots:
                     aggregate[bug_id] = aggregate.get(bug_id, []) + time
                     # ln(N/N-M)
                     expected_time_to_bug[fuzzer][bug_id] = self.compute_expected_time_to_bug(time,
-                                                                                             number_of_campaings_per_fuzzer_library
-                                                                                             [fuzzer][library_name],
+                                                                                             number_of_campaings_per_fuzzer_library[
+                                                                                                 fuzzer][library_name],
                                                                                              campaign_duration)
+
         df = DataFrame(number_of_campaings_per_fuzzer_library)
         df = df.transpose().sum()
 
@@ -220,8 +222,7 @@ class Plots:
             plt.clf()
 
     def heat_map_expected_time_to_bug(self):
-        data, aggregate = self.get_expected_time_to_bug_for_each_fuzzer(self.NUMBER_OF_CAMPAIGNS_PER_LIBRARY,
-                                                                        self.CAMPAIGN_DURATION)
+        data, aggregate = self.expected_time_to_bug_for_each_fuzzer(self.CAMPAIGN_DURATION)
         fuzzer_order = self.get_fuzzer_from_most_to_less_triggered_bugs(data)
         data["aggregate"] = aggregate
         df = DataFrame(data)
@@ -231,21 +232,32 @@ class Plots:
         fuzzers = list(df.columns)
         bug_id = list(df.index)
         raw_data = np.array(df)
+
         fig, ax = plt.subplots(figsize=(10, 10))
-        sns.heatmap(raw_data, cmap="YlGnBu", annot=self.get_labeled_data(raw_data), xticklabels=fuzzers,
-                    yticklabels=bug_id, fmt='s',
-                    cbar_kws=dict(ticks=[]), ax=ax)
-        ax.patch.set(fill='True', color='grey')
-        ax.set_title("Exptected time-to-trigger-bug for each fuzzer in hours", fontsize=20)
-        plt.yticks(rotation=0)
+        heat_map = sns.heatmap(raw_data, cmap='seismic',
+                               annot=self.get_labeled_data(raw_data),
+                               xticklabels=fuzzers,
+                               yticklabels=bug_id,
+                               fmt='s',
+                               norm=colors.PowerNorm(gamma=0.32),
+                               ax=ax)
+        ticks = [20850, 41700, 83400, 166800]
+        tick_labels = ["6h", "12h", "24h", "48h"]
+        cbar = ax.collections[0].colorbar
+        cbar.set_ticks(ticks)
+        cbar.set_ticklabels(tick_labels)
+        ax.patch.set(fill='True', color='darkgrey')
+        ax.set_title("Exptected time-to-trigger-bug for each fuzzer", fontsize=20)
         ax.xaxis.tick_top()
         ax.xaxis.set_label_position('top')
+        plt.yticks(rotation=0)
+        plt.xlabel("Fuzzers")
+        plt.ylabel("Bugs")
         plt.savefig(os.path.join(self.path.plot_dir,"expected_time_to_bug_heat.svg"), format="svg")
         plt.clf()
 
     def heat_map_aggregate(self):
-        fuzzers, aggregate = self.get_expected_time_to_bug_for_each_fuzzer(self.NUMBER_OF_CAMPAIGNS_PER_LIBRARY,
-                                                                           self.CAMPAIGN_DURATION)
+        fuzzers, aggregate = self.get_expected_time_to_bug_for_each_fuzzer(self.CAMPAIGN_DURATION)
         data = DataFrame(fuzzers)
         agg = {}
         agg["aggregate"] = aggregate
