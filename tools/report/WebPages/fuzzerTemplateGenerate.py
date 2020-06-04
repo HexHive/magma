@@ -106,10 +106,13 @@ class FuzzerTemplate(Render):
         # We split to get the name (e.g we get afl from "afl.html")
         splitted_output_file_name = output_file_name.split(".")
 
+        # We get the description according to the name
         description = fuzzer_descriptions[splitted_output_file_name[0]]
 
+        # We get the template for the fuzzer pages
         template = self.path.get_template(file_name)
 
+        # We render using jinja
         rendering = template.render(fuzzer=description,
                                     libraries=self.libraries,
                                     choices=["bar", "box"],
