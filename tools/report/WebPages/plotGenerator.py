@@ -430,37 +430,6 @@ class Plots:
         heatmap_args.update(kwargs)
         return sp.sign_plot(p_values, ax=axes, **heatmap_args)
 
-    def add_to_map_reach(self, bug, time, reached_map):
-        if bug in reached_map:
-            reached_map[bug].append(time)
-        else:
-            reached_map[bug] = [time]
-
-    def merge(self, map_one, map_two):
-        # Merge map {campaign_number -> {BUG_NAME: [204, 330, 439]}}
-        for key, v in map_two.items():
-            if key in map_one:
-                for bug, time in v.items():
-                    if bug in map_one[key]:
-                        map_one[key][bug].append(time)
-                    else:
-                        map_one[key][bug] = [time]
-            else:
-                for bug, time in v.items():
-                    map_one[key] = {bug: [time]}
-
-    def get_data(self, bug_map):
-        reached_map_list = {}
-
-        for key, value in bug_map.items():
-            for bug, time in value.items():
-                if bug in reached_map_list:
-                    reached_map_list[bug].append(time)
-                else:
-                    reached_map_list[bug] = [time]
-
-        return reached_map_list
-
     def get_list_of_all_bugs(self, fuzzer_name, library_name):
         '''
         Get all bugs and their reached and triggered time
@@ -494,9 +463,30 @@ class Plots:
         return reached_map, triggered_map
 
     def box_plot(self, dictionary, fuzzer, library, metric):
+        '''
+        Create box plot graph
+
+        Parameters
+        ----------
+        dictionary (string):
+            From which fuzzer
+
+        fuzzer (string):
+            From which fuzzer
+
+        library (string):
+            From which library
+
+        metric (string):
+            From which metric
+        '''
+
         df = pd.DataFrame(dict([(k, pd.Series(v)) for k, v in dictionary.items()]))
+
+        # We increase the width so smaller boxes can be seen
         boxprops = dict(linestyle='-', linewidth=2, color='k')
         df.boxplot(figsize=(12, 10), boxprops=boxprops)
+
         plt.title(metric + ". Fuzzer: " + fuzzer + ". Library:" + library)
         plt.xlabel("Bug Number")
         plt.ylabel("Time (seconds)", rotation=90)
@@ -505,6 +495,10 @@ class Plots:
         plt.close()
 
     def generate_plots_for_fuzzer(self):
+        '''
+        Function to generate the different plots for the fuzzer pages
+        '''
+
         libraries, fuzzers = self.get_all_targets_and_fuzzers()
         for fuzzer in fuzzers:
             for library in libraries:
@@ -514,6 +508,28 @@ class Plots:
                 self.box_plot(t, fuzzer, library, self.TRIGGERED)
 
     def get_minimum_ttb(self, fuzzer, library, bug, campaign, metric):
+        '''
+        Get minimum time to be reached for a fuzzer, a library, a bug,
+        a campaign and a metric
+
+        Parameters
+        ----------
+        fuzzer (string):
+            From which fuzzer
+
+        library (string):
+            From which library
+
+        bug (string):
+            From which bug
+
+        campaign (string):
+            From which campaign
+
+        metric (string):
+            From which metric
+        '''
+
         samples = [np.nan]
         for program, p_data in self.data[fuzzer][library].items():
             r_data = p_data.get(campaign, np.nan)
@@ -524,6 +540,18 @@ class Plots:
         return np.nanmin(samples)
 
     def get_fuzzer_lib_bugs(self, fuzzer, library):
+        '''
+        Get all bugs for a fuzzer and a library
+
+        Parameters
+        ----------
+        fuzzer (string):
+            From which fuzzer
+
+        library (string):
+            From which library
+        '''
+
         bugs = set()
         for p_data in self.data[fuzzer][library].values():
             for r_b_t in p_data.values():
