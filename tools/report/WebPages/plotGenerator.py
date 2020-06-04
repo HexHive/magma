@@ -430,13 +430,13 @@ class Plots:
         heatmap_args.update(kwargs)
         return sp.sign_plot(p_values, ax=axes, **heatmap_args)
 
-    def get_list_of_all_bugs(self, fuzzer_name, library_name):
+    def get_list_of_all_bugs(self, fuzzer, library):
         '''
         Get all bugs and their reached and triggered time
 
         Parameters
         ----------
-        fuzzer_name (string):
+        fuzzer (string):
             From which fuzzer
 
         library_name (string):
@@ -446,7 +446,7 @@ class Plots:
         reached_map = {}
         triggered_map = {}
 
-        for value in self.data[fuzzer_name][library_name].values():
+        for value in self.data[fuzzer][library].values():
             for kv, uv in value.items():
                 for k, u in uv.items():
                     for bug, time in u.items():

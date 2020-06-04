@@ -45,7 +45,10 @@ def main():
 
     libraries, fuzzers = plots.get_all_targets_and_fuzzers()
 
-    fuzzer_template = FuzzerTemplate(Path(template_dir, fuzzers_dir, tables_dir, "../"+PLOTS), libraries)
+    fuzzer_path = Path(template_dir, fuzzers_dir, tables_dir, "../"+PLOTS)
+    fuzzer_path.create_directories()
+
+    fuzzer_template = FuzzerTemplate(fuzzer_path, libraries)
 
     print("Create library pages")
     library_template = LibraryTemplate(Path(template_dir, libraries_dir, tables_dir, "../"+PLOTS))
