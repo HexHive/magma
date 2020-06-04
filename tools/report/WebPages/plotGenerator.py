@@ -527,15 +527,6 @@ class Plots:
                                 triggered_map[campaign][time] = 1
         return reached_map, triggered_map
 
-    def to_html(self, dataframe, output_name):
-        df = pd.DataFrame(dataframe)
-        df.to_html(self.path.tables_dir + "/" + output_name + ".html", index=True)
-
-    def to_html_without_decimal(self, dataframe, output_name):
-        df = pd.DataFrame(dataframe)
-        df = df.astype('Int64').astype(str).replace("<NA>", "")
-        df.to_html(self.path.tables_dir + "/" + output_name + ".html", index=True)
-
     def box_plot(self, dictionary, fuzzer, library, metric):
         df = pd.DataFrame(dict([(k, pd.Series(v)) for k, v in dictionary.items()]))
         boxprops = dict(linestyle='-', linewidth=2, color='k')
