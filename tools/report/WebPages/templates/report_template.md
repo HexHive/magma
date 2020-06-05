@@ -45,7 +45,7 @@ title: {{ report_title }}
 <div class="general graph">
     <h2>General result</h2>
     <div>
-        <img src ="{{plots_dir}}/unique_bug_box.svg">
+        <img src ="{{plots_dir}}/mean_variance_bar.svg">
     </div>
     <div>
         <img src ="{{plots_dir}}/signplot.svg">
