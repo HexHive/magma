@@ -561,6 +561,7 @@ class Plots:
             for library in libraries:
                 r, t = self.get_list_of_all_bugs(fuzzer, library)
 
+                plt.clf()
                 self.box_plot(r, fuzzer, library, self.REACHED)
                 plt.clf()
                 self.box_plot(t, fuzzer, library, self.TRIGGERED)
