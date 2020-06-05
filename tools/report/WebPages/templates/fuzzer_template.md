@@ -12,7 +12,7 @@ title: {{ fuzzer.name }}
       <li>{{ fuzzer.type }}</li>
       <li>{{ fuzzer.use_case }}</li>
       <li>{{ fuzzer.availability }}</li>
-      <li><a href={{ fuzzer.link }}>site</a></li>
+      <li><a href="{{ fuzzer.link }}">site</a></li>
   </ul>
 </div>
 <div id="some_id" class="some_class">
