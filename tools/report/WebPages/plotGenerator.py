@@ -26,8 +26,10 @@ class Plots:
         self.campaigns = list(str(x) for x in range(self.NUMBER_OF_CAMPAIGNS_PER_LIBRARY))
 
     def generate(self):
-        # self.line_plot_unique_bugs(self.REACHED)
-        # self.line_plot_unique_bugs(self.TRIGGERED)
+        self.line_plot_unique_bugs(self.REACHED)
+        plt.clf()
+        self.line_plot_unique_bugs(self.TRIGGERED)
+        plt.clf()
         self.generate_plots_for_fuzzer()
         plt.clf()
         self.barplot_reached_vs_triggered_bugs_by_each_fuzzer_in_a_library()
@@ -571,8 +573,9 @@ class Plots:
         for p_data in self.data[fuzzer][library].values():
             for r_b_t in p_data.values():
                 for b_t in r_b_t.values():
-                    for bug in b_t.keys():
-                        bugs.add(bug)
+                    if type(b_t) is dict:
+                        for bug in b_t.keys():
+                            bugs.add(bug)
         return bugs
 
     def get_minimum_bugs(self, library, metric):
@@ -644,7 +647,7 @@ class Plots:
             y = aggplot_data[fuzzer]["y"]
             ci = aggplot_data[fuzzer]["ci"]
 
-            axes.set_xscale('log')
+            # axes.set_xscale('log')
             axes.step(x, y)
             axes.fill_between(x, (y-ci), (y+ci), color='b', alpha=.1)
 
