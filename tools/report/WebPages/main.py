@@ -46,15 +46,15 @@ def main():
     print("Create library pages")
     library_template = LibraryTemplate(Path(template_dir, libraries_dir, tables_dir, "../"+PLOTS))
     for library in libraries:
-        library_template.render("library_template.html", library+".html")
+        library_template.render("library_template.md", library+".md")
 
     print("Create main page")
-    main_template = MainPageTemplate(Path(template_dir, output_dir, tables_dir, "./"+PLOTS), fuzzers, libraries)
-    main_template.render("report_template.html", "report.html")
+    main_template = MainPageTemplate(sys.argv[2], Path(template_dir, output_dir, tables_dir, "./"+PLOTS), fuzzers, libraries)
+    main_template.render("report_template.md", "index.md")
 
     print("Create fuzzer pages")
     for fuzzer in fuzzers:
-        fuzzer_template.render("fuzzer_template.html", fuzzer+".html")
+        fuzzer_template.render("fuzzer_template.md", fuzzer+".md")
 
 
 def get_data():

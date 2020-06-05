@@ -7,7 +7,7 @@ class MainPageTemplate(Render):
        A class to represent a the main report page
     '''
 
-    def __init__(self, path, fuzzers, libraries):
+    def __init__(self, title, path, fuzzers, libraries):
         '''
 d        Parameters
         ----------
@@ -20,6 +20,7 @@ d        Parameters
         '''
         self.fuzzers = fuzzers
         self.libraries = libraries
+        self.title = title
 
         super(MainPageTemplate, self).__init__(path)
         # Set paths for templates, output and images
@@ -54,6 +55,6 @@ d        Parameters
         total_bugs = sum(i[1] for i in target_number_of_bug_list)
         target_list = target_number_of_bug_list
 
-        rendering = template.render(target_list=target_list, total_bugs=total_bugs, fuzzer_list=self.fuzzers, plots_dir=self.plot_dir)
+        rendering = template.render(report_title=self.title, target_list=target_list, total_bugs=total_bugs, fuzzer_list=self.fuzzers, plots_dir=self.plot_dir)
 
         self.path.write(output_file_name, rendering)
