@@ -209,15 +209,19 @@ class Plots:
 
     def barplot_mean_and_variance_of_bugs_found_by_each_fuzzer(self):
         reached, triggered = self.meanAndDeviationOfNumberOfBugsAcrossXCampaigns(self.NUMBER_OF_CAMPAIGNS_PER_LIBRARY)
-        df = DataFrame(reached).transpose()
+        df = DataFrame(reached)
         variances = df.applymap(lambda x: x[1])
         means = df.applymap(lambda x: x[0])
         fig, ax = plt.subplots()
-        means.plot.bar(yerr=variances, ax=ax, figsize=(20, 10))
+
+        means.plot.bar(width=0.8, yerr=variances, ax=ax, figsize=(9, 6))
+
+        ax.legend(loc="upper left", bbox_to_anchor=(1,1))
         plt.ylabel('Number of Bugs Triggered')
         plt.xlabel('Targets')
+        plt.xticks(rotation=0)
         plt.title("Mean number of bugs found by different fuzzers for each target library")
-        plt.savefig(os.path.join(self.path.plot_dir,"mean_variance_bar.svg"), format="svg")
+        plt.savefig(os.path.join(self.path.plot_dir,"mean_variance_bar.svg"), format="svg", bbox_inches="tight")
         plt.clf()
 
     def barplot_reached_vs_triggered_bugs_by_each_fuzzer_in_a_library(self):
