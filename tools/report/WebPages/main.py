@@ -30,13 +30,15 @@ def main():
 
     json_data = get_data()
 
-    path = Path(template_dir, libraries_dir, tables_dir, plot_dir)
+    lib_path = Path(template_dir, libraries_dir, tables_dir, plot_dir)
+    fuzz_path = Path(template_dir, fuzzers_dir, tables_dir, plot_dir)
 
     print("Create useful directories")
-    path.create_directories()
+    lib_path.create_directories()
+    fuzz_path.create_directories()
 
     print("Generate plots")
-    plots = Plots(json_data, path)
+    plots = Plots(json_data, lib_path)
     plots.generate()
 
     libraries, fuzzers = plots.get_all_targets_and_fuzzers()
