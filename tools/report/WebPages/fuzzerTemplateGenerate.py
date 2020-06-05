@@ -110,7 +110,7 @@ class FuzzerTemplate(Render):
         template = self.path.get_template(file_name)
 
         rendering = template.render(fuzzer=description, libraries=self.libraries,
-                                    choices=["bar", "box"],
+                                    choices=["box"],
                                     reached_triggered=["reached", "triggered"], plot_dir=self.plot_dir)
 
         self.path.write(output_file_name, rendering)
