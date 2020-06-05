@@ -40,9 +40,9 @@
 
         <h2>{{ site.data.nav.title }}</h2>
         <ul class="navigation">
-          {% assign nav_pages = site.pages | where_exp:"item", "site.data.nav.urls contains item.url" %}
-          {% for item in site.data.nav.urls %}
-            {% assign ipage = nav_pages | where: 'url', item | first%}
+          {% assign nav_pages = site.pages | where_exp:"item", "site.data.nav.paths contains item.path" %}
+          {% for item in site.data.nav.paths %}
+            {% assign ipage = nav_pages | where: 'path', item | first %}
             {% if page.path == ipage.path %}
               {% assign item_cls = "current" %}
             {% else %}

@@ -1,6 +1,7 @@
 title: Table of Contents
 
-urls:
-  - /
-  - /docs/config.html
-  - /docs/contribute.html
+paths:
+  - index.md
+  - docs/config.md
+  - docs/contribute.md
+  - reports/index.md
