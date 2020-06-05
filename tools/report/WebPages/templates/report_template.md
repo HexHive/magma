@@ -48,10 +48,10 @@ title: {{ report_title }}
         <img src ="{{plots_dir}}/unique_bug_box.svg">
     </div>
     <div>
-        <img src ="{{plots_dir}}/expected_time_to_bug_heat.svg">
+        <img src ="{{plots_dir}}/signplot.svg">
     </div>
     <div>
-        <img src ="{{plots_dir}}/signplot.svg">
+        <img src ="{{plots_dir}}/expected_time_to_bug_heat.svg">
     </div>
 </div>
 {% raw %}

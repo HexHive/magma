@@ -378,25 +378,31 @@ class Plots:
                                          alternative='two-sided')
 
     def heatmap_pvalue(self):
+        libraries, _ = self.get_all_targets_and_fuzzers()
+        ncols = 3
+        nrows = (len(libraries) - 1) // ncols + 1
         df = self.get_benchmark_snapshot_df()
-        fig, ax = plt.subplots(nrows=1, ncols=7, figsize=(14, 7))
+        fig, ax = plt.subplots(nrows=nrows, ncols=ncols, figsize=(ncols * 3, nrows * 3))
         g_data = df.groupby('target')
         for i, target in enumerate(g_data.groups):
-            figx = i // 7
-            figy = i % 7
-            #     axes = ax[figx, figy]
-            axes = ax[i]
+            figx = i // ncols
+            figy = i % ncols
+            axes = ax[figx, figy]
 
-            if i != 0:
-                axes.get_yaxis().set_visible(False)
+            # if i != 0:
+            #     axes.get_yaxis().set_visible(False)
 
             axes.set_title(target)
             p_values = self.two_sided_u_test(g_data.get_group(target))
             self.heatmap_plot(p_values, symmetric=False, axes=axes, labels=False, cbar_ax_bbox=[1, 0.4, 0.02, 0.2])
 
+        for i in range(len(g_data.groups), ncols * nrows):
+            figx = i // ncols
+            figy = i % ncols
+            fig.delaxes(ax[figx, figy])
+
         fig.tight_layout(pad=2.0)
-        # fig.delaxes(ax[1,3])
-        fig.savefig(os.path.join(self.path.plot_dir,'signplot.svg'), bbox_inches=matplotlib.transforms.Bbox.from_bounds(0, 0, 15, 7))
+        fig.savefig(os.path.join(self.path.plot_dir,'signplot.svg'), bbox_inches="tight")
 
     def heatmap_plot(self, p_values, axes=None, symmetric=False, **kwargs):
         """Draws heatmap plot for visualizing statistical test results.
@@ -540,13 +546,13 @@ class Plots:
     def box_plot(self, dictionary, fuzzer, library, metric):
         df = pd.DataFrame(dict([(k, pd.Series(v)) for k, v in dictionary.items()]))
         boxprops = dict(linestyle='-', linewidth=2, color='k')
-        df.boxplot(figsize=(12, 10), boxprops=boxprops)
+        df.boxplot(figsize=(12, 10), boxprops=boxprops, vert=False)
         plt.title(metric + ". Fuzzer: " + fuzzer + ". Library:" + library)
-        plt.xlabel("Bug Number")
-        plt.ylabel("Time (seconds)", rotation=90)
+        plt.ylabel("Bug Number")
+        plt.xlabel("Time (seconds)")
         plt.ylim(bottom=0)
 
-        plt.savefig(self.path.plot_dir + "/" + fuzzer+"_"+library+"_" + metric + "_box.svg", format="svg")
+        plt.savefig(self.path.plot_dir + "/" + fuzzer+"_"+library+"_" + metric + "_box.svg", format="svg", bbox_inches="tight")
         plt.close()
 
     def generate_plots_for_fuzzer(self):
@@ -556,7 +562,9 @@ class Plots:
                 r, t = self.get_list_of_all_bugs(fuzzer, library)
 
                 self.box_plot(r, fuzzer, library, self.REACHED)
+                plt.clf()
                 self.box_plot(t, fuzzer, library, self.TRIGGERED)
+                plt.clf()
 
     def get_minimum_ttb(self, fuzzer, library, bug, campaign, metric):
         samples = [np.nan]
