@@ -10,6 +10,7 @@ import json
 
 def main():
 
+    # We initialize a few constants for the different directories
     TEMPLATES = "templates"
     OUTPUTS = "outputs"
     PLOTS = "plots"
@@ -17,7 +18,9 @@ def main():
     LIBRARIES = "libraries"
     FUZZERS = "fuzzers"
 
+    # We get the current path to the file
     current_path = os.path.dirname(__file__)
+
     # Set paths for templates, output and images
     output_dir = os.path.join(current_path, OUTPUTS)
     fuzzers_dir = os.path.join(output_dir, FUZZERS)
@@ -28,6 +31,7 @@ def main():
     plot_dir = os.path.join(output_dir, PLOTS)
     tables_dir = os.path.join(output_dir, TABLES)
 
+    # We get the json
     json_data = get_data()
 
     lib_path = Path(template_dir, libraries_dir, tables_dir, plot_dir)
@@ -43,7 +47,10 @@ def main():
 
     libraries, fuzzers = plots.get_all_targets_and_fuzzers()
 
-    fuzzer_template = FuzzerTemplate(Path(template_dir, fuzzers_dir, tables_dir, "../"+PLOTS), libraries)
+    fuzzer_path = Path(template_dir, fuzzers_dir, tables_dir, "../"+PLOTS)
+    fuzzer_path.create_directories()
+
+    fuzzer_template = FuzzerTemplate(fuzzer_path, libraries)
 
     print("Create library pages")
     library_template = LibraryTemplate(Path(template_dir, libraries_dir, tables_dir, "../"+PLOTS))

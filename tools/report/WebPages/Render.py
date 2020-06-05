@@ -1,13 +1,25 @@
 
 
 class Render:
+    '''
+    A class to render files
+    '''
+
     def __init__(self, path):
+        '''
+        Parameters
+        ----------
+        path (string):
+            The path class to be used
+
+        '''
+
+        # Setting the path
         self.path = path
 
     def render(self, file_name, output_file_name):
         '''
-        Generate (write to html file) and render reports (html, bugs reports,
-        tables,...)
+        Generate (write to html file) and render report pages
 
         Parameters
         ----------

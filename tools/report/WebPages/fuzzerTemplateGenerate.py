@@ -22,8 +22,12 @@ class FuzzerDescription:
 
         availability (string):
             Indicates if it is open source or not
+
+        link (string):
+            The link to the repository of the fuzzer
         '''
 
+        # We set the different variables
         self.name = name
         self.type = type
         self.use_case = use_case
@@ -31,6 +35,7 @@ class FuzzerDescription:
         self.link = link
 
 
+# We initialize all different descriptions
 fuzzer_descriptions = {
     "afl": FuzzerDescription("AFL", "Gray-box binary fuzzer",
                              "Mutational fuzzing", "Open-source",
@@ -62,8 +67,8 @@ fuzzer_descriptions = {
 
 class FuzzerTemplate(Render):
     '''
-    A class to generate a template for a fuzzer. Generate its html file and its
-    plots
+    A class to generate a template for a fuzzer. It generate its html file and 
+    its plots
     '''
 
     FUZZER_TEMPLATE = "fuzzerTemplate.html"
@@ -72,10 +77,10 @@ class FuzzerTemplate(Render):
         '''
         Parameters
         ----------
-        path(Path):
+        path (Path):
             of class Path, used to have all the useful paths
 
-        libraries(array of string):
+        libraries (array of string):
             libraries
         '''
 
@@ -96,21 +101,24 @@ class FuzzerTemplate(Render):
             The file to get the directory from
 
         output_file_name (string):
-            The name of the html file to write to. (example: "afl")
-
-        description (FuzzerDescription):
-            The corresponding description
+            The name of the html file to write to. (example: "afl.html")
         '''
 
+        # We split to get the name (e.g we get afl from "afl.html")
         splitted_output_file_name = output_file_name.split(".")
 
+        # We get the description according to the name
         description = fuzzer_descriptions[splitted_output_file_name[0]]
 
-        # TODO Generate bugs reports, tables, graphs
+        # We get the template for the fuzzer pages
         template = self.path.get_template(file_name)
 
-        rendering = template.render(fuzzer=description, libraries=self.libraries,
+        # We render using jinja
+        rendering = template.render(fuzzer=description,
+                                    libraries=self.libraries,
                                     choices=["box"],
-                                    reached_triggered=["reached", "triggered"], plot_dir=self.plot_dir)
+                                    reached_triggered=["reached", "triggered"],
+                                    plot_dir=self.plot_dir)
 
+        # We write what we have generated
         self.path.write(output_file_name, rendering)
