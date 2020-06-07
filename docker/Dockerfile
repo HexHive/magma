@@ -15,6 +15,8 @@ ARG magma_root=./
 
 ARG isan
 ARG harden
+ARG canaries
+ARG fixes
 
 # Path variables inside the container
 ENV MAGMA_R /magma
@@ -49,7 +51,9 @@ RUN ${TARGET}/fetch.sh && ${MAGMA}/apply_patches.sh
 
 ARG ISAN_FLAG=${isan:+-DMAGMA_FATAL_CANARIES}
 ARG HARDEN_FLAG=${harden:+-DMAGMA_HARDEN_CANARIES}
-ARG BUILD_FLAGS="-include ${MAGMA}/src/canary.h -DMAGMA_ENABLE_CANARIES ${ISAN_FLAG} ${HARDEN_FLAG} -g -O0"
+ARG CANARIES_FLAG=${canaries:+-DMAGMA_ENABLE_CANARIES}
+ARG FIXES_FLAG=${fixes:+-DMAGMA_ENABLE_FIXES}
+ARG BUILD_FLAGS="-include ${MAGMA}/src/canary.h ${CANARIES_FLAG} ${FIXES_FLAG} ${ISAN_FLAG} ${HARDEN_FLAG} -g -O0"
 
 ENV CFLAGS ${BUILD_FLAGS}
 ENV CXXFLAGS ${BUILD_FLAGS}

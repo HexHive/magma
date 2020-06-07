@@ -37,6 +37,12 @@ POLL=5
 # [MAGMA]: path to magma root (default: ../../)
 # MAGMA=/path/to/magma/
 
+# [NO_CANARIES]: if set, build the benchmark without canaries (default: unset)
+# NO_CANARIES=1
+
+# [FIXES]: if set, build the benchmark without bugs (default: unset)
+# FIXES=1
+
 # [ISAN]: if set, build the benchmark with ISAN/fatal canaries (default: unset)
 # ISAN=1
 
