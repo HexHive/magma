@@ -4,54 +4,79 @@ title: {{ report_title }}
 {% raw %}
 {% capture template %}
 {% endraw %}
-<div class="targets">
-    <p>
-        Welcome to the magma report. In here you will be able to see the results of the benched fuzzers
-        over the target libraries.
-        See <a href="https://github.com/HexHive/magma/blob/master/README.md">here</a> for build and run details.
-    </p>
-
-    <h2>Benchmark process</h2>
-       <p>
-           The differents fuzzers are run over the target libraries in which multiple patches have been implemented.
-           These patches reintroduce previous corrected bugs. Once the fuzzer campaign is done you will find in this report how much
-           bugs where triggered and at what moment. All this gives us enought material to establish a benchmark for the used fuzzers.
-        </p>
-</div>
-
-<div class="target_description">
-    <h2>Targeted Libraries</h2>
-    <p>Here are all the currently supported libraries in magma.</p>
-    <ul id="target_list">
+<div class="section">
+    <h1>Fuzzed Libraries</h1>
+    <p>This report summarizes the results of fuzzing the following libraries:</p>
+    <ul id="target-list" class="browser-default">
         {% for (item,num_bugs) in target_list %}
-        <li><a href= "libraries/{{item}}.html">{{item}}</a> has a total of {{num_bugs}} implemented bugs</li>
+        <li><a href= "libraries/{{item}}.html">{{item}}</a> ({{num_bugs}} bugs)</li>
         {% endfor %}
     </ul>
     <p>
-        Total number of patches is {{total_bugs}}
+        Total number of forward-ported bugs is {{total_bugs}}, across {{target_list | length}} targets.
     </p>
 </div>
 
-<div class="fuzzers">
-    <h2>Evaluated Fuzzers</h2>
-    <p>Currently magma can evaluate {{fuzzer_list|length}}</p>
-    <ul id="fuzzer_list">
+<div class="section">
+    <h1>Evaluated Fuzzers</h1>
+    <p>The fuzzers used in this evaluation are listed below:</p>
+    <ul id="fuzzer-list" class="browser-default">
         {% for fuzzer in fuzzer_list %}
         <li><a href= "fuzzers/{{fuzzer}}.html">{{fuzzer}}</a></li>
         {% endfor %}
     </ul>
 </div>
 
-<div class="general graph">
-    <h2>General result</h2>
-    <div>
-        <img src ="{{plots_dir}}/mean_variance_bar.svg">
+<!--
+EXPERIMENT PARAMETERS WILL BE LISTED HERE
+-->
+
+<div class="section">
+    <h1>Experiment Summary</h1>
+    <div id="bugs-triggered">
+        <h2>Total Unique Bugs Triggered</h2>
+        <ul class="collapsible popout">
+            <li>
+                <div class="collapsible-header">
+                    <h3>Mean and Standard Deviation</h3>
+                </div>
+                <div class="collapsible-body">
+                    This plot shows the mean number of unique bugs triggered by every fuzzer against every target
+                    library, and the standard deviation bar, across all campaigns.
+                </div>
+            </li>
+        </ul>
+        <img class="materialboxed responsive-img" src ="{{plots_dir}}/mean_variance_bar.svg">
+        <ul class="collapsible popout">
+            <li>
+                <div class="collapsible-header">
+                    <h3>Stastistical Significance</h3>
+                </div>
+                <div class="collapsible-body">
+                    This matrix summarizes the p-values of the pairwise Mann-Whitney U tests calculated against the
+                    total bug count sample sets collected for every fuzzer across all campaigns. Cells with a green
+                    shade indicate that the number of bugs triggered by a fuzzer is statistically different.
+                </div>
+            </li>
+        </ul>
+        <img class="materialboxed responsive-img" src ="{{plots_dir}}/signplot.svg">
     </div>
-    <div>
-        <img src ="{{plots_dir}}/signplot.svg">
-    </div>
-    <div>
-        <img src ="{{plots_dir}}/expected_time_to_bug_heat.svg">
+    <div id="expected-ttb">
+        <h2>Expected Time-to-Bug</h2>
+        <ul class="collapsible popout">
+            <li>
+                <div class="collapsible-header">
+                    <h3>Ranking of Bugs and Fuzzers</h3>
+                </div>
+                <div class="collapsible-body">
+                    This table shows the calculated values of expected time-to-trigger-bug for every bug triggered
+                    during the evaluation. The calculation accounts for missed measurements (where the fuzzer only
+                    triggers a bug in M out of N campaigns) and fits the distribution of time-to-bug samples onto an
+                    exponential distribution. More information about this can be found in the Magma paper.
+                </div>
+            </li>
+        </ul>
+        <img class="materialboxed responsive-img" src ="{{plots_dir}}/expected_time_to_bug_heat.svg">
     </div>
 </div>
 {% raw %}

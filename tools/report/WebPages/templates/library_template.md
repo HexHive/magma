@@ -4,17 +4,25 @@ title: {{ library.name }}
 {% raw %}
 {% capture template %}
 {% endraw %}
-<a href="{{ library.link }}">repository</a>
-
-<div class="targets">
-    <span>
-        In table bellow you will find all the implemented bugs in the {{library_name}} library.
-    </span>
-
-    <h2>Benchmark Results</h2>
-    <div>
-      <img src="{{ plots_dir }}/{{ library.name | lower }}_reached_and_triggered_bar.svg" >
+<div class="section">
+	<h1>{{ library.name }}</h1>
+    <p>
+        This page displays the aggregate information about the library as collected from the evaluation.
+    </p>
+    <div class="card-panel amber lighten-5">
+    	<div class="row valign-wrapper" style="margin-bottom: 0;">
+    		<div class="col s2 m1 center-align">
+				<i class="small material-icons">warning</i>
+    		</div>
+    		<div class="col s10 m11">
+    			<span class="black-text">
+    				This page is incomplete. In a future update, per-bug information will be added.
+    			</span>
+    		</div>
+    	</div>
     </div>
+    <h2>Total Bugs Reached and Triggered</h2>
+	<img class="materialboxed responsive-img" src="{{ plots_dir }}/{{ library.name | lower }}_reached_and_triggered_bar.svg" >
 </div>
 {% raw %}
 {% endcapture %}
