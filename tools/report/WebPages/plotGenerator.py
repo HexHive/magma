@@ -29,6 +29,10 @@ class Plots:
         self.campaigns = list(str(x) for x in range(self.NUMBER_OF_CAMPAIGNS_PER_LIBRARY))
 
     def generate(self):
+        """
+        Generates all the avaalble graphs. Each method saves
+        its own graph in the plots folder
+        """
         self.line_plot_unique_bugs(self.REACHED)
         plt.clf()
         self.line_plot_unique_bugs(self.TRIGGERED)
@@ -46,12 +50,19 @@ class Plots:
         self.boxplot_unique_bugs_reached_in_all_libraries()
         plt.clf()
 
-    # A function to get all targets and fuzzers that is part of the json
     def get_all_targets_and_fuzzers(self):
+        """
+        Returns a pair of lists containing all
+        targets for one and all fuzzers for the other
+        """
         df = DataFrame(self.data)
         return list(df.index), list(df.columns)
 
     def combine_sublibrary_fuzz_results(self):
+        """
+        Sometimes a target has to be fuzzed multiple times over different parts of it
+        This functions combines all the sublibrary fuzzing result
+        """
         simplified_data = {}
         for fuzzer in self.data:
             simplified_data[fuzzer] = {}
@@ -79,6 +90,11 @@ class Plots:
         return simplified_data
 
     def get_total_number_of_unique_bugs(self):
+        """
+        Returns a pair which of the first element contains ,for each fuzzer,library possibility
+        ,the number of reached bugs. The second element of the pair contains the number of triggered
+        bugs
+        """
         d = self.combine_sublibrary_fuzz_results()
 
         totalBugsReached = {}
@@ -98,10 +114,16 @@ class Plots:
 
         return totalBugsReached, totalBugsTriggered
 
-    def meanAndDeviationOfNumberOfBugsAcrossXCampaigns(self, numberOfCampaings):
+    def get_mean_and_deviation_of_number_of_triggered_bugs(self):
+        """
+        Computes the mean and the standard deviation of the number of reached and triggered
+        campaigns over all campaigns ran over a target with a fuzzer
+
+        """
+        number_of_campaigns = self.get_number_of_campaigns_per_fuzzer_library()
         d = self.combine_sublibrary_fuzz_results()
-        mean_deviation_reached = d.copy()
-        mean_deviation_triggered = d.copy()
+        mean_deviation_reached = self.ddr()
+        mean_deviation_triggered = self.ddr()
         for fuzzer, libraries in d.items():
             for library, campaigns in libraries.items():
                 total_reached = 0
@@ -112,28 +134,46 @@ class Plots:
                     total_reached = total_reached + len(result[0])
                     total_triggered = total_triggered + len(result[1])
 
-                meanR = total_reached / numberOfCampaings
-                meanT = total_triggered / numberOfCampaings
+                meanR = total_reached / number_of_campaigns[fuzzer][library]
+                meanT = total_triggered / number_of_campaigns[fuzzer][library]
 
                 for campaignNum, result in campaigns.items():
                     var_reached = var_reached + pow((len(result[0]) - meanR), 2)
                     var_triggered = var_triggered + pow((len(result[1]) - meanT), 2)
 
-                mean_deviation_reached[fuzzer][library] = (meanR, sqrt(var_reached / numberOfCampaings))
-                mean_deviation_triggered[fuzzer][library] = (meanT, sqrt(var_triggered / numberOfCampaings))
+                mean_deviation_reached[fuzzer][library] = (meanR, sqrt(var_reached / number_of_campaigns[fuzzer][library]))
+                mean_deviation_triggered[fuzzer][library] = (meanT, sqrt(var_triggered / number_of_campaigns[fuzzer][library]))
 
         return mean_deviation_reached, mean_deviation_triggered
 
     def remove_non_triggered_bugs(self):
+        """
+        Some bugs are only reached and never triggered. This function removes all the data about the
+        not-triggered bugs
+        """
         d = self.combine_sublibrary_fuzz_results()
         for fuzzer, libraries in d.items():
             for library, campaigns in libraries.items():
                 for campaignNum, result in campaigns.items():
                     d[fuzzer][library][campaignNum] = self.intersect_bug_id(result[0], result[1])
-
         return d
 
+
+
+    def intersect_bug_id(self, reached_bugs, triggered_bugs):
+        """
+           Helper function for remove_non_triggered_bugs
+
+        """
+        intersected_reached_bugs = [r_bug for r_bug in reached_bugs if
+                                    r_bug[0] in [t_bug[0] for t_bug in triggered_bugs]]
+        return intersected_reached_bugs, triggered_bugs
+
     def get_number_of_campaigns_per_fuzzer_library(self):
+        """
+        Returns for each fuzzer and target pair, how many campaigns that were
+        actually run.
+        """
         d = self.combine_sublibrary_fuzz_results()
         number_of_campaings_per_fuzzer_library = {}
         for fuzzer, libraries in d.items():
@@ -142,14 +182,13 @@ class Plots:
                 number_of_campaings_per_fuzzer_library[fuzzer][library_name] = len(campaigns.keys())
         return number_of_campaings_per_fuzzer_library
 
-    def intersect_bug_id(self, reached_bugs, triggered_bugs):
-        intersected_reached_bugs = [r_bug for r_bug in reached_bugs if
-                                    r_bug[0] in [t_bug[0] for t_bug in triggered_bugs]]
-        return intersected_reached_bugs, triggered_bugs
-
     def get_time_to_trigger_per_bug(self):
+        """
+        For each fuzzer target pair, fills a dictionnary containing a bug_id (unique) as key and
+        a list with all the trigger times of this precise bug. The size of the list gives also the number of times a bug
+        was triggered out of all the campaigns.
+        """
         d = self.remove_non_triggered_bugs()
-
         for fuzzer, libraries in d.items():
             for library, campaigns in libraries.items():
                 num_trigger = {}
@@ -158,11 +197,16 @@ class Plots:
                     result[1].sort(key=lambda x: x[0])
                     for x in range(len(result[0])):
                         bug_id = result[0][x][0]
-                        num_trigger[bug_id] = num_trigger.get(bug_id, []) + [result[1][x][1] - result[0][x][1]]
+                        num_trigger[bug_id] = num_trigger.get(bug_id, []) + [result[1][x][1]]
                 d[fuzzer][library] = num_trigger
         return d
 
-    def expected_time_to_bug_for_each_fuzzer(self,campaign_duration):
+    def expected_time_to_bug_for_each_fuzzer(self):
+        """
+        Computes the expected time-to-trigger for each bug
+        Handles also the aggregate time by
+
+        """
         d = self.get_time_to_trigger_per_bug()
         number_of_campaings_per_fuzzer_library = self.get_number_of_campaigns_per_fuzzer_library()
         expected_time_to_bug = {}
@@ -174,42 +218,58 @@ class Plots:
                 for bug_id, time in bugs.items():
                     library_bugs[bug_id] = library_name
                     aggregate[bug_id] = aggregate.get(bug_id, []) + time
-                    # ln(N/N-M)
                     expected_time_to_bug[fuzzer][bug_id] = self.compute_expected_time_to_bug(time,
                                                                                              number_of_campaings_per_fuzzer_library[
-                                                                                                 fuzzer][library_name],
-                                                                                             campaign_duration)
-
+                                                                                                 fuzzer][library_name])
         df = DataFrame(number_of_campaings_per_fuzzer_library)
         df = df.transpose().sum()
-
         for bug_id, times in aggregate.items():
-            aggregate[bug_id] = self.compute_expected_time_to_bug(times, df[library_bugs[bug_id]], campaign_duration)
+            aggregate[bug_id] = self.compute_expected_time_to_bug(times, df[library_bugs[bug_id]])
         return expected_time_to_bug, aggregate
 
-    def compute_expected_time_to_bug(self, list_of_times, num_campaigns, campaign_duration):
-        T = campaign_duration  # Secs in 24h
-        N_minus_M = num_campaigns - len(list_of_times)
+    def compute_expected_time_to_bug(self, list_of_times, number_of_campaigns,):
+        """
+        Implements the expected time-to-trigger bug formula used in the magma paper
+
+        Parameters
+        ----------
+        list_of_times (list of integer):
+            For one bug
+
+        number_of_campaigns (integer):
+            Number of campaigns actually run
+
+        """
+
+        T =self.CAMPAIGN_DURATION  # Secs in 24h
+        N_minus_M = number_of_campaigns - len(list_of_times)
         if N_minus_M != 0:
-            lambda_t = math.log(num_campaigns / N_minus_M)
+            lambda_t = math.log(number_of_campaigns / N_minus_M)
         else:
             lambda_t = 1
         expected_time_to_bug_in_seconds = (((len(list_of_times) * statistics.mean(list_of_times)) + N_minus_M * (
-                    T / lambda_t)) / num_campaigns)
+                T / lambda_t)) / number_of_campaigns)
         return expected_time_to_bug_in_seconds
 
     def boxplot_unique_bugs_reached_in_all_libraries(self):
+        """
+        For each library, plots a boxplot that contains for each fuzzer the number of unique bugs reached
+        """
         reached_unique, triggered_unique = self.get_total_number_of_unique_bugs()
         triggered = DataFrame(triggered_unique)
         fig = plt.figure()
         fig.canvas.set_window_title("Repartition of unique bugs reached by all fuzzer in a tested libraries")
         triggered.boxplot(figsize=(0.34, 20))
         plt.title("Repartition of unique bugs reached by all fuzzer in a tested libraries")
-        plt.savefig(os.path.join(self.path.plot_dir,"unique_bug_box.svg"), format="svg")
+        plt.savefig(os.path.join(self.path.plot_dir, "unique_bug_box.svg"), format="svg")
 
     def barplot_mean_and_variance_of_bugs_found_by_each_fuzzer(self):
-        reached, triggered = self.meanAndDeviationOfNumberOfBugsAcrossXCampaigns(self.NUMBER_OF_CAMPAIGNS_PER_LIBRARY)
-        df = DataFrame(reached)
+        """
+        For each fuzzer, plots for each target the mean number of bugs found by the fuzzer along with
+        the standard deviation computed over X campaigns
+        """
+        reached, triggered = self.get_mean_and_deviation_of_number_of_triggered_bugs()
+        df = DataFrame(triggered)
         variances = df.applymap(lambda x: x[1])
         means = df.applymap(lambda x: x[0])
         fig, ax = plt.subplots()
@@ -221,10 +281,14 @@ class Plots:
         plt.xlabel('Targets')
         plt.xticks(rotation=0)
         plt.title("Mean number of bugs found by different fuzzers for each target library")
-        plt.savefig(os.path.join(self.path.plot_dir,"mean_variance_bar.svg"), format="svg", bbox_inches="tight")
+        plt.savefig(os.path.join(self.path.plot_dir, "mean_variance_bar.svg"), format="svg", bbox_inches="tight")
         plt.clf()
 
     def barplot_reached_vs_triggered_bugs_by_each_fuzzer_in_a_library(self):
+        """
+        For each library generates of plots where the number of reached and triggered bugs is represented as a bar for
+        each fuzzer
+        """
         reached_unique, triggered_unique = self.get_total_number_of_unique_bugs()
         triggered = DataFrame(triggered_unique).transpose()
         reached = DataFrame(reached_unique).transpose()
@@ -232,12 +296,15 @@ class Plots:
             df = DataFrame({'Reached': reached[library], 'Triggered': triggered[library]})
             df.plot.bar(figsize=(8, 6), rot=0)
             plt.title("Number of reached and triggered bugs in " + library + " by all fuzzers")
-            #plt.show()
-            plt.savefig(os.path.join(self.path.plot_dir,library+"_reached_and_triggered_bar.svg"), format="svg")
+            # plt.show()
+            plt.savefig(os.path.join(self.path.plot_dir, library + "_reached_and_triggered_bar.svg"), format="svg")
             plt.clf()
 
     def heat_map_expected_time_to_bug(self):
-        data, aggregate = self.expected_time_to_bug_for_each_fuzzer(self.CAMPAIGN_DURATION)
+        """
+        Represents the expected time to trigger bug as a heat map.
+        """
+        data, aggregate = self.expected_time_to_bug_for_each_fuzzer()
         fuzzer_order = self.get_fuzzer_from_most_to_less_triggered_bugs(data)
         data["aggregate"] = aggregate
         df = DataFrame(data)
@@ -265,15 +332,17 @@ class Plots:
         ax.set_title("Exptected time-to-trigger-bug for each fuzzer", fontsize=20)
         ax.xaxis.tick_top()
         ax.xaxis.set_label_position('top')
-
         plt.yticks(rotation=0)
         plt.xlabel("Fuzzers")
         plt.ylabel("Bugs")
-        plt.savefig(os.path.join(self.path.plot_dir,"expected_time_to_bug_heat.svg"), format="svg")
+        plt.savefig(os.path.join(self.path.plot_dir, "expected_time_to_bug_heat.svg"), format="svg")
         plt.clf()
 
     def heat_map_aggregate(self):
-        fuzzers, aggregate = self.expected_time_to_bug_for_each_fuzzer(self.CAMPAIGN_DURATION)
+        """
+        Represents the aggregate times for each bugs as a heat map
+        """
+        fuzzers, aggregate = self.expected_time_to_bug_for_each_fuzzer()
         agg = {}
         agg["aggregate"] = aggregate
         aggregate = DataFrame(agg)
@@ -296,10 +365,14 @@ class Plots:
         cbar.set_ticklabels(tick_labels)
         ax.set_title("Aggregate time for each bug in hours", fontsize=20)
         plt.ylabel("Triggered Bugs")
-        plt.savefig(os.path.join(self.path.plot_dir,"aggregate_time_per_bug.svg"), format="svg")
+        plt.savefig(os.path.join(self.path.plot_dir, "aggregate_time_per_bug.svg"), format="svg")
         plt.clf()
 
     def get_fuzzer_from_most_to_less_triggered_bugs(self, data):
+        """
+        Sorts the fuzzers by the most to less triggered bugs.
+        This is used on the heat map to order the columns of the heat map
+        """
         most_bugs = {}
         for fuzzers, bugs in data.items():
             most_bugs[fuzzers] = len(bugs)
@@ -308,6 +381,10 @@ class Plots:
         return most_bugs
 
     def get_labeled_data(self, to_label):
+        """
+        Converts an 2D array of data to a 2D array of string labels
+        This is used in the heat map to show the times on each cell
+        """
         labelled_data = []
         for bug in range(len(to_label)):
             labelled_data.append([])
@@ -321,6 +398,10 @@ class Plots:
         # This function takes a numpy 2D array
 
     def get_variable_time_unit(self, elem):
+        """
+        Helper function for get_labled_data. Allows a variable units of times, instead of representing everything in seconds or
+        hours
+        """
         if self.is_nan(elem):
             return elem
         elif elem < 60:
@@ -331,7 +412,11 @@ class Plots:
             return str(int(elem / 3600)) + " h"
 
     def is_nan(self, x):
+        """
+        return true if x is nan else return false
+        """
         return (x != x)
+
 
     def get_sig_data(self):
         metric = "triggered"
@@ -427,7 +512,7 @@ class Plots:
             fig.delaxes(ax[figx, figy])
 
         fig.tight_layout(pad=2.0)
-        fig.savefig(os.path.join(self.path.plot_dir,'signplot.svg'), bbox_inches="tight")
+        fig.savefig(os.path.join(self.path.plot_dir, 'signplot.svg'), bbox_inches="tight")
 
     def heatmap_plot(self, p_values, axes=None, symmetric=False, **kwargs):
         """Draws heatmap plot for visualizing statistical test results.
@@ -512,7 +597,7 @@ class Plots:
         plt.xlabel("Time (seconds)")
         plt.ylim(bottom=0)
 
-        plt.savefig(self.path.plot_dir + "/" + fuzzer+"_"+library+"_" + metric + "_box.svg", format="svg", bbox_inches="tight")
+        plt.savefig(self.path.plot_dir + "/" + fuzzer + "_" + library + "_" + metric + "_box.svg", format="svg", bbox_inches="tight")
         plt.close()
 
     def generate_plots_for_fuzzer(self):
@@ -557,7 +642,7 @@ class Plots:
         samples = [np.nan]
         for program, p_data in self.data[fuzzer][library].items():
             r_data = p_data.get(campaign, np.nan)
-            if(r_data is not np.nan):
+            if (r_data is not np.nan):
                 samples.append(r_data[metric].get(bug, np.nan))
         if np.all(np.isnan(samples)):
             return np.nan
@@ -614,7 +699,7 @@ class Plots:
 
     def get_step_value(self, series, x):
         serie = series[series.index <= x]
-        if(serie.empty):
+        if (serie.empty):
             return 0
         return serie.iloc[-1]
 
@@ -632,7 +717,7 @@ class Plots:
         for fuzzer in self.data.keys():
             df = pd.DataFrame.from_dict(campaign_data[fuzzer], orient='index')
             for campaign in self.campaigns:
-                if(campaign in df.index):
+                if (campaign in df.index):
                     a = df.loc[campaign]
                     b = a[~np.isnan(a)]
                     plot_data[fuzzer][campaign] = b.value_counts().sort_index().cumsum()
@@ -656,18 +741,18 @@ class Plots:
             xvalues = sorted(set(index for campaign in data.values() for index in campaign.index))
             yvalues = [[self.get_step_value(campaign, x) for campaign in data.values()] for x in xvalues]
 
-            cintervals = [1.96 * np.nanstd(i)/np.nanmean(i) for i in yvalues]
+            cintervals = [1.96 * np.nanstd(i) / np.nanmean(i) for i in yvalues]
             ymeans = [np.nanmean(i) for i in yvalues]
 
             aggplot_data[fuzzer]["x"] = np.array(xvalues)
             aggplot_data[fuzzer]["y"] = np.array(ymeans)
-            if(max(aggplot_data[fuzzer]["x"]) > max_x):
+            if (max(aggplot_data[fuzzer]["x"]) > max_x):
                 max_x = max(aggplot_data[fuzzer]["x"])
 
-            if(min(aggplot_data[fuzzer]["x"]) < min_x):
+            if (min(aggplot_data[fuzzer]["x"]) < min_x):
                 min_x = min(aggplot_data[fuzzer]["x"])
 
-            if(max(aggplot_data[fuzzer]["y"]) > max_y):
+            if (max(aggplot_data[fuzzer]["y"]) > max_y):
                 max_y = max(aggplot_data[fuzzer]["y"])
 
             aggplot_data[fuzzer]["ci"] = np.array(cintervals)
@@ -708,7 +793,7 @@ class Plots:
 
             # axes.set_xscale('log')
             axes.step(x, y)
-            axes.fill_between(x, (y-ci), (y+ci), color='b', alpha=.1)
+            axes.fill_between(x, (y - ci), (y + ci), color='b', alpha=.1)
 
             axes.set_title(fuzzer)
             axes.set_ylim((0, max_y + 5))
