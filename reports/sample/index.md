@@ -4,50 +4,35 @@ title: Sample Report
 
 {% capture template %}
 
-<div class="targets">
-    <p>
-        Welcome to the magma report. In here you will be able to see the results of the benched fuzzers
-        over the target libraries.
-        See <a href="https://github.com/HexHive/magma/blob/master/README.md">here</a> for build and run details.
-    </p>
-
-    <h2>Benchmark process</h2>
-       <p>
-           The differents fuzzers are run over the target libraries in which multiple patches have been implemented.
-           These patches reintroduce previous corrected bugs. Once the fuzzer campaign is done you will find in this report how much
-           bugs where triggered and at what moment. All this gives us enought material to establish a benchmark for the used fuzzers.
-        </p>
-</div>
-
-<div class="target_description">
-    <h2>Targeted Libraries</h2>
-    <p>Here are all the currently supported libraries in magma.</p>
-    <ul id="target_list">
+<div class="section">
+    <h1>Fuzzed Libraries</h1>
+    <p>This report summarizes the results of fuzzing the following libraries:</p>
+    <ul id="target-list" class="browser-default">
         
-        <li><a href= "libraries/poppler.html">poppler</a> has a total of 22 implemented bugs</li>
+        <li><a href= "libraries/poppler.html">poppler</a> (22 bugs)</li>
         
-        <li><a href= "libraries/libpng.html">libpng</a> has a total of 7 implemented bugs</li>
+        <li><a href= "libraries/libpng.html">libpng</a> (7 bugs)</li>
         
-        <li><a href= "libraries/libtiff.html">libtiff</a> has a total of 14 implemented bugs</li>
+        <li><a href= "libraries/libtiff.html">libtiff</a> (14 bugs)</li>
         
-        <li><a href= "libraries/libxml2.html">libxml2</a> has a total of 18 implemented bugs</li>
+        <li><a href= "libraries/libxml2.html">libxml2</a> (18 bugs)</li>
         
-        <li><a href= "libraries/sqlite3.html">sqlite3</a> has a total of 20 implemented bugs</li>
+        <li><a href= "libraries/sqlite3.html">sqlite3</a> (20 bugs)</li>
         
-        <li><a href= "libraries/php.html">php</a> has a total of 16 implemented bugs</li>
+        <li><a href= "libraries/php.html">php</a> (16 bugs)</li>
         
-        <li><a href= "libraries/openssl.html">openssl</a> has a total of 21 implemented bugs</li>
+        <li><a href= "libraries/openssl.html">openssl</a> (21 bugs)</li>
         
     </ul>
     <p>
-        Total number of patches is 118
+        Total number of forward-ported bugs is 118, across 7 targets.
     </p>
 </div>
 
-<div class="fuzzers">
-    <h2>Evaluated Fuzzers</h2>
-    <p>Currently magma can evaluate 6</p>
-    <ul id="fuzzer_list">
+<div class="section">
+    <h1>Evaluated Fuzzers</h1>
+    <p>The fuzzers used in this evaluation are listed below:</p>
+    <ul id="fuzzer-list" class="browser-default">
         
         <li><a href= "fuzzers/moptafl.html">moptafl</a></li>
         
@@ -64,16 +49,56 @@ title: Sample Report
     </ul>
 </div>
 
-<div class="general graph">
-    <h2>General result</h2>
-    <div>
-        <img src ="./plots/mean_variance_bar.svg">
+<!--
+EXPERIMENT PARAMETERS WILL BE LISTED HERE
+-->
+
+<div class="section">
+    <h1>Experiment Summary</h1>
+    <div id="bugs-triggered">
+        <h2>Total Unique Bugs Triggered</h2>
+        <ul class="collapsible popout">
+            <li>
+                <div class="collapsible-header">
+                    <h3>Mean and Standard Deviation</h3>
+                </div>
+                <div class="collapsible-body">
+                    This plot shows the mean number of unique bugs triggered by every fuzzer against every target
+                    library, and the standard deviation bar, across all campaigns.
+                </div>
+            </li>
+        </ul>
+        <img class="materialboxed responsive-img" src ="./plots/mean_variance_bar.svg">
+        <ul class="collapsible popout">
+            <li>
+                <div class="collapsible-header">
+                    <h3>Stastistical Significance</h3>
+                </div>
+                <div class="collapsible-body">
+                    This matrix summarizes the p-values of the pairwise Mann-Whitney U tests calculated against the
+                    total bug count sample sets collected for every fuzzer across all campaigns. Cells with a green
+                    shade indicate that the number of bugs triggered by a fuzzer is statistically different.
+                </div>
+            </li>
+        </ul>
+        <img class="materialboxed responsive-img" src ="./plots/signplot.svg">
     </div>
-    <div>
-        <img src ="./plots/signplot.svg">
-    </div>
-    <div>
-        <img src ="./plots/expected_time_to_bug_heat.svg">
+    <div id="expected-ttb">
+        <h2>Expected Time-to-Bug</h2>
+        <ul class="collapsible popout">
+            <li>
+                <div class="collapsible-header">
+                    <h3>Ranking of Bugs and Fuzzers</h3>
+                </div>
+                <div class="collapsible-body">
+                    This table shows the calculated values of expected time-to-trigger-bug for every bug triggered
+                    during the evaluation. The calculation accounts for missed measurements (where the fuzzer only
+                    triggers a bug in M out of N campaigns) and fits the distribution of time-to-bug samples onto an
+                    exponential distribution. More information about this can be found in the Magma paper.
+                </div>
+            </li>
+        </ul>
+        <img class="materialboxed responsive-img" src ="./plots/expected_time_to_bug_heat.svg">
     </div>
 </div>
 

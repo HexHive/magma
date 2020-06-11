@@ -6,7 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
 {% seo %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <link rel="stylesheet" href="{{ "/assets/css/style.css?v=" | append: site.github.build_revision | relative_url }}">
+    <link rel="stylesheet" href="{{ "/assets/css/report.css?v=" | append: site.github.build_revision | relative_url }}">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="{{ "/assets/js/report.js?v=" | append: site.github.build_revision | relative_url }}"></script>
     <!--[if lt IE 9]>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
     <![endif]-->
@@ -31,7 +37,7 @@
         {% endif %}
 
         {% if site.show_downloads %}
-        <ul class="downloads">
+        <ul class="browser-default downloads">
           <li><a href="{{ site.github.zip_url }}">Download <strong>ZIP File</strong></a></li>
           <li><a href="{{ site.github.tar_url }}">Download <strong>TAR Ball</strong></a></li>
           <li><a href="{{ site.github.repository_url }}">View On <strong>GitHub</strong></a></li>
@@ -39,7 +45,7 @@
         {% endif %}
 
         <h2>{{ site.data.nav.title }}</h2>
-        <ul class="navigation">
+        <ul class="browser-default navigation">
           {% assign nav_pages = site.pages | where_exp:"item", "site.data.nav.paths contains item.path" %}
           {% for item in site.data.nav.paths %}
             {% assign ipage = nav_pages | where: 'path', item | first %}
