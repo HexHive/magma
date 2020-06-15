@@ -32,8 +32,10 @@ export POLL=${POLL:-5}
 export TIMEOUT=${TIMEOUT:-1m}
 
 WORKDIR="$(realpath "$WORKDIR")"
-export LOGSDIR="$WORKDIR/logs"
-mkdir -p "$LOGSDIR"
+export LOGDIR="$WORKDIR/log"
+export POCDIR="$WORKDIR/poc"
+mkdir -p "$LOGDIR"
+mkdir -p "$POCDIR"
 
 get_next_cid()
 {
@@ -77,11 +79,11 @@ start_campaign()
     mkdir -p "$SHARED" && chmod 777 "$SHARED"
 
     echo_time "Container $FUZZER/$TARGET/$PROGRAM/$CID started on CPU $AFFINITY"
-
     "$MAGMA"/tools/captain/start.sh &> \
-        "${LOGSDIR}/${FUZZER}_${TARGET}_${PROGRAM}_${CID}_container.log"
-
+        "${LOGDIR}/${FUZZER}_${TARGET}_${PROGRAM}_${CID}_container.log"
     echo_time "Container $FUZZER/$TARGET/$PROGRAM/$CID stopped"
+
+    "$MAGMA"/tools/captain/extract.sh
 
     ARDIR="$WORKDIR/ar/$FUZZER/$TARGET/$PROGRAM"
     mkdir -p "$ARDIR"
@@ -211,7 +213,7 @@ for FUZZER in "${FUZZERS[@]}"; do
         # build the Docker image
         IMG_NAME="magma/$FUZZER/$TARGET"
         echo_time "Building $IMG_NAME"
-        "$MAGMA"/tools/captain/build.sh &> "${LOGSDIR}/${FUZZER}_${TARGET}_build.log"
+        "$MAGMA"/tools/captain/build.sh &> "${LOGDIR}/${FUZZER}_${TARGET}_build.log"
 
         PROGRAMS=($(get_var_or_default '$1_$2_PROGRAMS' $FUZZER $TARGET))
         for PROGRAM in "${PROGRAMS[@]}"; do

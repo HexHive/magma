@@ -10,6 +10,7 @@
 # - env ARGS: extra arguments to pass to the program
 # - env POLL: time (in seconds) to sleep between polls
 # - env TIMEOUT: time to run the campaign
+# - env MAGMA: path to Magma support files
 # + env LOGSIZE: size (in bytes) of log file to generate (default: 1 MiB)
 ##
 
@@ -22,33 +23,13 @@ mkdir -p "$MONITOR"
 # change working directory to somewhere accessible by the fuzzer and target
 cd "$SHARED"
 
-find_triggered()
-{
-    ##
-    # Pre-requirements:
-    # - $1: human-readable monitor output
-    ##
-    awk '{print $5}' <<< "$1" | while read triggered; do
-        if [ ! -z $triggered ] && [ $triggered -ne 0 ]; then
-            awk '{print $1}' <<< "$1"
-            return 1
-        fi
-    done
-}
-
 # prune the seed corpus for any fault-triggering test-cases
 for seed in "$TARGET/corpus/$PROGRAM"/*; do
-    out="$($OUT/monitor --fetch watch --dump human "$FUZZER/runonce.sh" "$seed")"
+    out="$("$MAGMA"/runonce.sh "$seed")"
     code=$?
 
-    bug=$(find_triggered "$out")
-    is_triggered=$?
-
-    if [ $is_triggered -ne 0 ]; then
-        echo "$seed triggers $bug"
-        rm "$seed"
-    elif [ $code -ne 0 ]; then
-        echo "$seed causes unexpected crash (exit code: $code)"
+    if [ $code -ne 0 ]; then
+        echo "$out"
         rm "$seed"
     fi
 done
