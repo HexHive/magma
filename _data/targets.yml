@@ -1,0 +1,27 @@
+libpng:
+  display_name: libpng
+  url: https://github.com/glennrp/libpng
+
+libtiff:
+  display_name: LibTIFF
+  url: https://gitlab.com/libtiff/libtiff
+
+libxml2:
+  display_name: Libxml2
+  url: https://gitlab.gnome.org/GNOME/libxml2
+
+poppler:
+  display_name: Poppler
+  url: https://poppler.freedesktop.org
+
+openssl:
+  display_name: OpenSSL
+  url: https://github.com/openssl/openssl
+
+sqlite3:
+  display_name: SQLite
+  url: https://www.sqlite.org
+
+php:
+  display_name: PHP
+  url: https://github.com/php/php-src
