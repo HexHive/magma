@@ -19,7 +19,7 @@ The following tables list the {{ site.data.bugs | size }} bugs added to Magma, a
     {% assign left = rows | size | minus: overflow %}
     <div class="row valign-wrapper">
         <div class="col s6">
-            <h2>{{ target | capitalize}}</h2>
+            <h2>{{ target }}</h2>
         </div>
         <div class="col s6">
             <span class="badge new right" data-badge-caption="bugs">{{ rows | size }}</span>
@@ -41,7 +41,7 @@ The following tables list the {{ site.data.bugs | size }} bugs added to Magma, a
             <tbody>
         {% for row in rows limit:left %}
                 <tr>
-                    <td><a href="{{ site.github.repository_url }}/tree/master/targets/{{ target }}/patches/bugs/{{ row.bug }}.patch">{{ row.bug }}</a></td>
+                    <td><a href="{{ site.github.repository_url }}/tree/master/targets/{{ target | downcase }}/patches/bugs/{{ row.bug }}.patch">{{ row.bug }}</a></td>
                     <td>{{ row.identifier }}</td>
                 </tr>
         {% endfor %}
@@ -61,7 +61,7 @@ The following tables list the {{ site.data.bugs | size }} bugs added to Magma, a
             <tbody>
         {% for row in rows offset:left %}
                 <tr>
-                    <td><a href="{{ site.github.repository_url }}/tree/master/targets/{{ target }}/patches/bugs/{{ row.bug }}.patch">{{ row.bug }}</a></td>
+                    <td><a href="{{ site.github.repository_url }}/tree/master/targets/{{ target | downcase }}/patches/bugs/{{ row.bug }}.patch">{{ row.bug }}</a></td>
                     <td>{{ row.identifier }}</td>
                 </tr>
         {% endfor %}
