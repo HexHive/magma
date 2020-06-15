@@ -2,6 +2,7 @@ title: Table of Contents
 
 paths:
   - index.md
+  - docs/bugs.md
   - docs/config.md
   - docs/contribute.md
   - reports/index.md
