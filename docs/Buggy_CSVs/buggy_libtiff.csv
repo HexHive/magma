@@ -1,0 +1,49 @@
+CVE ID,Vulnerability Type,Ported,Component,Bug ID,Report,Fix,Notes
+CVE-2017-5225,Heap buffer overflow,False,tiffcp,,,,Not a core bug.
+CVE-2016-9533,Heap buffer overflow,False,libtiff,,,,"Vulnerability in the implementation of the PixarLog encoder. Cannot be directly triggered by a crafted TIFF file. (Unless the application reads the TIFF and writes it somewhere else, e.g tiffcp)"
+CVE-2016-9534,Heap buffer overflow,False,libtiff,,Commit 83a4b92815ea04969d494416eaae3d4c6b338e4a,,"Vulnerability in TIFFFlushData1 error code path, which fails to reset the tif_rawcc and tif_rawcp members. Bug in write path. Cannot be triggered by crafted TIFF file."
+CVE-2016-9535,Heap buffer overflow,True,libtiff,AAH009,,,
+CVE-2016-9536,Heap buffer overflow,False,libtiff,,Commit 83a4b92815ea04969d494416eaae3d4c6b338e4a,,Bug in write path. Cannot be triggered by crafted TIFF file.
+CVE-2016-9537,Heap buffer overflow,False,libtiff,,Commit 83a4b92815ea04969d494416eaae3d4c6b338e4a,,Bug in write path. Cannot be triggered by crafted TIFF file.
+CVE-2016-9538,"Integer overflow, oob read",False,tiffcp,,,,Not a core bug.
+CVE-2016-9539,Oob read,False,tiffcp,,,,Not a core bug.
+CVE-2016-9540,Heap buffer overflow,False,tiffcp,,,,Not a core bug.
+CVE-2016-5314,Heap buffer overflow,True,libtiff,AAH010,,,
+CVE-2016-10266,Divide by zero,True,libtiff,AAH011,,,
+CVE-2016-10267,Divide by zero,True,libtiff,AAH012,,,
+CVE-2016-10268,"Integer underflow, oob read",False,tiffcp,,,,Not a core bug.
+CVE-2016-10269,Oob read,True,libtiff,"AAH013, AAH014",,,
+CVE-2016-10270,Oob read,True,libtiff,AAH015,,,
+CVE-2016-10271,Heap buffer overflow,False,tiffcrop,,,,Not a core bug.
+CVE-2016-10272,Heap buffer overflow,False,tiffcrop,,,,Not a core bug.
+CVE-2016-10092,Heap buffer overflow,False,tiffcrop,,,,Not a core bug.
+CVE-2016-10093,Heap buffer overflow,False,tiffcp,,,,Not a core bug.
+CVE-2016-10094,Heap buffer overflow,False,tiff2pdf,,,,Not a core bug.
+CVE-2016-0740,Buffer overflow,False,python-pillow,,,,Not a core bug.
+CVE-2015-8784,Heap buffer overflow,True,libtiff,AAH016,,,
+CVE-2014-8130,Divide by zero,False,libtiff,,,,Bug in write path. Cannot be directly triggered by crafted TIFF file.
+CVE-2013-4244,Oob write,False,gif2tiff,,,,Not a core bug.
+CVE-2019-7663,0-pointer dereference,True,libtiff,AAH017,,,
+CVE-2019-6128,Memory leak,False,pal2rgb,,,,Not a core bug.
+CVE-2018-8905,Heap buffer underflow,True,libtiff,AAH018,,,
+CVE-2018-7456,Oob read,True,libtiff,AAH019,,,
+CVE-2018-5784,Resource exhaustion,False,libtiff,,,,"Not a DoS. If a loop exists in the IFD linked list, traversal is terminated after a set threshold (65535) of nodes."
+CVE-2018-5360,Heap buffer overflow,False,libtiff,,,,"Duplicate of CVE-2014-8127, CVE-2016-3658"
+CVE-2014-8127,Heap buffer overflow,False,libtiff,,,,Duplicate of CVE-2016-3658
+CVE-2016-3658,Heap buffer overflow,True,libtiff,AAH020,,,
+CVE-2018-19210,0-pointer dereference,False,libtiff,,,,"Duplicate of CVE-2016-3658 (not exactly, but very similar bug fix)"
+CVE-2018-18661,0-pointer dereference,False,tiff2bw,,,,Not a core bug.
+CVE-2018-18557,Oob write,True,libtiff,AAH021,,,Might require a vulnerable application to trigger (where the supplied buffer by the application is too small)
+CVE-2018-17795,Heap buffer overflow,False,tiff2pdf,,,,Not a core bug. Similar to CVE-2017-9935
+CVE-2018-17100,Integer overflow,False,ppm2tiff,,,,"Not a core bug. According to the bug report 2810, probably not even a bug."
+CVE-2018-17101,Oob write,False,"tiff2bw, pal2rgb",,,,Not a core bug.
+CVE-2018-17000,0-pointer dereference,False,libtiff,,,,Duplicate of CVE-2019-7663 (AAH017)
+CVE-2017-11613,Resource exhaustion,True,libtiff,AAH022,,,
+CVE-2018-16335,Heap buffer overflow,False,libtiff,,,,Bug report unclear. Seems to have the same fix as that for CVE-2017-11613
+CVE-2018-15209,Heap buffer overflow,False,libtiff,,,,Bug report unclear. Seems to have the same fix as that for CVE-2017-11613
+CVE-2018-12900,Integer overflow,False,tiffcp,,,,Not a core bug.
+CVE-2018-10963,Improper error handling,False,libtiff,,,,"An assertion was placed where an error should have been handled instead, causing a denial of service. Not interesting."
+CVE-2018-10779,Heap buffer overflow,False,libtiff,,,,Bug report unclear.
+CVE-2018-10801,Memory leak,False,bmp2tiff,,,,Not a core bug. Bug report unclear as to the source of the culprit.
+CVE-2018-10126,0-pointer dereference,False,libtiff,,,,Bug report unclear. No fix listed.
+CVE-2017-9935,Heap buffer overflow,False,tiff2pdf,,,,Not a core bug.
