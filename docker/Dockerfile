@@ -9,35 +9,40 @@ ARG fuzzer_name
 ARG target_name
 ARG USER_ID=1000
 ARG GROUP_ID=1000
+
+## Magma directory hierarchy
 # magma_root is relative to the docker-build's working directory
 # The Docker image must be built in the root of the magma directory
 ARG magma_root=./
+ARG magma_path=magma
+ARG fuzzer_path=fuzzers/${fuzzer_name}
+ARG target_path=targets/${target_name}
 
-ARG isan
-ARG harden
-ARG canaries
-ARG fixes
-
-# Path variables inside the container
+## Path variables inside the container
 ENV MAGMA_R /magma
-ENV MAGMA 	${MAGMA_R}/magma
 ENV OUT		/magma_out
 ENV SHARED 	/magma_shared
-ENV FUZZER 	${MAGMA_R}/fuzzers/${fuzzer_name}
-ENV TARGET 	${MAGMA_R}/targets/${target_name}
+ENV MAGMA 	${MAGMA_R}/${magma_path}
+ENV FUZZER 	${MAGMA_R}/${fuzzer_path}
+ENV TARGET 	${MAGMA_R}/${target_path}
 
 RUN mkdir -p /home && \
 	groupadd -g ${GROUP_ID} magma && \
 	useradd -l -u ${USER_ID} -K UMASK=0000 -d /home -g magma magma && \
 	chown magma:magma /home
 RUN	echo "magma:amgam" | chpasswd && usermod -a -G sudo magma
-COPY --chown=magma:magma ${magma_root} ${MAGMA_R}
-RUN mkdir -p ${SHARED} ${OUT} && \
-	chown magma:magma ${SHARED} ${OUT} && \
-	chmod 744 ${SHARED} ${OUT}
 
+RUN mkdir -p ${MAGMA_R} ${FUZZER} ${TARGET} ${SHARED} ${OUT} && \
+	chown magma:magma  ${MAGMA_R} ${FUZZER} ${TARGET} ${SHARED} ${OUT} && \
+	chmod 744 ${SHARED} ${OUT}
+RUN su -c "mkdir -p ${MAGMA_R} ${FUZZER} ${TARGET} ${SHARED} ${OUT}" magma
+COPY --chown=magma:magma ${magma_root}/${magma_path}/preinstall.sh ${MAGMA}/
 RUN ${MAGMA}/preinstall.sh
+
+COPY --chown=magma:magma ${magma_root}/${fuzzer_path}/preinstall.sh ${FUZZER}/
 RUN ${FUZZER}/preinstall.sh
+
+COPY --chown=magma:magma ${magma_root}/${target_path}/preinstall.sh ${TARGET}/
 RUN ${TARGET}/preinstall.sh
 
 USER magma:magma
@@ -45,9 +50,20 @@ USER magma:magma
 ENV CC	gcc
 ENV CXX g++
 
+COPY --chown=magma:magma ${magma_root}/${magma_path} ${MAGMA}
 RUN ${MAGMA}/prebuild.sh
+
+COPY --chown=magma:magma ${magma_root}/${fuzzer_path} ${FUZZER}
 RUN ${FUZZER}/fetch.sh && ${FUZZER}/build.sh
+
+COPY --chown=magma:magma ${magma_root}/${target_path} ${TARGET}
 RUN ${TARGET}/fetch.sh && ${MAGMA}/apply_patches.sh
+
+## Configuration parameters
+ARG isan
+ARG harden
+ARG canaries
+ARG fixes
 
 ARG ISAN_FLAG=${isan:+-DMAGMA_FATAL_CANARIES}
 ARG HARDEN_FLAG=${harden:+-DMAGMA_HARDEN_CANARIES}
