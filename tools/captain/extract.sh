@@ -10,6 +10,13 @@
 # - env POCDIR: path to the directory where faulty test cases will be saved
 ##
 
+cleanup() {
+    rm -f "$tmp"
+    docker rm -f $container_id 1>/dev/null 2>&1
+}
+
+trap cleanup EXIT
+
 IMG_NAME="magma/$FUZZER/$TARGET"
 
 container_id=$(
@@ -41,5 +48,3 @@ while read file; do
     cp --backup=numbered "$tmp" "$POCDIR/$poc_name"
     rm "$tmp"
 done
-
-docker rm -f $container_id &> /dev/null

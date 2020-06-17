@@ -171,7 +171,11 @@ for FUZZER in "${FUZZERS[@]}"; do
         # build the Docker image
         IMG_NAME="magma/$FUZZER/$TARGET"
         echo_time "Building $IMG_NAME"
-        "$MAGMA"/tools/captain/build.sh &> "${LOGDIR}/${FUZZER}_${TARGET}_build.log"
+        if ! "$MAGMA"/tools/captain/build.sh &> \
+            "${LOGDIR}/${FUZZER}_${TARGET}_build.log"; then
+            echo_time "Failed to build $IMG_NAME. Check build log for info."
+            continue
+        fi
 
         PROGRAMS=($(get_var_or_default '$1_$2_PROGRAMS' $FUZZER $TARGET))
         for PROGRAM in "${PROGRAMS[@]}"; do
