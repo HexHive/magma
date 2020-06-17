@@ -45,9 +45,9 @@ if [ ! -z "$MAGMA" ]; then
         PROGRAMS_str="${PROGRAMS[@]}"
         declare -a DEFAULT_${ITARGET}_PROGRAMS="($PROGRAMS_str)"
 
-        for PROGRAM in "${PROGRAMS[@]}"; do
-            varname="${PROGRAM}_ARGS"
-            declare DEFAULT_${ITARGET}_${PROGRAM}_ARGS="${!varname}"
+        for IPROGRAM in "${PROGRAMS[@]}"; do
+            varname="${IPROGRAM}_ARGS"
+            declare DEFAULT_${ITARGET}_${IPROGRAM}_ARGS="${!varname}"
         done
     done
     popd &> /dev/null
