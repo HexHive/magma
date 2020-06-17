@@ -5,6 +5,6 @@
 # - env TARGET: path to target work dir
 ##
 
-git clone https://github.com/glennrp/libpng.git \
-    --depth 1 --branch libpng16 \
+git clone --no-checkout https://github.com/glennrp/libpng.git \
     "$TARGET/repo"
+git -C "$TARGET/repo" checkout dbe3e0c43e549a1602286144d94b0666549b18e6
