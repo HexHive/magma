@@ -6,7 +6,10 @@ set -e
 # - env FUZZER: path to fuzzer work dir
 ##
 
-git clone --depth 1 https://github.com/puppet-meteor/MOpt-AFL.git "$FUZZER/repo"
+git clone --no-checkout https://github.com/puppet-meteor/MOpt-AFL.git \
+    "$FUZZER/repo"
+git -C "$FUZZER/repo" checkout 61cdee22a9dc0f638d2a200c0d460c699e8500e0
+
 mv "$FUZZER/repo/MOpt"/* "$FUZZER/repo"
 #wget -O "$FUZZER/repo/afl_driver.cpp" \
 #    "https://cs.chromium.org/codesearch/f/chromium/src/third_party/libFuzzer/src/afl/afl_driver.cpp"
