@@ -87,7 +87,9 @@ start_campaign()
         "${LOGDIR}/${FUZZER}_${TARGET}_${PROGRAM}_${CID}_container.log"
     echo_time "Container $FUZZER/$TARGET/$PROGRAM/$CID stopped"
 
-    "$MAGMA"/tools/captain/extract.sh
+    if [ ! -z $POC_EXTRACT ]; then
+        "$MAGMA"/tools/captain/extract.sh
+    fi
 
     CAMPAIGN_ARDIR="$ARDIR/$FUZZER/$TARGET/$PROGRAM"
     mkdir -p "$CAMPAIGN_ARDIR"

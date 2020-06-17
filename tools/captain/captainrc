@@ -49,6 +49,11 @@ POLL=5
 # [HARDEN]: if set, build the benchmark with hardened canaries (default: unset)
 # HARDEN=1
 
+# [POC_EXTRACT]: if set, run the extract.sh script after the campaign is done
+# (default: set)
+POC_EXTRACT=1
+
+
 ###
 ## Campaigns to run
 ###
