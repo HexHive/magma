@@ -3,7 +3,8 @@
 @@ -5392,6 +5392,9 @@ htmlParseTryOrFinish(htmlParserCtxtPtr ctxt, int terminate) {
  	    avail = in->length - (in->cur - in->base);
  	else
- 	    avail = xmlBufUse(in->buf->buffer) - (in->cur - in->base);
+ 	    avail = (ptrdiff_t)xmlBufUse(in->buf->buffer) -
+                     (in->cur - in->base);
 +#ifdef MAGMA_ENABLE_CANARIES
 +    MAGMA_LOG("AAH030", avail != (in->end - in->cur));
 +#endif
