@@ -13,7 +13,7 @@
 ##
 
 cleanup() {
-	docker rm -f $container_id 1>/dev/null 2>&1
+    docker rm -f $container_id 1>/dev/null 2>&1
 }
 
 trap cleanup EXIT
