@@ -32,8 +32,12 @@ export POLL=${POLL:-5}
 export TIMEOUT=${TIMEOUT:-1m}
 
 WORKDIR="$(realpath "$WORKDIR")"
+export ARDIR="$WORKDIR/ar"
+export CACHEDIR="$WORKDIR/cache"
 export LOGDIR="$WORKDIR/log"
 export POCDIR="$WORKDIR/poc"
+mkdir -p "$ARDIR"
+mkdir -p "$CACHEDIR"
 mkdir -p "$LOGDIR"
 mkdir -p "$POCDIR"
 
@@ -72,10 +76,10 @@ start_campaign()
     # - env PROGRAM
     # - env ARGS
     ##
-    CACHEDIR="$WORKDIR/cache/$FUZZER/$TARGET/$PROGRAM"
+    CAMPAIGN_CACHEDIR="$CACHEDIR/$FUZZER/$TARGET/$PROGRAM"
     export CID=$(sem --id magma_cid --fg -j 1 -u \
-            get_next_cid "$CACHEDIR")
-    export SHARED="$CACHEDIR/$CID"
+            get_next_cid "$CAMPAIGN_CACHEDIR")
+    export SHARED="$CAMPAIGN_CACHEDIR/$CID"
     mkdir -p "$SHARED" && chmod 777 "$SHARED"
 
     echo_time "Container $FUZZER/$TARGET/$PROGRAM/$CID started on CPU $AFFINITY"
@@ -85,17 +89,17 @@ start_campaign()
 
     "$MAGMA"/tools/captain/extract.sh
 
-    ARDIR="$WORKDIR/ar/$FUZZER/$TARGET/$PROGRAM"
-    mkdir -p "$ARDIR"
+    CAMPAIGN_ARDIR="$ARDIR/$FUZZER/$TARGET/$PROGRAM"
+    mkdir -p "$CAMPAIGN_ARDIR"
     CID=$(sem --id magma_cid --fg -j 1 -u \
-            get_next_cid "$ARDIR")
+            get_next_cid "$CAMPAIGN_ARDIR")
     if [ -z $NO_ARCHIVE ]; then
         # only one tar job runs at a time, to prevent out-of-storage errors
         sem --id "magma_tar" --fg -j 1 \
-          tar -cf "${ARDIR}/${CID}/${CID}.tar" -C "$SHARED" . &>/dev/null && \
+          tar -cf "${CAMPAIGN_ARDIR}/${CID}/${CID}.tar" -C "$SHARED" . &>/dev/null && \
         rm -rf "$SHARED"
     else
-        rm -rf "${ARDIR}/${CID}" && mv "$SHARED" "${ARDIR}/${CID}"
+        rm -rf "${CAMPAIGN_ARDIR}/${CID}" && mv "$SHARED" "${CAMPAIGN_ARDIR}/${CID}"
     fi
 }
 export -f start_campaign
@@ -141,66 +145,18 @@ start_ex()
 }
 export -f start_ex
 
-contains_element () {
-    local e match="$1"
-    shift
-    for e; do [[ "$e" == "$match" ]] && return 0; done
-    return 1
-}
-
-get_var_or_default() {
-    ##
-    # Pre-requirements:
-    # - $1: variable format
-    # - $2..N: placeholders
-    ##
-    pattern="$1"
-    shift
-
-    name="$(eval echo $pattern)"
-    name="${name}[@]"
-    value="${!name}"
-    if [ -z $value ] || [ ${#value[@]} -eq 0 ]; then
-        set -- "DEFAULT" "${@:2}"
-        name="$(eval echo $pattern)"
-        name="${name}[@]"
-        value="${!name}"
-    fi
-    echo "${value[@]}"
-}
-
 # clear any stuck semaphores
 sem --id "magma" --st 1 rm -rf ~/.parallel/semaphores/id-magma*
 
 # set up a RAM-backed fs for fast processing of canaries and crashes
-mkdir -p "$WORKDIR/cache"
-mkdir -p "$WORKDIR/ar"
 if [ -z $CACHE_ON_DISK ]; then
     echo_time "Obtaining sudo permissions to mount tmpfs"
-    if mountpoint -q -- "$WORKDIR/cache"; then
-        sudo umount -f "$WORKDIR/cache"
+    if mountpoint -q -- "$CACHEDIR"; then
+        sudo umount -f "$CACHEDIR"
     fi
     sudo mount -t tmpfs -o size=$TMPFS_SIZE,uid=$(id -u $USER),gid=$(id -g $USER) \
-        tmpfs "$WORKDIR/cache"
+        tmpfs "$CACHEDIR"
 fi
-
-# initialize default parameters
-pushd "$MAGMA/targets" &> /dev/null
-shopt -s nullglob
-DEFAULT_TARGETS=(*)
-shopt -u nullglob
-
-for TARGET in "${DEFAULT_TARGETS[@]}"; do
-    source "$MAGMA/targets/$TARGET/configrc"
-    PROGRAMS_str="${PROGRAMS[@]}"
-    declare -a DEFAULT_${TARGET}_PROGRAMS="($PROGRAMS_str)"
-
-    for PROGRAM in "${PROGRAMS[@]}"; do
-        varname="${PROGRAM}_ARGS"
-        declare DEFAULT_${TARGET}_${PROGRAM}_ARGS="${!varname}"
-    done
-done
-popd &> /dev/null
 
 # schedule campaigns
 for FUZZER in "${FUZZERS[@]}"; do
@@ -238,5 +194,5 @@ done
 
 if [ -z $CACHE_ON_DISK ]; then
     echo_time "Obtaining sudo permissions to umount tmpfs"
-    sudo umount "$WORKDIR/cache"
+    sudo umount "$CACHEDIR"
 fi

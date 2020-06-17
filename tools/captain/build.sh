@@ -38,6 +38,7 @@ if [ ! -z $HARDEN ]; then
 fi
 
 if [ -z $(docker image ls -q "$IMG_NAME") ] || [ ! -z $FORCE ]; then
+    set -x
     docker build -t "$IMG_NAME" \
         --build-arg fuzzer_name="$FUZZER" \
         --build-arg target_name="$TARGET" \
@@ -45,6 +46,7 @@ if [ -z $(docker image ls -q "$IMG_NAME") ] || [ ! -z $FORCE ]; then
         --build-arg GROUP_ID=$(id -g $USER) \
         $canaries_flag $fixes_flag $isan_flag $harden_flag \
         -f "$MAGMA/docker/Dockerfile" "$MAGMA"
+    set +x
 fi
 
 echo "$IMG_NAME"
