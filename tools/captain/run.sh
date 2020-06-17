@@ -194,6 +194,7 @@ for FUZZER in "${FUZZERS[@]}"; do
     done
 done
 
+sem --id "magma" --wait
 for i in $WORKERPOOL; do
     sem --id "magma_cpu_$i" --wait
 done
