@@ -6,20 +6,23 @@ title: Home
 
 Magma is a collection of open-source libraries with widespread usage and a long
 history of security-critical bugs and vulnerabilities. In light of the need for
-better fuzzer evaluation, we front-ported bugs from previous bug reports to the
-latest versions of these libraries, which are constantly being updated with new
-patches and features, possibly introducing even more undiscovered bugs. This
-last fact allows us to continuously update Magma with new bugs as they are
-reported, instead of using old stale versions of the libraries.
+better fuzzer evaluation, we *front-ported* bugs from previous bug reports to
+the latest versions of these libraries.
 
 For each ported bug, we added in-line (source-code-level) instrumentation to
-collect ground-truth information about bugs reached (buggy code executed) and
-triggered (fault condition satisfied by input). This instrumentation allows a
-monitoring utility to measure fuzzer progress in real time.
+collect ground-truth information about bugs **reached** (buggy code executed)
+and **triggered** (fault condition satisfied by input). This instrumentation
+allows a monitoring utility to measure fuzzer progress in real time.
+
+Magma also includes the `captain` toolset which facilitates the process of
+building Magma targets and running campaigns.
 
 ## Included Libraries
 
-So far, we have added the following libraries to Magma:
+We selected a handful of diverse targets to include in the initial version of
+Magma. These targets were chosen from the Google
+[OSS-Fuzz](https://github.com/google/oss-fuzz) list of supported projects which
+are actively updated and developed:
 
 1. libpng
 1. libtiff
@@ -32,8 +35,114 @@ So far, we have added the following libraries to Magma:
 For each library, we build at least one executable program that consumes an
 input file and feeds it to the instrumented library. While these programs are
 not guaranteed to maximize library code coverage, they have proven useful as
-fuzz targets, since a majority of the reports for front-ported bugs in Magma
-mention that these programs can be used to trigger the bugs.
+fuzz targets, since they are used by OSS-Fuzz as libFuzzer/AFL stubs, and a
+majority of the reports for front-ported bugs in Magma mention these programs in
+the Proof-of-Concept to reproduce the bugs.
+
+## Usage
+
+To use Magma and its scripts, first install the dependencies:
+```
+apt-get update &&
+  apt-get install -y parallel docker.io git
+```
+
+Magma uses [GNU Parallel](https://www.gnu.org/software/parallel/) to manage fuzz
+campaigns through bash. To silence the citation notice, run either of the
+following commands:
+```
+# Requires user input
+parallel --citation
+
+# OR
+touch ~/.parallel/will-cite
+```
+
+Then clone Magma:
+```
+git clone https://github.com/HexHive/magma.git magma
+```
+
+From here on, you can use the `captain` scripts (in `tools/captain`) to build,
+start, and manage fuzz campaigns.
+
+The `captain/run.sh` script can build fuzzing images and start multiple
+campaigns in parallel. To configure it, the `captainrc` file is imported.
+
+For instance, to run a single 24-hour AFL campaign against a Magma target (e.g.,
+libpng), the `captainrc` file can be as such:
+```
+###
+## Configuration parameters
+###
+
+# WORKDIR: path to directory where shared volumes will be created
+WORKDIR=./workdir
+
+# REPEAT: number of campaigns to run per program (per fuzzer)
+REPEAT=1
+
+# [WORKERS]: number of worker threads (default: CPU cores)
+WORKERS=1
+
+# [TIMEOUT]: time to run each campaign. This variable supports one-letter
+# suffixes to indicate duration (s: seconds, m: minutes, h: hours, d: days)
+# (default: 1m)
+TIMEOUT=24h
+
+# [POLL]: time (in seconds) between polls (default: 5)
+POLL=5
+
+# [ISAN]: if set, build the benchmark with ISAN/fatal canaries (default: unset)
+ISAN=1
+
+###
+## Campaigns to run
+###
+
+# FUZZERS: an array of fuzzer names (from magma/fuzzers/*) to evaluate
+FUZZERS=(afl)
+
+# [fuzzer_TARGETS]: an array of target names (from magma/targets/*) to fuzz with
+# `fuzzer` (default: all targets)
+afl_TARGETS=(libpng)
+```
+
+Then, execute `./run.sh` in the same directory. The `workdir/log` directory
+contains the build and run logs of the campaign. In addition, the fuzzer logs
+and outputs can be found in `workdir/findings`.
+
+The collected Magma instrumentation can be found in name-timestamped files
+inside `workdir/monitor`. Timestamps are recorded in seconds since the beginning
+of the campaign. The contents of each monitor file are a CSV header and data row
+representing the global campaign bug reached and triggered counters at that
+timestamp. For instance, the `workdir/monitor/43200` file could have the
+following contents:
+```
+AAH001_R, AAH001_T, AAH007_R, AAH007_T
+1245, 342, 45324, 6345
+```
+
+This indicates that, up until the 12-hour mark, the `AAH001` bug was reached
+*1245* times, and triggered *342* times, whereas the `AAH007` bug was reach
+*45324* times, and triggered *6345* times.
+
+
+## Manual Builds
+
+The `captain` toolset also provides scripts to manually build and start
+unmanaged campaigns:
+```
+cd tools/captain
+
+# Build the docker image for AFL and a Magma target (e.g., libpng)
+FUZZER=afl TARGET=libpng ./build.sh
+
+# To start a single 24-hour fuzzing campaign, use the start.sh script
+mkdir -p ./workdir
+FUZZER=afl TARGET=libpng PROGRAM=libpng_read_fuzzer SHARED=./workdir POLL=5 \
+  TIMEOUT=24h ./start.sh
+```
 
 ## TODOs
 
@@ -62,64 +171,3 @@ The long-term milestones of this project are:
    in work being duplicated, like compiling the benchmark twice with the same
    compiler configuration or compiling all libraries twice just to change the
    MAGMA_STORAGE value (which only affects one object file).~~
-
-## Usage
-
-To use Magma and its scripts, first install the dependencies:
-```
-apt-get update &&
-  apt-get install -y screen parallel docker.io git snapd
-snap install yq
-```
-
-Magma uses [GNU Parallel](https://www.gnu.org/software/parallel/) to manage fuzz
-campaigns through bash. To silence the citation notice, run either of the
-following commands:
-```
-# Requires user input
-parallel --citation
-
-# OR
-touch ~/.parallel/will-cite
-```
-
-Then clone Magma:
-```
-git clone https://github.com/HexHive/magma.git magma
-```
-
-From here on, you can use the Captain scripts (in `tools/captain`) to build,
-start, and manage fuzz campaigns.
-
-For instance, to run a single AFL campaign against a Magma target, follow these
-steps:
-```
-cd tools/captain
-
-# Build the docker image for AFL and a Magma target (e.g., libpng)
-FUZZER=afl TARGET=libpng ./build.sh
-
-# To start a single 24-hour fuzzing campaign, use the start.sh script
-mkdir -p ./workdir
-FUZZER=afl TARGET=libpng PROGRAM=libpng_read_fuzzer SHARED=./workdir POLL=5 \
-  TIMEOUT=24h ./start.sh
-```
-
-To **build and run** a set of campaigns against multiple targets, the Captain
-toolset includes a script to manage these campaigns:
-```
-mkdir -p ./workdir
-cat > ./config.yaml << EOF
-afl:
-  - libpng
-  - libtiff
-aflfast:
-  - libxml2
-  - poppler
-EOF
-
-# define MAGMA_CACHE_ON_DISK to use disk-backed storage while the campaign is
-#   running, instead of a tmpfs volume.
-WORKDIR=./workdir REPEAT=5 WORKERS=6 TIMEOUT=24h POLL=5 MAGMA_CACHE_ON_DISK=1 \
-  ./run.sh
-```
