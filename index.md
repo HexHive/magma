@@ -60,7 +60,7 @@ touch ~/.parallel/will-cite
 
 Then clone Magma:
 ```
-git clone https://github.com/HexHive/magma.git magma
+git clone --branch v1.0.0 https://github.com/HexHive/magma.git magma
 ```
 
 From here on, you can use the `captain` scripts (in `tools/captain`) to build,
@@ -143,6 +143,20 @@ mkdir -p ./workdir
 FUZZER=afl TARGET=libpng PROGRAM=libpng_read_fuzzer SHARED=./workdir POLL=5 \
   TIMEOUT=24h ./start.sh
 ```
+
+## Magma Versioning
+
+To guarantee replicatable results across evaluations, Magma uses semantic
+versioning:
+
+1. *MAJOR*: A Magma release with incompatible API/toolset changes
+1. *MINOR*: An update to Magma that modifies targets (e.g., updates version or
+   ref) or patches (e.g., adds/removes bugs), making evaluations not comparable
+   across minor releases.
+1. *PATCH*: An update or a hotfix to the toolset or build system in a
+   backward-compatible manner that preserves benchmark results.
+
+The first stable and anchored release of Magma is `v1.0.0`.
 
 ## TODOs
 
