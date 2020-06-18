@@ -110,14 +110,14 @@ afl_TARGETS=(libpng)
 
 Then, execute `./run.sh` in the same directory. The `workdir/log` directory
 contains the build and run logs of the campaign. In addition, the fuzzer logs
-and outputs can be found in `workdir/findings`.
+and outputs can be found in `workdir/afl/libpng/libpng_read_fuzzer/0/findings`.
 
 The collected Magma instrumentation can be found in name-timestamped files
-inside `workdir/monitor`. Timestamps are recorded in seconds since the beginning
-of the campaign. The contents of each monitor file are a CSV header and data row
-representing the global campaign bug reached and triggered counters at that
-timestamp. For instance, the `workdir/monitor/43200` file could have the
-following contents:
+inside `workdir/afl/libpng/libpng_read_fuzzer/0/monitor`. Timestamps are
+recorded in seconds since the beginning of the campaign. The contents of each
+monitor file are a CSV header and data row representing the global campaign bug
+reached and triggered counters at that timestamp. For instance, the
+`monitor/43200` file could have the following contents:
 ```
 AAH001_R, AAH001_T, AAH007_R, AAH007_T
 1245, 342, 45324, 6345
