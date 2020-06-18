@@ -4,5 +4,6 @@ paths:
   - index.md
   - docs/bugs.md
   - docs/config.md
+  - docs/technical.md
   - docs/contribute.md
   - reports/index.md
