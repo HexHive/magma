@@ -50,7 +50,7 @@ POLL=5
 # HARDEN=1
 
 # [POC_EXTRACT]: if set, run the extract.sh script after the campaign is done
-# (default: set)
+# (default: unset)
 POC_EXTRACT=1
 
 
