@@ -23,7 +23,7 @@ get_var_or_default() {
     name="$(eval echo $pattern)"
     name="${name}[@]"
     value="${!name}"
-    if [ -z $value ] || [ ${#value[@]} -eq 0 ]; then
+    if [ -z "$value" ] || [ ${#value[@]} -eq 0 ]; then
         set -- "DEFAULT" "${@:2}"
         name="$(eval echo $pattern)"
         name="${name}[@]"
