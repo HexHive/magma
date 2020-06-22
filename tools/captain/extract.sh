@@ -43,8 +43,6 @@ while read file; do
         poc_name="${poc_name}_NEW"
     fi
 
-    tmp=$(mktemp --tmpdir="$POCDIR" poc.XXX)
-    docker cp "$container_id:$file" "$tmp"
-    cp --backup=numbered "$tmp" "$POCDIR/$poc_name"
-    rm "$tmp"
+    poc=$(mktemp --tmpdir="$POCDIR" "${poc_name}.XXX")
+    docker cp "$container_id:$file" "$poc"
 done
