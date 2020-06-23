@@ -11,7 +11,6 @@
 ##
 
 cleanup() {
-    rm -f "$tmp"
     docker rm -f $container_id 1>/dev/null 2>&1
 }
 
