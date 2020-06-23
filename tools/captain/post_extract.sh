@@ -6,7 +6,7 @@
 ##
 
 cleanup() {
-    rm -f "$TMPDIR"
+    rm -rf "$TMPDIR"
 }
 
 trap cleanup EXIT
@@ -84,5 +84,3 @@ find "$ARDIR" -mindepth 1 -maxdepth 1 -type d | while read FUZZERDIR; do
         done
     done
 done
-
-rm -rf "$TMPDIR"
