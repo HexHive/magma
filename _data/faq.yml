@@ -1,0 +1,472 @@
+- question: >
+    What is the difference between a bug and a crash? Don't all bugs lead to
+    crashes?
+  answer: >
+    A bug is a diversion from intended program behavior. A bug may not always
+    manifest as a crash. With Magma, we try to capture that diversion and record
+    it as "triggered". This does not necessitate that a crash always follows a
+    bug.
+
+- question: >
+    <ul style="margin: 0">
+    <li> My fuzzer has triggered a memory bug, but it could not detect it with ASan.
+    Is this a false-positive? </li>
+    <li> Do all bugs in Magma result in a crash? If not, then why? </li>
+    </ul>
+  answer: >
+    <p> This may be due to an "under-fit" trigger condition. The fixes written
+    by the library developers are often more restricting than the cause for a
+    crash. Magma extracts the bug condition from those fixes, instead of using
+    the actual "crash" condition. </p>
+
+    <p> It is possible that the fix provided by the developers is underfitting
+    to the original bug. In that sense, the trigger condition could cover cases
+    that are not crashing, but that still violate the criteria set by the
+    developers to fix the bug. Then, a bug can be triggered but not cause a
+    crash. </p>
+
+    <p> Another reason could be that the code base had undergone changes that
+    prevent the crash from happening at a later point after the trigger
+    condition is evaluated. In that case, reproducing the bug may not yield the
+    same results (crashing), but would still require satisfying complex
+    conditions. </p>
+
+
+- question: >
+    What does the term "forward-porting" mean, and how is it different from
+    "back-porting"?
+  answer: >
+    <p> In contrast to the process of back-porting fixes from newer software
+    versions to previous releases, we coin the term <i>forward-porting</i> for
+    re-purposing bugs from previous releases and injecting them into later
+    versions of the code. </p>
+
+    <p> An alternative approach to forward-porting bugs would be back-porting
+    canaries. Given a library <i>libfoo</i> with a previous release <b>A</b> and
+    the latest stable release <b>B</b>, the history of bugs fixed from <b>A</b>
+    to <b>B</b> can be used to identify the bugs present in <b>A</b>, formulate
+    oracles, and inject canaries in an old version of <i>libfoo</i>. However,
+    when we use <b>A</b> as the code base for our target, we could potentially
+    miss some bugs in the back-porting process. This increases the possibility
+    that the instrumented version of <b>A</b> has bugs for which no ground-truth
+    is being collected. In contrast, when we follow the forward-porting
+    approach, <b>B</b> is used as a code base, ensuring that all <i>known</i>
+    bugs are fixed, and the bugs we re-introduce will have ground-truth oracles.
+    It is still possible that with the new fixes and features added to <b>B</b>,
+    more bugs could have been re-introduced, but the forward-porting approach
+    allows the benchmark to constantly evolve with each published bug fix. </p>
+
+- question: >
+    What is "ground truth"?
+  answer: >
+    Ground truth in Magma represents the ability to to recognize faulty behavior
+    and map it back to its root cause (the bug). We integrate ground truth into
+    Magma targets through oracles and canaries that evaluate program state to
+    detect if a fault has occurred.
+
+- question: >
+    Is Magma limited to evaluating grey-box fuzzers?
+  answer: >
+    No. At its core, Magma is just a compilation of libraries with ground-truth
+    bugs. The only requirement for evaluating a bug-finding tool with Magma is
+    that it qualifies as a <b>fuzzer</b>. The defining trait of fuzzers, in
+    contrast with other types of bug-finding tools, is the fact that they
+    execute the target concretely on the host system. This allows Magma's
+    instrumentation to export canary statistics from the program's environment
+    and into the monitor.
+
+- question: >
+    What is a "canary"? What is the difference between an "oracle" and a
+    "canary"?
+  answer: >
+    <p> An oracle evaluates the current program state and determines if it is
+    faulty (i.e., if the bug has been triggered). A canary is responsible for
+    reporting and exporting that knowledge, through Magma's runtime library, to
+    be used by the monitor. </p>
+
+    <p> Throughout the code, the documentation, and the paper, the distinction
+    between those terms is not too emphasized, and they are often used
+    interchangeably when the distinction is not critical. </p>
+
+- question: >
+    Which targets are suitable for use in Magma?
+  answer: >
+    <p> Magma's initial set of targets was chosen to cover different
+    computational domains of applications and standards, to provide an
+    all-around benchmark representative of a major portion of in-the-wild
+    fuzzing targets. </p>
+
+    <p> Although the concept behind Magma is not exclusive to one title under
+    which targets fall, Magma's implementation does limit the scope of real
+    targets that can be added. Magma currently relies on inline instrumentation
+    written in <code>C</code>, which then requires the targets to be written in
+    <code>C/C++</code>. Moreover, Magma currently does not support
+    multi-threaded targets, since its runtime library is not thread-safe. </p>
+
+- question: >
+    How are bugs in Magma targets selected for porting?
+  answer: >
+    <p> No specific set of criteria was imposed on the bug selection process.
+    However, throughout our porting efforts, we often prioritized more recent
+    bug reports, since they correlate most closely to the latest code base, and
+    are thus more likely to remain valid. Additionally, reports marked
+    "critical" were also given a higher priority than others. </p>
+
+    <p> That said, there are no constraints on bug types. Bugs in Magma can be
+    anything from typical memory safety violations to semantic bugs, allowing
+    for a broad range of possible sanitization and fault detection techniques.
+    </p>
+
+- question: >
+    What is the difference between a bug being reached, triggered, and detected?
+  answer: >
+    <p> A <i>reached</i> bug refers to a bug whose oracle was called, implying
+    that the executed path reaches the context of the bug, without necessarily
+    triggering a fault. A <i>triggered</i> bug, on the other hand, refers to a
+    bug that was reached, and <i>whose</i>triggering condition was satisfied},
+    indicating that a fault occurred. Whereas triggering a bug implies that the
+    program has transitioned into a faulty state, the symptoms of the fault may
+    not be directly observable at the oracle injection site. When a bug is
+    triggered, the oracle only indicates that the conditions for a fault have
+    been satisfied, but this does not imply that the fault was encountered or
+    detected by the fuzzer. </p>
+
+    <p> Another distinction is the difference between <i>triggering</i> and
+    <i>detecting</i> a bug. Whereas most security-critical bugs manifest as a
+    low-level security policy violation for which state-of-the-art sanitizers
+    are well-suited &mdash; e.g., memory corruption, data races, invalid
+    arithmetic &mdash; some classes of bugs are not easily observable. Resource
+    exhaustion bugs are often detected after the fault has manifested, either
+    through a timeout or an out-of-memory indication. Even more obscure are
+    semantic bugs whose malfunctions cannot be observed without some
+    specification or reference. Different fuzzing techniques have been developed
+    to target such evasive bugs, such as SlowFuzz and NEZHA. Such advancements
+    in fuzzer technologies could benefit from an evaluation which accounts for
+    <i>detection</i> rate as another dimension for comparison. </p>
+
+- question: >
+    Why does Magma not measure coverage as a metric?
+  answer: >
+    The idea behind Magma is to obtain an accurate and meaningful measure of
+    fuzzer performance. The rationale boils down to the following: if fuzzer
+    <i>A</i> finds more bugs than fuzzer <i>B</i>, then <i>A</i> is superior to
+    <i>B</i>. Coverage, on the other hand, is just an approximation to
+    performance, based on the observation that the more code is covered, the
+    more likely it is to execute buggy code. Hence, Magma focuses on bug counts
+    and time-to-bug metrics as more direct surrogates for performance.
+
+- question: >
+    <span> What does the <code>POLL</code> parameter affect? And why does the
+    Magma <code>monitor</code> need to poll? </span>
+  answer: >
+    Canary information from Magma instrumentation is stored in a shared file
+    that the <code>monitor</code> can access. To avoid the overhead and
+    complexity of synchronization, the Magma monitor does not synchronously read
+    the results. Instead, it polls the file, meaning that it reads its contents
+    every <code>POLL</code> seconds.
+
+- question: >
+    When should I use the IdealSanitizer (ISan) configuration?
+  answer: >
+    <p> ISan is an early alarm system that crashes the program (with a
+    <code>SIGSEGV</code> signal) when the bug trigger conditions are satisfied.
+    It can be used when the <i>detection</i> capabilities of the fuzzer are of
+    no interest to the evaluator, or when they can be evaluated separately in a
+    post-processing step. </p>
+
+    <p> One such example is AFL. When using AFL with AddressSanitizer, it is
+    possible to first run the Magma benchmark with ISan, collect crashing
+    test-cases for <i>all bugs</i>, then re-compile the target without ASan and
+    re-run it against the collected test-cases, filtering out the bugs which
+    could not be detected by ASan. It is also important to take into account
+    AFL's other fault detection techniques, like out-of-memory thresholds and
+    execution timeouts. The <code>[fuzzer]/run_once.sh</code> scripts in Magma
+    are intended to emulate the fuzzer's execution environment to detect faults.
+    </p>
+
+- question: >
+    How is the seed corpus for Magma chosen? Does it guarantee that all bugs
+    will be found?
+  answer: >
+    No. The corpus provided in Magma is only a starting set of seed files,
+    usually sourced from the original library repository. The objective is to
+    provide a common starting configuration for all fuzzers.
+
+- question: >
+    <span> When using the <code>captain/run.sh</code> script, how should I select
+    the value for <code>WORKERS</code>? </span>
+  answer: >
+    <code>WORKERS</code> specifies the number of logical cores (from
+    <code>0</code> up to <code>WORKERS-1</code>) you wish to allocate for
+    running the benchmark. Magma will utilize these cores to run multiple
+    campaigns in parallel. When all allocated cores are busy or occupied, Magma
+    queues up remaining campaigns and dispatches them to the next core that
+    frees up.
+
+- question: >
+    I need to run scripts inside the Docker container. How can I do that?
+  answer: |
+    <p> In order to obtain an <i>interactive</i> shell session in a Docker
+    container, you must execute the <code>bash</code> program inside a
+    <b>running</b> container. </p>
+
+    <p> In the case that you already have an existing running container (e.g. a
+    campaign that has not finished):
+    <ol>
+    <li> Obtain the container's ID with <code>docker ps</code> </li>
+    <li> Execute <code>bash</code> in a foreground TTY terminal:
+    <pre class="highlight">
+    <code>docker exec -it &lt;CONTAINER_ID&gt; /bin/bash</code>
+    </pre>
+    </li>
+    </ol>
+    </p>
+
+    <p> Alternatively, if you want to launch a <code>bash</code> shell inside a
+    new container, you can use the <code>captain/start.sh</code> script as
+    follows:
+    <pre class="highlight">
+    <code>cd captain
+    FUZZER=afl TARGET=php PROGRAM=exif ENTRYPOINT=/bin/bash ./start.sh</code>
+    </pre>
+    </p>
+
+- question: >
+    <span> How do I obtain <code>sudo</code> access inside the container? </span>
+  answer: >
+    The Dockerfile describes how the <code>magma</code> user inside the image is
+    added to the <code>sudo</code> users group. The default password is
+    <code>amgam</code>.
+
+- question: >
+    How do I check if campaigns are still running? How do I kill their
+    containers (prematurely)?
+  answer: |
+    The <code>captain</code> toolset currently does not provide means by which
+    to manually terminate containers. Its scripts have exit handlers which
+    attempt a clean-up before the script exits. However, in case of a
+    malfunction, you can still manually check the status of current active
+    containers and kill/remove them:
+    <pre class="highlight">
+    <code>docker ps
+    docker kill &lt;CONTAINER_ID&gt;
+    docker rm -f &lt;CONTAINER_ID&gt;</code>
+    </pre>
+
+- question: >
+    How do I remove all Magma containers and images from my system?
+  answer: |
+    <pre class="highlight">
+    <code>docker ps
+    docker rm -f `docker ps | grep magma | awk '{print $1}'`
+    docker rmi -f `docker image ls | grep magma | awk '{print $3}'`</code>
+    </pre>
+
+- question: >
+    Why do some target programs need arguments, whereas others do not?
+  answer: >
+    <p> Most programs that we include in Magma targets are derived from Google's
+    OSS-Fuzz project, where the target developers write their own libFuzzer
+    stubs. In Magma, we include a wrapper for those stubs to allow them to be
+    fuzzed by AFL and its likes. This wrapper can either be launched with a
+    file-name argument, which will be read and fed into the libFuzzer stub, or
+    it can be launched without arguments, in which case it would be used by AFL
+    for persistent fuzzing. </p>
+
+    <p> We also occasionally include other programs in Magma, including tools
+    (e.g., <code>tiffcp</code>, <code>pdfimages</code>, ...) which require
+    command-line arguments to properly consume the input. In that case, we
+    provide the AFL-style arguments in the configuration, where <code>@@</code>
+    is replaced by the path to the fuzzer-generated test-case. </p>
+
+- question: >
+    Where can I find which programs are included with a target, and the
+    arguments they need?
+  answer: >
+    Each target configuration (in <code>targets/*</code>) includes a
+    <code>configrc</code> file which specifies the list of programs to fuzz, and
+    the AFL-style arguments to pass to each program.
+
+- question: >
+    <span> What does the <code>REPEAT</code> parameter signify? Why do I need multiple
+    repetitions? </span>
+  answer: >
+    It indicates the number of times to repeat the same campaign over. Fuzzing
+    is a highly stochastic process, and performance often varies based on the
+    initial random seed that the fuzzer chose. As such, it is important not to
+    consider the results of only one campaign as final, but to examine the
+    fuzzer's overall trend through multiple restarts of the same campaign.
+
+- question: >
+    Can I select which bugs to inject into a target?
+  answer: >
+    Magma's configuration scripts currently do not support custom bugs. However,
+    you can still achieve this. When building a Magma Docker image, only the
+    bugs inside the <code>patches/bugs</code> and <code>patches/setup</code>
+    directories (in the target configuration directory) are applied, and all
+    files in other subdirectories are ignored. So, to select which bugs to
+    apply, simply make sure that only your chosen bugs are inside those
+    directories, and move the undersired bugs somewhere else. Then, rebuild the
+    image.
+
+- question: >
+    How can I resume or extend a fuzzing campaign?
+  answer: >
+    <p> This requires creating a new fuzzer configuration that resumes from an
+    existing workdir. For this purpose, we've added an example config,
+    <code>afl_resume</code> , which is a copy of <code>afl</code> where the
+    <code>run.sh</code> script was modified to use the <code>-i -</code> flag in
+    running AFL instead of using the seed corpus as input. </p>
+
+    <p> To resume work from a previous campaign, build the new configuration:
+    <pre class="highlight">
+    <code>FUZZER=afl_resume TARGET=libtiff ./build.sh</code>
+    </pre>
+    </p>
+
+    <p> Then, launch the campaign manually, specifying the old workdir (without
+    emptying it):
+    <pre class="highlight">
+    <code>FUZZER=afl_resume TARGET=libtiff PROGRAM=tiffcp ARGS="-M @@ tmp.out" SHARED=./workdir POLL=5 TIMEOUT=24h ./start.sh</code>
+    </pre>
+    </p>
+
+- question: >
+    <span> The <code>captain/run.sh</code> script has terminated, but campaigns
+    are still running. What's wrong? </span>
+  answer: >
+    <p> It is likely that the script encountered an error while building the
+    benchmark or processing parameters, and terminated prematurely. </p>
+
+    <p> To kill all campaigns:
+    <pre class="highlight">
+    <code>pkill -SIGTERM 'start\.sh'</code>
+    </pre>
+    </p>
+
+- question: >
+    I have run my fuzzer for a long time, but it has found very few bugs or
+    crashes. Am I doing something wrong?
+  answer: >
+    Probably not. Bugs in Magma are real and complex, and we have yet to collect
+    a comprehensive list of proof-of-concept test-cases for every bug. Keep an
+    eye out on the <a href="/docs/bugs.html">Bugs</a> and <a
+    href="/reports/index.html">Reports</a> pages for the latest status of bugs
+    and statistics on them.
+
+- question: >
+    Where can I find a list of PoVs (proofs of vulnerability) to trigger bugs in
+    Magma targets?
+  answer: >
+    Any PoV dumps will be listed for download on the <a
+    href="/docs/bugs.html">Bugs</a> page.
+
+- question: >
+    Can all bugs in Magma be reached, triggered, and detected?
+  answer: >
+    <p> Bugs that are injected in Magma are not verified, since the process of
+    manually crafting PoVs is arduous and requires domain-specific knowledge,
+    both about the input format and the program or library, potentially bringing
+    the bug-injection process to a grinding halt. </p>
+
+    <p> Instead, we inject bugs into the targets without first supplying PoVs,
+    then we collect PoVs from the results of the campaigns. When available, we
+    also extract PoVs from public bug reports. </p>
+
+    <p> This approach does not guarantee that all injected bugs can be used for
+    evaluation, but it does make the development of the benchmark and
+    contribution to it more streamlined and efficient, leaving it to the fuzzers
+    to do all the heavy lifting. </p>
+
+- question: >
+    <span> What do the <code>monitor</code> output logs contain? Does every log
+    file correspond to a new bug discovered? </span>
+  answer: |
+    <p> Throughout the lifetime of the campaign, the monitor keeps track of the
+    cumulative count of all bugs encountered. These log are not related to one
+    specific crash or run. They are the culmination of the entire fuzzing process
+    up until the timestamped point. </p>
+
+    <p> The monitor folder contains files whose names are timestamps, and whose
+    contents are counters. The timestamps are in seconds, since the beginning of
+    the campaign. The counters are just the number of times the bug has been
+    reached/triggered since the beginning of the campaign. </p>
+
+    <p> Consider a timestamped log <code>monitor/24100</code> which contains the
+    following:
+    <pre class="highlight">
+    <code>ABC123_R, ABC123_T, XYZ001_R, XYZ001_T
+    63453, 29060, 23, 3</code>
+    </pre>
+    </p>
+
+    <p> This means that, until this timestamp, the fuzzer had generated 63453
+    files that reach ABC123, of which 29060 files trigger it. The fuzzer may not
+    have saved all of them because it manages to deduplicate some crashes. </p>
+
+- question: >
+    How can I save all inputs that trigger a bug, even if they don't crash with
+    AddressSanitizer?
+  answer: >
+    You can use ISan and fuzz until you encounter that bug. When using ASan
+    only, the bugs that are triggered without causing a crash will not be saved
+    in the crashes directory of the fuzzer. However, the Magma
+    <code>monitor</code> will log it, thanks to the canaries.
+
+    Compiling with ISan is not necessary to <i>see whether an input triggers a
+    bug</i>. You can do that with <code>monitor --fetch watch</code>. But for
+    obtaining the test cases that don't crash, you will need ISan, because the
+    typical fuzzer would not have saved non-crashing cases.
+
+- question: >
+    I have found a PoV that triggers two bugs, but the `monitor` only reports one.
+    Why?
+  answer: >
+    This is intended behavior. It doesn't make sense to trigger more than one
+    bug. Once a bug is triggered, the program moves into a faulty state where
+    the canaries are disabled. Any bugs triggered after the first bug are not
+    reliable. This is a design decision in Magma. After a bug is triggered, the
+    state of the program is unknown. It can lead to other bugs being triggered
+    only as a result of triggering the first bug.
+
+- question: >
+    I want to evaluate my fuzzer with Magma, but I do not have a public git
+    repo. How can I modify the Docker image to use my local code?
+  answer: >
+    Provide the source code as part of the fuzzer configuration directory
+    (create a folder called `repo` and place the code there). Then create an
+    empty fetch script.
+
+- question: >
+    How can Magma evaluate transformational fuzzers (e.g., T-Fuzz)?
+  answer: >
+    <p> When a canary is inserted at some line of code, it <i>assumes</i> that
+    the input satisfied the conditions to reach that line of code in the
+    original program. Then, to consider the bug triggered, an additional bug
+    condition is supplied to the canary. Thus, the condition for triggering a
+    bug is the <b>AND</b> of the reach condition and the bug condition:
+    <code>trigger = reach AND bug</code>. </p>
+
+    <p> However, when the program is modified, the reach condition could have
+    been violated, and the assumption made by the canary would be broken. The
+    canary only evaluates the bug condition, and uses that as a trigger
+    condition. Thus, if T-Fuzz reaches a bug by transforming the program, then
+    triggers it through random mutation, the canary may record a false positive.
+    </p>
+
+    <p> One way we suggest to address this would be:
+    <ul class="browser-default" style="margin: 0">
+    <li>enable ISan so that the bug crashes directly when triggered (this makes
+        evaluation easier)</li>
+    <li>enable canaries in the original program</li>
+    <li>disable canaries in the transformed program at runtime (but ISan would
+        still be in effect)</li>
+    </ul>
+    </p>
+
+    <p> This way, the transformed program could still crash when a bug is
+    triggered, thus informing T-Fuzz to perform post-analysis. After
+    post-analysis, the fuzzer would run the adapted crashing input and feed it
+    to the original program (with canaries enabled). This way, bug triggers are
+    only recorded in the original program after T-Fuzz creates/synthesizes valid
+    crashing test cases for the original program. </p>
