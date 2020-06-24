@@ -60,7 +60,7 @@ touch ~/.parallel/will-cite
 
 Then clone Magma:
 ```
-git clone --branch v1.0.0 https://github.com/HexHive/magma.git magma
+git clone --branch {{ site.github.latest_release.tag_name }} {{ site.github.clone_url }}
 ```
 
 From here on, you can use the `captain` scripts (in `tools/captain`) to build,
