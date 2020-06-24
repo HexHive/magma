@@ -26,3 +26,12 @@ li .material-icons.drop-down::before {
 li.active .material-icons.drop-down::before {
 	content: 'arrow_drop_up';
 }
+
+pre.quote {
+	overflow-x: auto;
+    white-space: pre-wrap;
+    white-space: -moz-pre-wrap;
+    white-space: -pre-wrap;
+    white-space: -o-pre-wrap;
+    word-wrap: break-word;
+}

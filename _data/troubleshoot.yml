@@ -1,0 +1,100 @@
+- question: >
+    <span>Campaigns terminate as soon as they start, regardless of the value of
+    <code>TIMEOUT</code>.</span>
+  answer: >
+    Check the log files in <code>workdir/log</code> and
+    <code>workdir/ar/fuzzer/target/program/run/log</code>. It is likely that AFL
+    (and AFL-based fuzzers) are terminating early due to the <code>Pipe at the
+    beginning of 'core_pattern'</code> error. To fix that:
+
+    <pre class="highlight">
+    <code>sudo bash -c 'echo core > /proc/sys/kernel/core_pattern'</code>
+    </pre>
+
+- question: >
+    <span><code>rm: cannot remove 'cache': Device or resource busy</code>
+    when deleting the work directory.</span>
+  answer: |
+    The <code>captain/run.sh</code> script does not currently implement an exit
+    handler for cleanup. When it is terminated prematurely (through
+    <code>Ctrl-C</code> or a runtime error), it may not unmount the
+    <code>workdir/cache</code> directory automatically. To fix that, just
+    unmount it manually before attempting to remove it:
+
+    <pre class="highlight">
+    <code>sudo umount /path/to/workdir/cache
+    rm -r /path/to/workdir/cache</code>
+    </pre>
+
+- question: >
+    <span><code>level=error msg="can't add file ... to tar"</code> when building
+    a Magma image.</span>
+  answer: >
+    <p> When building a Docker image, the <i>context</i> of the image is sent to
+    the Docker daemon. In Magma, the context is the root directory of the
+    project, and everything in it and its subdirectories. If your
+    <code>WORKDIR</code> points somewhere within the context, and if your
+    workdir is not empty, then it will be copied over to the Docker daemon. This
+    may be the root of the issue. </p>
+
+    <p> To fix it, move your working directory somewhere outside the project
+    hierarchy, and re-assign your <code>WORKDIR</code> parameter to point to it.
+    </p>
+
+- question: >
+    <span><code>groupadd: GID '0' already exists</code> when building a Magma
+    image.</span>
+  answer: |
+    You are likely running the <code>captain/build.sh</code> script as the
+    <code>root</code> user. One reason to do that may be that your normal user
+    account does not have the proper permissions to launch <code>docker</code>.
+    To fix that, add your current user to the <code>docker</code> user group:
+
+    <pre class="highlight">
+    <code>sudo usermod -aG docker $USER
+    newgrp docker # OR logout and log back in</code>
+    </pre>
+
+- question: >
+    Seed corpus directory is empty inside container.
+  answer: >
+    Magma's <code>magma/run.sh</code> script performs a seed pruning phase
+    before launching every campaign, to make sure that no seeds trigger any bugs
+    or crash the target program. If the seed corpus is empty, it means the
+    pruning stage detected all seeds as crashing, and it is more likely that the
+    compiled program just crashes on launch, regardless of the input file.
+    Verify that the compilation process is not flawed and test your target
+    program manually inside the container.
+
+- question: >
+    <ul style="margin: 0">
+    <li> <code>can't find file to patch</code> <b>OR</b> </li>
+    <li> <code>Hunk #NNN FAILED at MMM</code> </li>
+    </ul>
+  answer: >
+    You may be using the trunk version of Magma, in which targets and patches
+    have not been verified. Magma targets are constantly being changed and
+    updated, and Magma patches may no longer apply to the latest version of
+    those targets. As such, you are encouraged to use one of the <a
+    href="https://github.com/HexHive/magma/tags">versioned Magma releases</a>
+    which anchor the versions of targets and are verified to compile.
+
+- question: >
+    <span> I want to debug a binary inside the container, but GDB shows
+    <code>&lt;optimized out&gt;</code> even after I added <code>-O0 -g
+    -ggdb</code> to the compile flags. </span>
+  answer: >
+    <p> This may be due to AFL's compiler implicitly optimizing the target. From
+    <a href="https://github.com/google/AFL/blob/master/docs/env_variables.txt">AFL's
+    environment variables</a> document:
+
+    <pre class="highlight quote">
+    <code>By default, the wrapper appends -O3 to optimize builds. Very rarely, this
+    will cause problems in programs built with -Werror, simply because -O3
+    enables more thorough code analysis and can spew out additional warnings.
+    To disable optimizations, set AFL_DONT_OPTIMIZE.</code>
+    </pre>
+    </p>
+
+    <p> So, <code>export AFL_DONT_OPTIMIZE=1</code> before launching the
+    compiler should do the trick. </p>

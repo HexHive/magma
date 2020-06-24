@@ -6,5 +6,6 @@ paths:
   - docs/config.md
   - docs/technical.md
   - docs/faq.md
+  - docs/troubleshoot.md
   - docs/contribute.md
   - reports/index.md
