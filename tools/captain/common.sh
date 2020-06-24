@@ -1,3 +1,5 @@
+export TARBALL_BASENAME="ball"
+
 echo_time() {
     date "+[%F %R] $*"
 }

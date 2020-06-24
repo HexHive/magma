@@ -98,8 +98,8 @@ start_campaign()
     if [ -z $NO_ARCHIVE ]; then
         # only one tar job runs at a time, to prevent out-of-storage errors
         sem --id "magma_tar" --fg -j 1 \
-          tar -cf "${CAMPAIGN_ARDIR}/${CID}.tar" -C "$SHARED" . &>/dev/null && \
-        rm -rf "$SHARED" "${CAMPAIGN_ARDIR}/${CID}"
+          tar -cf "${CAMPAIGN_ARDIR}/${CID}/${TARBALL_BASENAME}.tar" -C "$SHARED" . &>/dev/null && \
+        rm -rf "$SHARED"
     else
         # overwrites empty $CID directory with the $SHARED directory
         mv -T "$SHARED" "${CAMPAIGN_ARDIR}/${CID}"
