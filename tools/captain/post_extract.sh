@@ -63,14 +63,14 @@ find "$ARDIR" -mindepth 1 -maxdepth 1 -type d | while read FUZZERDIR; do
         find "$TARGETDIR" -mindepth 1 -maxdepth 1 -type d | while read PROGRAMDIR; do
             export PROGRAM="$(basename "$PROGRAMDIR")"
             export ARGS="$(get_var_or_default '$1_$2_$3_ARGS' $FUZZER $TARGET $PROGRAM)"
-            find "$PROGRAMDIR" -mindepth 1 -maxdepth 1 | while read CAMPAIGNDIR; do
-                export CID="$(basename -s .tar "$CAMPAIGNDIR")"
+            find "$PROGRAMDIR" -mindepth 1 -maxdepth 1 -type d | while read CAMPAIGNDIR; do
+                export CID="$(basename "$CAMPAIGNDIR")"
                 export SHARED="$TMPDIR/$FUZZER/$TARGET/$PROGRAM/$CID"
 
                 # select whether to copy or untar
-                if [[ "$CAMPAIGNDIR" == *.tar ]]; then
+                if [ -f "$CAMPAIGNDIR/${TARBALL_BASENAME}.tar" ]; then
                     mkdir -p "$SHARED"
-                    tar -C "$SHARED" -xf "$CAMPAIGNDIR"
+                    tar -C "$SHARED" -xf "$CAMPAIGNDIR/${TARBALL_BASENAME}.tar"
                 else
                     cp -r "$CAMPAIGNDIR" "$SHARED"
                 fi
