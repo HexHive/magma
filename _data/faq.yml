@@ -8,6 +8,19 @@
     bug.
 
 - question: >
+    If a bug does not result in a crash, should we really consider it a bug?
+  answer: >
+    A bug is just a diversion from intended behavior. We infer intended behavior
+    from the patch submitted by the developers. When devs write a patch, they
+    add the correct variable transformations and control flow statements to make
+    the program execution match intended behavior. With Magma, we reverse that
+    fix, and we add a check on those transformations and on the control flow to
+    see if the diversion would occur. Magma does not discriminate between bugs
+    based on their type. It includes bugs that are not memory-safety bugs. And
+    even those that relate to memory safety may not always manifest as memory
+    safety violations. It all depends on how the devs fixed the bug.
+
+- question: >
     <ul style="margin: 0">
     <li> My fuzzer has triggered a memory bug, but it could not detect it with ASan.
     Is this a false-positive? </li>
