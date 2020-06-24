@@ -123,7 +123,7 @@
     <p> A <i>reached</i> bug refers to a bug whose oracle was called, implying
     that the executed path reaches the context of the bug, without necessarily
     triggering a fault. A <i>triggered</i> bug, on the other hand, refers to a
-    bug that was reached, and <i>whose</i>triggering condition was satisfied},
+    bug that was reached, and <i>whose triggering condition was satisfied</i>,
     indicating that a fault occurred. Whereas triggering a bug implies that the
     program has transitioned into a faulty state, the symptoms of the fault may
     not be directly observable at the oracle injection site. When a bug is
@@ -176,7 +176,7 @@
 
     <p> One such example is AFL. When using AFL with AddressSanitizer, it is
     possible to first run the Magma benchmark with ISan, collect crashing
-    test-cases for <i>all bugs</i>, then re-compile the target without ASan and
+    test-cases for <i>all bugs</i>, then re-compile the target without ISan and
     re-run it against the collected test-cases, filtering out the bugs which
     could not be detected by ASan. It is also important to take into account
     AFL's other fault detection techniques, like out-of-memory thresholds and
