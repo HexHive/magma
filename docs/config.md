@@ -114,12 +114,12 @@ To disable this behavior, it suffices to *define* (uncomment) this parameter.
 Magma's bugs and instrumentation can be configured at build-time in one of three
 modes:
 
-1. `1`: Fixes are excluded (bugs are included), and canaries (instrumentation)
+* `1`: Fixes are excluded (bugs are included), and canaries (instrumentation)
    are enabled. This is the default mode.
-1. `2`: Fixes are excluded, and canaries are disabled. This is useful to test if
+* `2`: Fixes are excluded, and canaries are disabled. This is useful to test if
    a fuzzer is over-fitting to canaries, or if the instrumentation is
    introducing new bugs.
-1. `3`: Fixes are included (bugs are excluded), and canaries are disabled. This
+* `3`: Fixes are included (bugs are excluded), and canaries are disabled. This
    is useful to test if a discovered crash is true or a false positive.
 
 ### `ISAN`
