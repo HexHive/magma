@@ -253,7 +253,7 @@ script, in the first few lines of comments.
 |`start.sh`       |Launches a single fuzzing campaign (useful for testing).                                                                              |
 |`extract.sh`     |A post-processing script to extract PoC files from fuzzer-generated test-cases.                                                       |
 |`run.sh`         |Launches and manages multiple concurrent campaigns, building any missing images in the process. Requires `captainrc`.                 |
-|`post-extract.sh`|Launches the extraction script, in case extraction was not done with `run.sh` (i.e., `POC_EXTRACT` was not set). Requires `captainrc`.|
+|`post_extract.sh`|Launches the extraction script, in case extraction was not done with `run.sh` (i.e., `POC_EXTRACT` was not set). Requires `captainrc`.|
 |`common.sh`      |Initializes a common set of functions and variables. Not to be executed out of context.                                               |
 
 ## Benchd Toolset: Processing Results
