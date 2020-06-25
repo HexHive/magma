@@ -20,7 +20,7 @@
   <body>
     <div class="wrapper">
       <header>
-        <h1><a href="{{ "/" | absolute_url }}">{{ site.title | default: site.github.repository_name | capitalize }}</a></h1>
+        <a href="{{ "/" | absolute_url }}"><img src="{{ "/assets/svg/magma_logo.svg" | relative_url }}" class="logo" /></a>
 
         {% if site.logo %}
           <img src="{{site.logo | relative_url}}" alt="Logo" />
