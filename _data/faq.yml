@@ -1,4 +1,14 @@
 - question: >
+    What's up with the name?
+  answer: >
+    <a href="https://wikipedia.com/wiki/Magma">Magma</a> refers to the layers of
+    molten rock burried beneath the surface of the earth. As opposed to <a
+    href="https://wikipedia.com/wiki/Lava">lava</a> which is found on the
+    surface, magma is much deeper within the Earth's crust, and the naming is
+    meant to imply that bugs injected in Magma are deeper and more complex, in
+    comparison to the other prominent ground-truth fuzzing benchmark, LAVA-M.
+
+- question: >
     What is the difference between a bug and a crash? Don't all bugs lead to
     crashes?
   answer: >
