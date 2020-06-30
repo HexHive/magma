@@ -19,9 +19,10 @@ cleanup() {
     if [ ! -t 1 ]; then
         docker rm -f $container_id &> /dev/null
     fi
+    exit 0
 }
 
-trap cleanup EXIT
+trap cleanup EXIT SIGINT SIGTERM
 
 if [ -z $FUZZER ] || [ -z $TARGET ] || [ -z $PROGRAM ]; then
     echo '$FUZZER, $TARGET, and $PROGRAM must be specified as' \
@@ -62,7 +63,7 @@ else
         "$IMG_NAME"
     )
     container_id=$(cut -c-12 <<< $container_id)
-    echo_time "Container for $FUZZER/$TARGET/$PROGRAM/$CID started in $container_id"
+    echo_time "Container for $FUZZER/$TARGET/$PROGRAM started in $container_id"
     docker logs -f "$container_id" &
     exit_code=$(docker wait $container_id)
     exit $exit_code

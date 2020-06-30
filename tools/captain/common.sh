@@ -16,20 +16,27 @@ export -f contains_element
 get_var_or_default() {
     ##
     # Pre-requirements:
-    # - $1: variable format
-    # - $2..N: placeholders
+    # - $1..N: placeholders
     ##
-    pattern="$1"
-    shift
+    function join_by { local IFS="$1"; shift; echo "$*"; }
+    pattern=$(join_by _ "${@}")
 
-    name="$(eval echo $pattern)"
+    name="$(eval echo ${pattern})"
     name="${name}[@]"
     value="${!name}"
     if [ -z "$value" ] || [ ${#value[@]} -eq 0 ]; then
         set -- "DEFAULT" "${@:2}"
-        name="$(eval echo $pattern)"
+        pattern=$(join_by _ "${@}")
+        name="$(eval echo ${pattern})"
         name="${name}[@]"
         value="${!name}"
+        if [ -z "$value" ] || [ ${#value[@]} -eq 0 ]; then
+            set -- "${@:2}"
+            pattern=$(join_by _ "${@}")
+            name="$(eval echo ${pattern})"
+            name="${name}[@]"
+            value="${!name}"
+        fi
     fi
     echo "${value[@]}"
 }

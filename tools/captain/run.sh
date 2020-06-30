@@ -23,9 +23,13 @@ MAGMA=${MAGMA:-"$(cd "$(dirname "${BASH_SOURCE[0]}")/../../" >/dev/null 2>&1 \
 export MAGMA
 source "$MAGMA/tools/captain/common.sh"
 
-WORKERS=${WORKERS:-$(( $(nproc) - 2 ))}
-WORKERPOOLR=($(lscpu -b --parse | sed '/^#/d' | cut -d, -f1))
-export WORKERPOOL="${WORKERPOOLR[@]:0:WORKERS}"
+if [ -z "$WORKER_POOL" ]; then
+    WORKER_MODE=${WORKER_MODE:-1}
+    WORKERS_ALL=($(lscpu -b -p | sed '/^#/d' | sort -u -t, -k ${WORKER_MODE}g | cut -d, -f1))
+    WORKERS=${WORKERS:-${#WORKERS_ALL[@]}}
+    export WORKER_POOL="${WORKERS_ALL[@]:0:WORKERS}"
+fi
+export CAMPAIGN_WORKERS=${CAMPAIGN_WORKERS:-1}
 
 TMPFS_SIZE=${TMPFS_SIZE:-50g}
 export POLL=${POLL:-5}
@@ -36,10 +40,18 @@ export ARDIR="$WORKDIR/ar"
 export CACHEDIR="$WORKDIR/cache"
 export LOGDIR="$WORKDIR/log"
 export POCDIR="$WORKDIR/poc"
+export LOCKDIR="$WORKDIR/lock"
 mkdir -p "$ARDIR"
 mkdir -p "$CACHEDIR"
 mkdir -p "$LOGDIR"
 mkdir -p "$POCDIR"
+mkdir -p "$LOCKDIR"
+
+shopt -s nullglob
+rm -f "$LOCKDIR"/*
+shopt -u nullglob
+
+export PARALLELDIR=~/.parallel/semaphores
 
 get_next_cid()
 {
@@ -51,105 +63,128 @@ get_next_cid()
     campaigns=("$1"/*)
     if [ ${#campaigns[@]} -eq 0 ]; then
         echo 0
-        mkdir -p "$1/0"
+        dir="$1/0"
     else
         cids=($(sort -n < <(basename -a "${campaigns[@]}")))
         for ((i=0;;i++)); do
             if [ -z ${cids[i]} ] || [ ${cids[i]} -ne $i ]; then
                 echo $i
-                # ensure the directory is created to prevent races
-                mkdir -p "$1/$i"
+                dir="$1/$i"
                 break
             fi
         done
     fi
+    # ensure the directory is created to prevent races
+    mkdir -p "$dir"
+    while [ ! -d "$dir" ]; do sleep 1; done
 }
 export -f get_next_cid
 
 start_campaign()
 {
-    ##
-    # Pre-requirements:
-    # - env AFFINITY
-    # - env FUZZER
-    # - env TARGET
-    # - env PROGRAM
-    # - env ARGS
-    ##
-    CAMPAIGN_CACHEDIR="$CACHEDIR/$FUZZER/$TARGET/$PROGRAM"
-    export CID=$(sem --id magma_cid --fg -j 1 -u \
-            get_next_cid "$CAMPAIGN_CACHEDIR")
-    export SHARED="$CAMPAIGN_CACHEDIR/$CID"
-    mkdir -p "$SHARED" && chmod 777 "$SHARED"
+    launch_campaign()
+    {
 
-    echo_time "Container $FUZZER/$TARGET/$PROGRAM/$CID started on CPU $AFFINITY"
-    "$MAGMA"/tools/captain/start.sh &> \
-        "${LOGDIR}/${FUZZER}_${TARGET}_${PROGRAM}_${CID}_container.log"
-    echo_time "Container $FUZZER/$TARGET/$PROGRAM/$CID stopped"
+        export SHARED="$CAMPAIGN_CACHEDIR/$CACHECID"
+        mkdir -p "$SHARED" && chmod 777 "$SHARED"
 
-    if [ ! -z $POC_EXTRACT ]; then
-        "$MAGMA"/tools/captain/extract.sh
-    fi
+        echo_time "Container $FUZZER/$TARGET/$PROGRAM/$ARCID started on CPU $AFFINITY"
+        "$MAGMA"/tools/captain/start.sh &> \
+            "${LOGDIR}/${FUZZER}_${TARGET}_${PROGRAM}_${ARCID}_container.log"
+        echo_time "Container $FUZZER/$TARGET/$PROGRAM/$ARCID stopped"
 
-    CAMPAIGN_ARDIR="$ARDIR/$FUZZER/$TARGET/$PROGRAM"
-    mkdir -p "$CAMPAIGN_ARDIR"
-    CID=$(sem --id magma_cid --fg -j 1 -u \
-            get_next_cid "$CAMPAIGN_ARDIR")
-    if [ -z $NO_ARCHIVE ]; then
-        # only one tar job runs at a time, to prevent out-of-storage errors
-        sem --id "magma_tar" --fg -j 1 \
-          tar -cf "${CAMPAIGN_ARDIR}/${CID}/${TARBALL_BASENAME}.tar" -C "$SHARED" . &>/dev/null && \
-        rm -rf "$SHARED"
-    else
-        # overwrites empty $CID directory with the $SHARED directory
-        mv -T "$SHARED" "${CAMPAIGN_ARDIR}/${CID}"
-    fi
+        if [ ! -z $POC_EXTRACT ]; then
+            "$MAGMA"/tools/captain/extract.sh
+        fi
+
+        if [ -z $NO_ARCHIVE ]; then
+            # only one tar job runs at a time, to prevent out-of-storage errors
+            sem --id "magma_tar" --fg -j 1 \
+              tar -cf "${CAMPAIGN_ARDIR}/${ARCID}/${TARBALL_BASENAME}.tar" -C "$SHARED" . &>/dev/null && \
+            rm -rf "$SHARED"
+        else
+            # overwrites empty $ARCID directory with the $SHARED directory
+            mv -T "$SHARED" "${CAMPAIGN_ARDIR}/${ARCID}"
+        fi
+    }
+    export -f launch_campaign
+
+    while : ; do
+        export CAMPAIGN_CACHEDIR="$CACHEDIR/$FUZZER/$TARGET/$PROGRAM"
+        export CACHECID=$(sem --id magma_cid --fg -j 1 \
+                get_next_cid "$CAMPAIGN_CACHEDIR")
+        export CAMPAIGN_ARDIR="$ARDIR/$FUZZER/$TARGET/$PROGRAM"
+        export ARCID=$(sem --id magma_cid --fg -j 1 \
+                get_next_cid "$CAMPAIGN_ARDIR")
+
+        errno_lock=69
+        flock -xnF -E $errno_lock "${CAMPAIGN_CACHEDIR}/${CACHECID}" \
+            flock -xnF -E $errno_lock "${CAMPAIGN_ARDIR}/${ARCID}" \
+                -c launch_campaign || \
+        if [ $? -eq $errno_lock ]; then
+            continue
+        fi
+        break
+    done
 }
 export -f start_campaign
 
 start_ex()
 {
-    ##
-    # Pre-requirements:
-    # - $1: NUMCPUS
-    # - $2: CPUSET
-    # - $3+: COMMAND
-    ##
-    NUMCPUS=$1
-    CPUSET=$2
-    COMMAND=("${@:3}")
-    if [ $NUMCPUS -gt 0 ]; then
-        while true; do
-            for i in $WORKERPOOL; do
-                if [ -d ~/.parallel/semaphores/"id-magma_cpu_$i" ] || \
-                        ! sem -u --id "magma_cpu_$i" -j 1 --st -1 --fg \
-                        start_ex $((NUMCPUS - 1)) "$CPUSET,$i" \
-                        ${COMMAND[@]}; then
-                    continue
-                else
-                    exit 0
-                fi
-            done
-            sleep 1 # yet another hacky fix...
+    release_workers()
+    {
+        IFS=','
+        read -a workers <<< "$AFFINITY"
+        unset IFS
+        for i in "${workers[@]}"; do
+            rm -rf "$LOCKDIR/magma_cpu_$i"
         done
-    else
-        # release CPU allocation lock (hacky :/)
-        sem --id "magma" --st 1 rm -rf ~/.parallel/semaphores/id-magma &> /dev/null
-        # GNU Parallel does not re-aquire the mutex when it steals it, thus the
-        # following statement does not do the intended task of releasing the
-        # mutex after stealing it:
-        # sem --id "magma" --st 1
-        # Hence, we have to delete the metadata used by GNU Parallel, as above
+    }
+    trap release_workers EXIT
 
-        export AFFINITY=$(cut -d',' -f2- <<< $CPUSET)
-        ${COMMAND[@]}
-        exit 0
-    fi
+    start_campaign
+    exit 0
 }
 export -f start_ex
 
-# clear any stuck semaphores
-sem --id "magma" --st 1 rm -rf ~/.parallel/semaphores/id-magma*
+allocate_workers()
+{
+    ##
+    # Pre-requirements:
+    # - env NUMWORKERS
+    # - env WORKERSET
+    ##
+    cleanup()
+    {
+        IFS=','
+        read -a workers <<< "$WORKERSET"
+        unset IFS
+        for i in "${workers[@]:1}"; do
+            rm -rf "$LOCKDIR/magma_cpu_$i"
+        done
+        exit 0
+    }
+    trap cleanup SIGTERM SIGINT
+
+    while [ $NUMWORKERS -gt 0 ]; do
+        for i in $WORKER_POOL; do
+            if [ -f "$LOCKDIR/magma_cpu_$i" ]; then
+                continue
+            else
+                export WORKERSET="$WORKERSET,$i"
+                export NUMWORKERS=$(( NUMWORKERS - 1 ))
+                touch "$LOCKDIR/magma_cpu_$i"
+                allocate_workers
+                return
+            fi
+        done
+        # This times-out every 1 second to force a refresh, since a worker may
+        #   have been released by the time inotify instance is set up.
+        inotifywait -qq -t 1 -e delete "$LOCKDIR" &> /dev/null
+    done
+    cut -d',' -f2- <<< $WORKERSET
+}
+export -f allocate_workers
 
 # set up a RAM-backed fs for fast processing of canaries and crashes
 if [ -z $CACHE_ON_DISK ]; then
@@ -161,11 +196,34 @@ if [ -z $CACHE_ON_DISK ]; then
         tmpfs "$CACHEDIR"
 fi
 
+cleanup()
+{
+    trap 'echo Cleaning up...' SIGINT
+    for job in `jobs -p`; do
+        if ! wait $job; then
+            continue
+        fi
+    done
+
+    find "$LOCKDIR" -type f | while read lock; do
+        if inotifywait -qq -e delete_self "$lock" &> /dev/null; then
+            continue
+        fi
+    done
+
+    if [ -z $CACHE_ON_DISK ]; then
+        echo_time "Obtaining sudo permissions to umount tmpfs"
+        sudo umount "$CACHEDIR"
+    fi
+}
+
+trap cleanup EXIT
+
 # schedule campaigns
 for FUZZER in "${FUZZERS[@]}"; do
     export FUZZER
 
-    TARGETS=($(get_var_or_default '$1_TARGETS' $FUZZER))
+    TARGETS=($(get_var_or_default $FUZZER 'TARGETS'))
     for TARGET in "${TARGETS[@]}"; do
         export TARGET
 
@@ -178,29 +236,17 @@ for FUZZER in "${FUZZERS[@]}"; do
             continue
         fi
 
-        PROGRAMS=($(get_var_or_default '$1_$2_PROGRAMS' $FUZZER $TARGET))
+        PROGRAMS=($(get_var_or_default $FUZZER $TARGET 'PROGRAMS'))
         for PROGRAM in "${PROGRAMS[@]}"; do
             export PROGRAM
-            export ARGS="$(get_var_or_default '$1_$2_$3_ARGS' $FUZZER $TARGET $PROGRAM)"
+            export ARGS="$(get_var_or_default $FUZZER $TARGET $PROGRAM 'ARGS')"
 
             echo_time "Starting campaigns for $PROGRAM $ARGS"
             for ((i=0; i<$REPEAT; i++)); do
-                NUMCPUS=1 # TODO this can later be read from fuzzer config
-                # acquire CPU allocation lock
-                sem --id "magma" -u \
-                    start_ex $NUMCPUS "-1" \
-                    start_campaign
+                export NUMWORKERS="$(get_var_or_default $FUZZER 'CAMPAIGN_WORKERS')"
+                export AFFINITY=$(allocate_workers)
+                start_ex &
             done
         done
     done
 done
-
-sem --id "magma" --wait
-for i in $WORKERPOOL; do
-    sem --id "magma_cpu_$i" --wait
-done
-
-if [ -z $CACHE_ON_DISK ]; then
-    echo_time "Obtaining sudo permissions to umount tmpfs"
-    sudo umount "$CACHEDIR"
-fi

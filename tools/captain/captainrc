@@ -12,8 +12,20 @@ WORKDIR=./workdir
 # REPEAT: number of campaigns to run per program (per fuzzer)
 REPEAT=3
 
-# [WORKERS]: number of worker threads (default: CPU cores)
-WORKERS=4
+# [WORKER_MODE]: defines the type of CPU resources to allocate (default: 1)
+# - 1: logical cores (possibly SMT-enabled)
+# - 2: physical cores
+# - 3: physical sockets (1 worker per CPU socket)
+# WORKER_MODE=1
+
+# [WORKERS]: number of worker threads (default: all cores)
+# WORKERS=3
+
+# [WORKER_POOL]: a space-separated list of logical cores to allocate
+# WORKER_POOL="1 3 5 7 9"
+
+# [CAMPAIGN_WORKERS]: number of workers to allocate for a campaign (default: 1)
+# CAMPAIGN_WORKERS=1
 
 # [TIMEOUT]: time to run each campaign. This variable supports one-letter
 # suffixes to indicate duration (s: seconds, m: minutes, h: hours, d: days)
@@ -51,7 +63,7 @@ POLL=5
 
 # [POC_EXTRACT]: if set, run the extract.sh script after the campaign is done
 # (default: unset)
-POC_EXTRACT=1
+# POC_EXTRACT=1
 
 
 ###
@@ -69,3 +81,6 @@ FUZZERS=(afl aflfast moptafl aflplusplus fairfuzz honggfuzz)
 # magma/targets/target/configrc) to use as execution drivers when fuzzing the
 # `target`
 # afl_libtiff_PROGRAMS=(tiffcp)
+
+# [fuzzer_CAMPAIGN_WORKERS]: overrides the global CAMPAIGN_WORKERS setting
+# afl_CAMPAIGN_WORKERS=3

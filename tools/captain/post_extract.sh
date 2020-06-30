@@ -62,7 +62,7 @@ find "$ARDIR" -mindepth 1 -maxdepth 1 -type d | while read FUZZERDIR; do
 
         find "$TARGETDIR" -mindepth 1 -maxdepth 1 -type d | while read PROGRAMDIR; do
             export PROGRAM="$(basename "$PROGRAMDIR")"
-            export ARGS="$(get_var_or_default '$1_$2_$3_ARGS' $FUZZER $TARGET $PROGRAM)"
+            export ARGS="$(get_var_or_default $FUZZER $TARGET $PROGRAM 'ARGS')"
             find "$PROGRAMDIR" -mindepth 1 -maxdepth 1 -type d | while read CAMPAIGNDIR; do
                 export CID="$(basename "$CAMPAIGNDIR")"
                 export SHARED="$TMPDIR/$FUZZER/$TARGET/$PROGRAM/$CID"
