@@ -61,9 +61,43 @@ It specifies the number of times each experiment must be identically repeated.
 Every repetition is assigned a locally-unique `RUN` serial number (0, 1, 2, ...)
 in the workdir hierarchy as discussed above.
 
+### `WORKER_MODE`
+
+It defines the type of CPU resources to allocate as workers:
+* `1`: logical cores (possibly SMT-enabled)
+* `2`: physical cores
+* `3`: physical sockets (1 worker per CPU socket)
+
+For example, if your setup has 2 CPU sockets, each with 8 physical cores, and 16
+SMT-enabled threads (logical cores), the maximum number of concurrent workers
+that can be allocated with each mode would be:
+* `1`: 2 * 16 = 32 workers
+* `2`: 2 * 8 = 16 workers
+* `3`: 2 workers
+
 ### `WORKERS`
 
 It defines the maximum number of logical CPU cores to use concurrently.
+
+### `WORKER_POOL`
+
+Specifies a space-separated list of logical cores to allocate. If not specified,
+the `captain` tool will allocate cores from the output of `lscpu`, filtering out
+cores based on `WORKER_MODE` and limiting the count to that specified by
+`WORKERS` (or its default value).
+
+If you require control over which cores to allocate for `captain` (e.g., some of
+your cores are allocated for other tasks), you could specify which cores to use
+through a space-separated list as a bash string.
+
+### `CAMPAIGN_WORKERS`
+
+Specifies the number of workers to allocate for a single campaign. In most
+cases, this should not be more than 1 (which is the default value). However, if
+your custom fuzzer configurations utilize multiple cores, you can specify this
+global parameter to apply this effect. If, instead, you would like to specify
+this as a fuzzer-specific parameter, take a look at `fuzzer_CAMPAIGN_WORKERS`
+below.
 
 ### `TIMEOUT`
 
@@ -88,7 +122,8 @@ directory for every `RUN`. This parameter defines how long to wait, in
 
 To speed up the fuzzing process and reduce I/O bottlenecking of the
 fuzzer/target/instrumentation, Magma defaults to mounting the `cache` directory
-as a `tmpfs` volume. However, this could result in high memory usage, and requires root privileges to mount and unmount the volume.
+as a `tmpfs` volume. However, this could result in high memory usage, and
+requires root privileges to mount and unmount the volume.
 
 To disable this behavior, it suffices to *define* (uncomment) this parameter.
 
@@ -209,6 +244,10 @@ fuzzer, you can specify a Bash string variable of the form:
 ```
 my_awsome_fuzzer_libtiff_tiffcp_ARGS="@@ tmp.out"
 ```
+
+### `fuzzer_CAMPAIGN_WORKERS`
+
+This overrides the global CAMPAIGN_WORKERS setting for the specified fuzzer.
 
 ## More Information on IdealSanitizer
 
