@@ -44,7 +44,7 @@ the Proof-of-Concept to reproduce the bugs.
 To use Magma and its scripts, first install the dependencies:
 ```
 apt-get update &&
-  apt-get install -y parallel docker.io git
+  apt-get install -y parallel util-linux inotify-tools docker.io git
 ```
 
 Magma uses [GNU Parallel](https://www.gnu.org/software/parallel/) to manage fuzz
