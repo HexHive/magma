@@ -5,7 +5,6 @@
 # - env FUZZER: fuzzer name (from fuzzers/)
 # - env TARGET: target name (from targets/)
 # + env MAGMA: path to magma root (default: ../../)
-# + env FORCE: if set, force build even if image exists (default: 0)
 # + env ISAN: if set, build the benchmark with ISAN/fatal canaries (default:
 #       unset)
 # + env HARDEN: if set, build the benchmark with hardened canaries (default:
@@ -42,16 +41,14 @@ if [ ! -z $HARDEN ]; then
     harden_flag="--build-arg harden=1"
 fi
 
-if [ -z $(docker image ls -q "$IMG_NAME") ] || [ ! -z $FORCE ]; then
-    set -x
-    docker build -t "$IMG_NAME" \
-        --build-arg fuzzer_name="$FUZZER" \
-        --build-arg target_name="$TARGET" \
-        --build-arg USER_ID=$(id -u $USER) \
-        --build-arg GROUP_ID=$(id -g $USER) \
-        $mode_flag $isan_flag $harden_flag \
-        -f "$MAGMA/docker/Dockerfile" "$MAGMA"
-    set +x
-fi
+set -x
+docker build -t "$IMG_NAME" \
+    --build-arg fuzzer_name="$FUZZER" \
+    --build-arg target_name="$TARGET" \
+    --build-arg USER_ID=$(id -u $USER) \
+    --build-arg GROUP_ID=$(id -g $USER) \
+    $mode_flag $isan_flag $harden_flag \
+    -f "$MAGMA/docker/Dockerfile" "$MAGMA"
+set +x
 
 echo "$IMG_NAME"
