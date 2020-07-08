@@ -51,7 +51,8 @@ shopt -s nullglob
 rm -f "$LOCKDIR"/*
 shopt -u nullglob
 
-export PARALLELDIR=~/.parallel/semaphores
+export MUX_TAR=magma_tar
+export MUX_CID=magma_cid
 
 get_next_cid()
 {
@@ -80,11 +81,27 @@ get_next_cid()
 }
 export -f get_next_cid
 
+mutex()
+{
+    ##
+    # Pre-requirements:
+    # - $1: the mutex ID (file descriptor)
+    # - $2..N: command to run
+    ##
+    trap 'rm -f "$LOCKDIR/$mux"' EXIT
+    mux=$1
+    shift
+    (
+      flock -xF 200 &> /dev/null
+      "${@}"
+    ) 200>"$LOCKDIR/$mux"
+}
+export -f mutex
+
 start_campaign()
 {
     launch_campaign()
     {
-
         export SHARED="$CAMPAIGN_CACHEDIR/$CACHECID"
         mkdir -p "$SHARED" && chmod 777 "$SHARED"
 
@@ -99,7 +116,7 @@ start_campaign()
 
         if [ -z $NO_ARCHIVE ]; then
             # only one tar job runs at a time, to prevent out-of-storage errors
-            sem --id "magma_tar" --fg -j 1 \
+            mutex $MUX_TAR \
               tar -cf "${CAMPAIGN_ARDIR}/${ARCID}/${TARBALL_BASENAME}.tar" -C "$SHARED" . &>/dev/null && \
             rm -rf "$SHARED"
         else
@@ -111,10 +128,10 @@ start_campaign()
 
     while : ; do
         export CAMPAIGN_CACHEDIR="$CACHEDIR/$FUZZER/$TARGET/$PROGRAM"
-        export CACHECID=$(sem --id magma_cid --fg -j 1 \
+        export CACHECID=$(mutex $MUX_CID \
                 get_next_cid "$CAMPAIGN_CACHEDIR")
         export CAMPAIGN_ARDIR="$ARDIR/$FUZZER/$TARGET/$PROGRAM"
-        export ARCID=$(sem --id magma_cid --fg -j 1 \
+        export ARCID=$(mutex $MUX_CID \
                 get_next_cid "$CAMPAIGN_ARDIR")
 
         errno_lock=69
@@ -164,16 +181,13 @@ allocate_workers()
         done
         exit 0
     }
-    trap cleanup SIGTERM SIGINT
+    trap cleanup SIGINT
 
     while [ $NUMWORKERS -gt 0 ]; do
         for i in $WORKER_POOL; do
-            if [ -f "$LOCKDIR/magma_cpu_$i" ]; then
-                continue
-            else
+            if ( set -o noclobber; > "$LOCKDIR/magma_cpu_$i" ) &>/dev/null; then
                 export WORKERSET="$WORKERSET,$i"
                 export NUMWORKERS=$(( NUMWORKERS - 1 ))
-                touch "$LOCKDIR/magma_cpu_$i"
                 allocate_workers
                 return
             fi
@@ -199,6 +213,7 @@ fi
 cleanup()
 {
     trap 'echo Cleaning up...' SIGINT
+    echo_time "Waiting for jobs to finish"
     for job in `jobs -p`; do
         if ! wait $job; then
             continue
