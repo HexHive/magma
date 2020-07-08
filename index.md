@@ -44,18 +44,7 @@ the Proof-of-Concept to reproduce the bugs.
 To use Magma and its scripts, first install the dependencies:
 ```
 apt-get update &&
-  apt-get install -y parallel util-linux inotify-tools docker.io git
-```
-
-Magma uses [GNU Parallel](https://www.gnu.org/software/parallel/) to manage fuzz
-campaigns through bash. To silence the citation notice, run either of the
-following commands:
-```
-# Requires user input
-parallel --citation
-
-# OR
-touch ~/.parallel/will-cite
+  apt-get install -y util-linux inotify-tools docker.io git
 ```
 
 Then clone Magma:
@@ -156,7 +145,7 @@ versioning:
 1. *PATCH*: An update or a hotfix to the toolset or build system in a
    backward-compatible manner that preserves benchmark results.
 
-The first stable and anchored release of Magma is `v1.0.0`.
+The latest stable and anchored release of Magma is `{{ site.github.latest_release.tag_name }}`.
 
 ## TODOs
 
