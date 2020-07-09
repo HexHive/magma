@@ -113,7 +113,7 @@ AAH001_R, AAH001_T, AAH007_R, AAH007_T
 ```
 
 This indicates that, up until the 12-hour mark, the `AAH001` bug was reached
-*1245* times, and triggered *342* times, whereas the `AAH007` bug was reach
+*1245* times, and triggered *342* times, whereas the `AAH007` bug was reached
 *45324* times, and triggered *6345* times.
 
 
