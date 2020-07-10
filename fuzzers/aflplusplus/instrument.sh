@@ -16,28 +16,34 @@ export AS="$FUZZER/repo/afl-as"
 
 export LIBS="$LIBS -l:afl_driver.o -lstdc++"
 
-OUT_ORG="$OUT"
-LDFLAGS_ORG="$LDFLAGS"
-
 # Build the AFL-only instrumented version
-export OUT="$OUT_ORG/afl"
-export LDFLAGS="$LDFLAGS_ORG -L$OUT"
+(
+    export OUT="$OUT/afl"
+    export LDFLAGS="$LDFLAGS -L$OUT"
 
-"$MAGMA/build.sh"
-"$TARGET/build.sh"
+    export AFL_LLVM_INSTRUMENT=CLASSIC
+    export AFL_LLVM_CTX=1
+    export AFL_LLVM_SKIP_NEVERZERO=1
 
-# # Build the CmpLog instrumented version
-#
-# WARNING: CmpLog has been disabled because launching the monitor before AFL
-#   "stabilizes" causes the fuzzer to segfault. Pending further investigation.
-#
-# export AFL_LLVM_CMPLOG=1
-# export OUT="$OUT_ORG/cmplog"
-# export LDFLAGS="$LDFLAGS_ORG -L$OUT"
-# export CFLAGS="$CFLAGS -DMAGMA_DISABLE_CANARIES"
+    "$MAGMA/build.sh"
+    "$TARGET/build.sh"
+)
 
-# "$MAGMA/build.sh"
-# "$TARGET/build.sh"
+# Build the CmpLog instrumented version
+
+(
+    export OUT="$OUT/cmplog"
+    export LDFLAGS="$LDFLAGS -L$OUT"
+    # export CFLAGS="$CFLAGS -DMAGMA_DISABLE_CANARIES"
+
+    export AFL_LLVM_INSTRUMENT=CLASSIC
+    export AFL_LLVM_CTX=1
+    export AFL_LLVM_SKIP_NEVERZERO=1
+    export AFL_LLVM_CMPLOG=1
+
+    "$MAGMA/build.sh"
+    "$TARGET/build.sh"
+)
 
 # NOTE: We pass $OUT directly to the target build.sh script, since the artifact
 #       itself is the fuzz target. In the case of Angora, we might need to
