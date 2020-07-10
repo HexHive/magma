@@ -11,12 +11,10 @@
 ##
 
 export TIMELIMIT=0.1s
-export MEMLIMIT_MB=100
 
 run_limited()
 {
     set -e
-    ulimit -Sv $[MEMLIMIT_MB << 10];
     ${@:1}
 }
 export -f run_limited
