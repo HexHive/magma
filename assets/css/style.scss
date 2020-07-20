@@ -101,6 +101,8 @@ div.logo-wrapper {
 	}
 }
 
-.overview.materialboxed {
-	display:initial;
+@media print, screen and (max-width: 444px) {
+	footer .owner {
+	    display:initial;
+	}
 }
