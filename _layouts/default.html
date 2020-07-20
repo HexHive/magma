@@ -18,19 +18,23 @@
     <![endif]-->
   </head>
   <body>
+    {% if site.github.is_project_page %}
+    <div class="fork-me">
+      <a href="{{ site.github.repository_url }}">
+      <img width="149" height="149" src="https://github.blog/wp-content/uploads/2008/12/forkme_left_gray_6d6d6d.png?resize=149%2C149" class="attachment-full size-full" alt="Fork me on GitHub" data-recalc-dims="1">
+      </a>
+    </div>
+    {% endif %}
     <div class="wrapper">
       <header>
-        <a href="{{ "/" | absolute_url }}"><img src="{{ "/assets/svg/magma_logo.svg" | relative_url }}" class="logo" /></a>
-
+        <div class="logo-wrapper">
+          <a href="{{ "/" | absolute_url }}"><img src="{{ "/assets/svg/logo.svg" | relative_url }}" class="logo" /></a>
+        </div>
         {% if site.logo %}
           <img src="{{site.logo | relative_url}}" alt="Logo" />
         {% endif %}
 
         <p>{{ site.description | default: site.github.project_tagline }}</p>
-
-        {% if site.github.is_project_page %}
-        <p class="view"><a href="{{ site.github.repository_url }}">View the Project on GitHub <small>{{ site.github.repository_nwo }}</small></a></p>
-        {% endif %}
 
         {% if site.github.is_user_page %}
         <p class="view"><a href="{{ site.github.owner_url }}">View My GitHub Profile</a></p>
@@ -44,19 +48,21 @@
         </ul>
         {% endif %}
 
-        <h2>{{ site.data.nav.title }}</h2>
-        <ul class="browser-default navigation">
-          {% assign nav_pages = site.pages | where_exp:"item", "site.data.nav.paths contains item.path" %}
-          {% for item in site.data.nav.paths %}
-            {% assign ipage = nav_pages | where: 'path', item | first %}
-            {% if page.path == ipage.path %}
-              {% assign item_cls = "current" %}
-            {% else %}
-              {% assign item_cls = "other" %}
-            {% endif %}
-            <li><a class="{{ item_cls }}" href="{{ ipage.url | absolute_url }}">{{ ipage.title }}</a></li>
-          {% endfor %}
-        </ul>
+        <div class="navigation">
+          <h2>{{ site.data.nav.title }}</h2>
+          <ul class="browser-default">
+            {% assign nav_pages = site.pages | where_exp:"item", "site.data.nav.paths contains item.path" %}
+            {% for item in site.data.nav.paths %}
+              {% assign ipage = nav_pages | where: 'path', item | first %}
+              {% if page.path == ipage.path %}
+                {% assign item_cls = "current" %}
+              {% else %}
+                {% assign item_cls = "other" %}
+              {% endif %}
+              <li><a class="{{ item_cls }}" href="{{ ipage.url | relative_url }}">{{ ipage.title }}</a></li>
+            {% endfor %}
+          </ul>
+        </div>
       </header>
       <section>
 
@@ -65,7 +71,7 @@
       </section>
       <footer>
         {% if site.github.is_project_page %}
-        <p>This project is maintained by <a href="{{ site.github.owner_url }}">{{ site.github.owner_name }}</a></p>
+        <p class="owner">This project is maintained by <a href="{{ site.github.owner_url }}"><img src="{{ "/assets/svg/HexHive-logo.svg" | relative_url }}" class="hexhive-logo"/></a></p>
         {% endif %}
         <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
       </footer>

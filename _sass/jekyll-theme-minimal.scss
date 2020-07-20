@@ -3,7 +3,6 @@
 
 body {
   background-color: #fff;
-  padding:50px;
   font: 14px/1.5 "Noto Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
   color:#727272;
   font-weight:400;
@@ -230,6 +229,7 @@ section {
   width:900px;
   float:right;
   padding-bottom:50px;
+  padding-top:50px;
 }
 
 small {
@@ -256,6 +256,7 @@ footer {
   div.wrapper {
     width:auto;
     margin:0;
+    padding:50px;
   }
 
   header, section, footer {
@@ -305,10 +306,6 @@ footer {
 }
 
 @media print, screen and (max-width: 480px) {
-  body {
-    padding:15px;
-  }
-
   .downloads {
     width:99%;
   }

@@ -3,7 +3,7 @@
 
 @import "jekyll-theme-minimal";
 
-.navigation .current {
+.navigation ul .current {
 	font-weight:bold;
 	color:#069;
 }
@@ -38,4 +38,69 @@ pre.quote {
 
 img.logo {
 	padding: 3rem;
+}
+
+img.overview {
+	width: 70%;
+}
+
+img.hexhive-logo {
+	max-width:200px;
+	margin-top:10px;
+}
+
+div.fork-me {
+  position:fixed;
+}
+
+div.logo-wrapper {
+	text-align: center;
+}
+
+@media print, screen and (max-width: 1360px) {
+	footer .owner {
+		display: -webkit-box;
+	    display: -webkit-flex;
+	    display: -ms-flexbox;
+	    display:flex;
+	    -webkit-box-align: center;
+	    -webkit-align-items:center;
+	    -ms-flex-align: center;
+	    align-items:center;
+	}
+	img.logo {
+		max-width: min(270px, 100%);
+		padding-left: 0;
+	}
+	img.hexhive-logo {
+		max-width:150px;
+		margin-left: 5px;
+	}
+	div.fork-me {
+	position:static;
+	margin-bottom: -150px;
+	}
+	div.logo-wrapper {
+		text-align: left;
+	}
+	div.navigation {
+		position: absolute;
+		right: 100px;
+		top: 52px;
+	}
+	div.navigation ul {
+		position: static;
+	}
+}
+
+@media print, screen and (max-width: 720px) {
+	div.navigation {
+		position: static;
+	}
+	div.logo-wrapper {
+		text-align: center;
+	}
+	img.logo {
+		padding: 2rem;
+	}
 }

@@ -19,7 +19,7 @@ The following tables list the {{ site.data.bugs | size }} bugs added to Magma, a
     {% assign left = rows | size | minus: overflow %}
     <div class="row valign-wrapper">
         <div class="col s6">
-            <h2><a href="{{ site.data.targets[target].url }}">{{ site.data.targets[target].display_name }}</a></h2>
+            <h2><a href="{{ site.github.repository_url }}/tree/master/targets/{{ target }}">{{ site.data.targets[target].display_name }}</a></h2>
         </div>
         <div class="col s6">
             <span class="badge new right" data-badge-caption="bugs">{{ rows | size }}</span>
