@@ -53,6 +53,11 @@ div.logo-wrapper {
 	text-align: center;
 }
 
+div.bugs {
+	column-count: 3;
+	column-fill: balance;
+}
+
 @media print, screen and (max-width: 1360px) {
 	footer .owner {
 		display: -webkit-box;
@@ -98,6 +103,18 @@ div.logo-wrapper {
 	}
 	img.logo {
 		padding: 2rem;
+	}
+}
+
+@media print,screen and (max-width: 800px) {
+	div.bugs {
+		column-count: 2;
+	}
+}
+
+@media print,screen and (max-width: 560px) {
+	div.bugs {
+		column-count: 1;
 	}
 }
 

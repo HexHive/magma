@@ -13,10 +13,8 @@ The following tables list the {{ site.data.bugs | size }} bugs added to Magma, a
 {% for target in targets %}
 <tr>
 <td>
-<div class="row">
+<div>
     {% assign rows = site.data.bugs | where: "target", target %}
-    {% assign overflow = rows | size | divided_by: 2 %}
-    {% assign left = rows | size | minus: overflow %}
     <div class="row valign-wrapper">
         <div class="col s6">
             <h2><a href="{{ site.github.repository_url }}/tree/master/targets/{{ target }}">{{ site.data.targets[target].display_name }}</a></h2>
@@ -26,11 +24,7 @@ The following tables list the {{ site.data.bugs | size }} bugs added to Magma, a
         </div>
     </div>
 
-    {% if overflow == 0 %}
-    <div class="col s12">
-    {% else %}
-    <div class="col s6">
-    {% endif %}
+    <div class="bugs">
         <table class="highlight">
             <thead>
                 <tr>
@@ -39,7 +33,7 @@ The following tables list the {{ site.data.bugs | size }} bugs added to Magma, a
                 </tr>
             </thead>
             <tbody>
-        {% for row in rows limit:left %}
+        {% for row in rows %}
                 <tr>
                     <td><a href="{{ site.github.repository_url }}/tree/master/targets/{{ target }}/patches/bugs/{{ row.bug }}.patch">{{ row.bug }}</a></td>
                     <td>{{ row.identifier }}</td>
@@ -48,27 +42,6 @@ The following tables list the {{ site.data.bugs | size }} bugs added to Magma, a
             </tbody>
         </table>
     </div>
-
-    {% if overflow != 0 %}
-    <div class="col s6">
-        <table class="highlight">
-            <thead>
-                <tr>
-                    <th>Bug</th>
-                    <th>Identifier</th>
-                </tr>
-            </thead>
-            <tbody>
-        {% for row in rows offset:left %}
-                <tr>
-                    <td><a href="{{ site.github.repository_url }}/tree/master/targets/{{ target }}/patches/bugs/{{ row.bug }}.patch">{{ row.bug }}</a></td>
-                    <td>{{ row.identifier }}</td>
-                </tr>
-        {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    {% endif %}
 </div>
 </td>
 </tr>
