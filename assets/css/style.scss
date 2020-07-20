@@ -40,10 +40,6 @@ img.logo {
 	padding: 3rem;
 }
 
-img.overview {
-	width: 70%;
-}
-
 img.hexhive-logo {
 	max-width:200px;
 	margin-top:10px;
@@ -103,4 +99,8 @@ div.logo-wrapper {
 	img.logo {
 		padding: 2rem;
 	}
+}
+
+.overview.materialboxed {
+	display:initial;
 }

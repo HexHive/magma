@@ -21,8 +21,10 @@ Check out a sample Magma report [here]({{ "/reports/sample/" | relative_url }}).
 
 ## Overview
 
-<div class="center">
-<img src="{{ "/assets/svg/overview.svg" | relative_url }}" class="overview" />
+<div class="row">
+<div class="col s12 l8 offset-l2">
+<img src="{{ "/assets/svg/overview.svg" | relative_url }}" class="materialboxed responsive-img" />
+</div>
 </div>
 
 ## Included Libraries
