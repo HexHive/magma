@@ -80,6 +80,15 @@
     allows the benchmark to constantly evolve with each published bug fix. </p>
 
 - question: >
+    Why is the forward-porting process in Magma manual?
+  answer: >
+    An automated approach for injecting bugs would have resulted in an
+    incomplete and error-prone technique, which would ultimately yield fewer
+    lower-quality bugs. Instead, dedicating human resources for this purpose
+    maximizes the chance for a chosen bug to be ported correctly into Magma.
+    Thus, we opted for the latter to maximize Magma's utility.
+
+- question: >
     What is "ground truth"?
   answer: >
     Ground truth in Magma represents the ability to to recognize faulty behavior
