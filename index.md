@@ -17,7 +17,9 @@ allows a monitoring utility to measure fuzzer progress in real time.
 Magma also includes the `captain` toolset which facilitates the process of
 building Magma targets and running campaigns.
 
-Check out a sample Magma report [here]({{ "/reports/sample/" | relative_url }}).
+Check out a [sample Magma report]({{ "/reports/sample/" | relative_url }})
+and read the [paper preprint]({{ "/docs/preprint.pdf" | relative_url }}).
+Questions, comments, and feedback are welcome!
 
 ## Overview
 
