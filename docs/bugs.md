@@ -6,6 +6,11 @@ title: Bugs
 
 The following tables list the {{ site.data.bugs | size }} bugs added to Magma, and their corresponding reports.
 
+The following PoC dumps are also available:
+<ul class="browser-default">
+    <li><a href="https://drive.switch.ch/index.php/s/Uv1UrEA5ecg9NJk/download">2020-06-27</a></li>
+</ul>
+
 {% assign targets = site.data.bugs | map: "target" | uniq %}
 
 <table>
