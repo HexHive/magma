@@ -82,11 +82,44 @@
 - question: >
     Why is the forward-porting process in Magma manual?
   answer: >
-    An automated approach for injecting bugs would have resulted in an
+    <p>An automated approach for injecting bugs would have resulted in an
     incomplete and error-prone technique, which would ultimately yield fewer
     lower-quality bugs. Instead, dedicating human resources for this purpose
     maximizes the chance for a chosen bug to be ported correctly into Magma.
-    Thus, we opted for the latter to maximize Magma's utility.
+    Thus, we opted for the latter to maximize Magma's utility.</p>
+
+    <p>During a semester project, two Bachelor students added over 60 bugs to
+    Magma in three new targets. The students took less than 1.8 hours per bug
+    on average to analyze the bug location, infer the trigger constraints,
+    create the canary, and encode the necessary metadata. Injecting bugs into
+    Magma requires no expert knowledge (the
+    students are 3rd year Bachelor students without security experience).
+    Several external collaborators also added new targets and new fuzzer
+    configurations into Magma, and integrated Magma into their research
+    workflow.</p>
+
+    <p>The main critique point of previous reviews is that bug insertion and
+    forward-porting of bugs is not automatic. We argue that an automatic bug
+    insertion technique will be strictly inferior to manual porting due to the
+    difficulty and complexity of automatic forward porting. Creating an
+    automatic technique will be extremely challenging due to the large amount of
+    differences in bugs, bug types, bug locations, constraints required to
+    trigger a bug, code modifications to encode these constraints, and, based
+    on a bug report and a patch, carefully assessing where the bug location was.
+    </p>
+
+    <p>All these challenges for an automatic technique are unsolved and would
+    require large amount of time to solve, likely in the order of 5-10 person
+    years (1-2 PhDs). Additionally, any automatic solution would likely require
+    careful checking of the forward-ported bugs which would result in the same
+    amount of time required to manually port the bugs.</p>
+
+    <p>While these problems are interesting (and should be looked at), we
+    argue that they are orthogonal to Magma---a benchmark suite to test fuzzers.
+    Commpared to a manual approach that costs less than 2 person hours
+    per bug, an automatic approach will never be cost effective (or, arguably
+    ever be useful). Given these downsides, we strongly favor
+    the manual bug porting approach.</p>
 
 - question: >
     What is "ground truth"?
