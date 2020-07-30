@@ -15,7 +15,8 @@ cd "$FUZZER/repo"
 export CC=clang
 export AFL_NO_X86=1
 export PYTHON_INCLUDE=/
-make -j $(nproc) source-only
-make -C examples/aflpp_driver
+make -j$(nproc) || exit 1
+make -C llvm_mode -j$(nproc) || exit 1
+make -C examples/aflpp_driver || exit 1
 
 mkdir -p "$OUT/afl" "$OUT/cmplog"
