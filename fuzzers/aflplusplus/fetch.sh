@@ -6,7 +6,16 @@ set -e
 # - env FUZZER: path to fuzzer work dir
 ##
 
-git clone --depth 1 https://github.com/vanhauser-thc/AFLplusplus.git "$FUZZER/repo"
-#wget -O "$FUZZER/repo/afl_driver.cpp" \
-#    "https://cs.chromium.org/codesearch/f/chromium/src/third_party/libFuzzer/src/afl/afl_driver.cpp"
-cp "$FUZZER/src/afl_driver.cpp" "$FUZZER/repo/afl_driver.cpp"
+git clone --depth 1 https://github.com/AFLplusplus/AFLplusplus.git "$FUZZER/repo"
+
+# Fix: CMake-based build systems fail with duplicate or undefined references
+sed -i '{s/^int main/__attribute__((weak)) &/}' $FUZZER/repo/examples/aflpp_driver/
+sed -i '{s/^int LLVMFuzzerTestOneInput/__attribute__((weak)) &/}' $FUZZER/repo/examples/aflpp_driver/aflpp_driver.cpp
+cat >> $FUZZER/repo/examples/aflpp_driver/aflpp_driver.cpp << EOF
+extern "C" __attribute__((weak))
+int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
+{
+  assert(false && "LLVMFuzzerTestOneInput should not be implemented in afl_driver");
+  return 0;
+}
+EOF

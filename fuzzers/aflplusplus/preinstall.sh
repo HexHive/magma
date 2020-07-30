@@ -2,7 +2,8 @@
 set -e
 
 apt-get update && \
-    apt-get install -y make clang-9 llvm-9-dev build-essential git wget
+    apt-get install -y make clang-9 llvm-9-dev libc++-9-dev libc++abi-9-dev \
+        build-essential git wget gcc-7-plugin-dev
 
 update-alternatives \
   --install /usr/lib/llvm              llvm             /usr/lib/llvm-9  20 \
