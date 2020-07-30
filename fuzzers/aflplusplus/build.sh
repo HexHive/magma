@@ -12,24 +12,10 @@ if [ ! -d "$FUZZER/repo" ]; then
 fi
 
 cd "$FUZZER/repo"
-CC=clang make -j $(nproc) source-only
+export CC=clang
+export AFL_NO_X86=1
+export PYTHON_INCLUDE=/
+make -j $(nproc) source-only
+make -C examples/aflpp_driver
 
-# compile afl_driver.cpp
 mkdir -p "$OUT/afl" "$OUT/cmplog"
-
-(
-    export AFL_LLVM_INSTRUMENT=CLASSIC
-    export AFL_LLVM_CTX=1
-    export AFL_LLVM_SKIP_NEVERZERO=1
-    "./afl-clang-fast++" $CXXFLAGS -std=c++11 -c "afl_driver.cpp" \
-        -fPIC -o "$OUT/afl/afl_driver.o"
-)
-
-(
-    export AFL_LLVM_INSTRUMENT=CLASSIC
-    export AFL_LLVM_CTX=1
-    export AFL_LLVM_SKIP_NEVERZERO=1
-    export AFL_LLVM_CMPLOG=1
-    "./afl-clang-fast++" $CXXFLAGS -std=c++11 -c "afl_driver.cpp" \
-        -fPIC -o "$OUT/cmplog/afl_driver.o"
-)

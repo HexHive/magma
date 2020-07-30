@@ -12,18 +12,14 @@ set -e
 
 export CC="$FUZZER/repo/afl-clang-fast"
 export CXX="$FUZZER/repo/afl-clang-fast++"
-export AS="$FUZZER/repo/afl-as"
+export AS="llvm-as"
 
-export LIBS="$LIBS -l:afl_driver.o -lstdc++"
+export LIBS="$LIBS -lstdc++ $FUZZER/repo/examples/aflpp_driver/libAFLDriver.a"
 
 # Build the AFL-only instrumented version
 (
     export OUT="$OUT/afl"
     export LDFLAGS="$LDFLAGS -L$OUT"
-
-    export AFL_LLVM_INSTRUMENT=CLASSIC
-    export AFL_LLVM_CTX=1
-    export AFL_LLVM_SKIP_NEVERZERO=1
 
     "$MAGMA/build.sh"
     "$TARGET/build.sh"
@@ -36,9 +32,6 @@ export LIBS="$LIBS -l:afl_driver.o -lstdc++"
     export LDFLAGS="$LDFLAGS -L$OUT"
     # export CFLAGS="$CFLAGS -DMAGMA_DISABLE_CANARIES"
 
-    export AFL_LLVM_INSTRUMENT=CLASSIC
-    export AFL_LLVM_CTX=1
-    export AFL_LLVM_SKIP_NEVERZERO=1
     export AFL_LLVM_CMPLOG=1
 
     "$MAGMA/build.sh"

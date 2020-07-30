@@ -6,9 +6,6 @@ set -e
 # - env FUZZER: path to fuzzer work dir
 ##
 
-git clone --no-checkout https://github.com/vanhauser-thc/AFLplusplus.git \
+git clone --no-checkout https://github.com/AFLplusplus/AFLplusplus.git \
     "$FUZZER/repo"
-git -C "$FUZZER/repo" checkout 118cc88429c9cc5296ea5db69f2080d917235834
-#wget -O "$FUZZER/repo/afl_driver.cpp" \
-#    "https://cs.chromium.org/codesearch/f/chromium/src/third_party/libFuzzer/src/afl/afl_driver.cpp"
-cp "$FUZZER/src/afl_driver.cpp" "$FUZZER/repo/afl_driver.cpp"
+git -C "$FUZZER/repo" checkout 4a51cb71fb8785325dedac693cdea4648f6e5279
