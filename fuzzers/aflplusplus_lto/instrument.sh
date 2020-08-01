@@ -12,13 +12,14 @@ set -e
 
 export CC="$FUZZER/repo/afl-clang-lto"
 export CXX="$FUZZER/repo/afl-clang-lto++"
-export AS="/usr/lib/llvm-11/bin/llvm-as"
-export RANLIB="/usr/lib/llvm-11/bin/llvm-ranlib"
-export AR="/usr/lib/llvm-11/bin/llvm-ar"
-export LD="/usr/lib/llvm-11/bin/ld.lld"
-export NM="/usr/lib/llvm-11/bin/nm"
+LLVM_PATH=/usr/lib/llvm-11/bin
+export AS="${LLVM_PATH}/llvm-as"
+export RANLIB="${LLVM_PATH}/llvm-ranlib"
+export AR="${LLVM_PATH}/llvm-ar"
+export LD="${LLVM_PATH}/ld.lld"
+export NM="${LLVM_PATH}/llvm-nm"
 
-export LIBS="-flto=full $LIBS -lstdc++ $FUZZER/repo/examples/aflpp_driver/libAFLDriver.a"
+export LIBS="$LIBS -lstdc++ $FUZZER/repo/examples/aflpp_driver/libAFLDriver.a"
 
 # Build the AFL-only instrumented version
 (
