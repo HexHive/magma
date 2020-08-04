@@ -6,6 +6,4 @@ set -e
 # - env FUZZER: path to fuzzer work dir
 ##
 
-git clone https://github.com/AFLplusplus/AFLplusplus "$FUZZER/repo"
-cd "$FUZZER/repo" || exit 1
-git checkout dev
+git clone --depth 1 https://github.com/AFLplusplus/AFLplusplus "$FUZZER/repo"
