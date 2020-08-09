@@ -95,6 +95,7 @@ class MatplotlibPlotter(Plotter,DataProcessing):
 
 			axes.set_title(target)
 			p_values = self.two_sided_u_test(g_data.get_group(target))
+			print(p_values)
 			self.heatmap_plot(p_values, symmetric=False, axes=axes, labels=False, cbar_ax_bbox=[1, 0.4, 0.02, 0.2])
 
 		fig.tight_layout(pad=2.0)

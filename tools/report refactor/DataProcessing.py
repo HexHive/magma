@@ -56,13 +56,10 @@ class DataProcessing:
 	def mean_and_standard_deviation_data(self,metric):
 
 		df = self.df.reset_index().groupby(["Fuzzer", "Library","Program","Campaign","Metric"])['BugID'].nunique().to_frame()
-		print(df.head(60))
 		std_bugs = df.iloc[df.index.get_level_values('Metric') == metric].std(level=["Fuzzer", "Library"])
 		std_bugs.columns = ['std']
 		mean_bugs = df.iloc[df.index.get_level_values('Metric') == metric].mean(level=['Fuzzer','Library'])
 		mean_bugs.columns = ['mean']
-		print(mean_bugs)
-		
 		return mean_bugs.join(std_bugs)
 
 	"""
