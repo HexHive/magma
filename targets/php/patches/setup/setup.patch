@@ -11,3 +11,46 @@ index 37945b8e9e..3c22df0605 100644
    fi
    PHP_SUBST(FUZZING_LIB)
    PHP_SUBST(FUZZING_CC)
+--- a/ext/standard/string.c
++++ b/ext/standard/string.c
+@@ -3682,10 +3682,14 @@
+ # include "Zend/zend_cpuinfo.h"
+ 
+ ZEND_INTRIN_SSE4_2_FUNC_DECL(zend_string *php_addslashes_sse42(zend_string *str));
++
++__attribute__((used))
+ zend_string *php_addslashes_default(zend_string *str);
+ 
+ ZEND_INTRIN_SSE4_2_FUNC_DECL(void php_stripslashes_sse42(zend_string *str));
++
++__attribute__((used))
+ void php_stripslashes_default(zend_string *str);
+ 
+ # if ZEND_INTRIN_SSE4_2_FUNC_PROTO
+ PHPAPI zend_string *php_addslashes(zend_string *str) __attribute__((ifunc("resolve_addslashes")));
+--- a/ext/standard/base64.c
++++ b/ext/standard/base64.c
+@@ -376,8 +376,12 @@
+ ZEND_INTRIN_SSSE3_FUNC_DECL(zend_string *php_base64_decode_ex_ssse3(const unsigned char *str, size_t length, zend_bool strict));
+ # endif
+ 
++
++__attribute__((used))
+ zend_string *php_base64_encode_default(const unsigned char *str, size_t length);
++
++__attribute__((used))
+ zend_string *php_base64_decode_ex_default(const unsigned char *str, size_t length, zend_bool strict);
+ 
+ # if (ZEND_INTRIN_AVX2_FUNC_PROTO || ZEND_INTRIN_SSSE3_FUNC_PROTO)
+ PHPAPI zend_string *php_base64_encode(const unsigned char *str, size_t length) __attribute__((ifunc("resolve_base64_encode")));
+--- a/build/php.m4
++++ b/build/php.m4
+@@ -2638,7 +2638,7 @@
+   AC_MSG_CHECKING([for __builtin_cpu_init])
+ 
+   AC_LINK_IFELSE([AC_LANG_PROGRAM([], [[
+-    return __builtin_cpu_init()? 1 : 0;
++    return (__builtin_cpu_init(), 1) ? 1 : 0;
+   ]])], [
+     have_builtin_cpu_init=1
+     AC_MSG_RESULT([yes])
