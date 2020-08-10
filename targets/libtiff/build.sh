@@ -28,10 +28,14 @@ popd
 
 # Build libjpeg-turbo
 pushd "$TARGET/libjpeg-turbo"
-cmake . -DCMAKE_INSTALL_PREFIX=$WORK -DENABLE_STATIC=on -DENABLE_SHARED=off
+EXTRA=""
+test -n "$AR" && EXTRA="$EXTRA -DCMAKE_AR=$AR"
+test -n "$RANLIB" && EXTRA="$EXTRA -DCMAKE_RANLIB=$RANLIB"
+cmake . -DCMAKE_INSTALL_PREFIX=$WORK -DENABLE_STATIC=on -DENABLE_SHARED=off $EXTRA
 make -j$(nproc) clean
 make -j$(nproc)
 make install
+EXTRA=""
 popd
 
 # Build libjbig
