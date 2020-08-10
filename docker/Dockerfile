@@ -15,6 +15,9 @@ ENV MAGMA_R /magma
 ENV OUT		/magma_out
 ENV SHARED 	/magma_shared
 
+ENV CC  gcc
+ENV CXX g++
+
 ARG USER_ID=1000
 ARG GROUP_ID=1000
 RUN mkdir -p /home && \
@@ -23,42 +26,37 @@ RUN mkdir -p /home && \
 	chown magma:magma /home
 RUN	echo "magma:amgam" | chpasswd && usermod -a -G sudo magma
 
-ARG magma_path=magma
-ENV MAGMA 	${MAGMA_R}/${magma_path}
-RUN mkdir -p ${MAGMA} && chown magma:magma ${MAGMA}
-COPY --chown=magma:magma ${magma_root}/${magma_path}/preinstall.sh ${MAGMA}/
-RUN ${MAGMA}/preinstall.sh
-
-ARG fuzzer_name
-ARG fuzzer_path=fuzzers/${fuzzer_name}
-ENV FUZZER 	${MAGMA_R}/${fuzzer_path}
-RUN mkdir -p ${FUZZER} && chown magma:magma ${FUZZER}
-COPY --chown=magma:magma ${magma_root}/${fuzzer_path}/preinstall.sh ${FUZZER}/
-RUN ${FUZZER}/preinstall.sh
-
-ARG target_name
-ARG target_path=targets/${target_name}
-ENV TARGET 	${MAGMA_R}/${target_path}
-RUN mkdir -p ${TARGET} && chown magma:magma ${TARGET}
-COPY --chown=magma:magma ${magma_root}/${target_path}/preinstall.sh ${TARGET}/
-RUN ${TARGET}/preinstall.sh
-
 RUN mkdir -p ${SHARED} ${OUT} && \
 	chown magma:magma ${SHARED} ${OUT} && \
 	chmod 744 ${SHARED} ${OUT}
 
+ARG magma_path=magma
+ENV MAGMA 	${MAGMA_R}/${magma_path}
+USER root:root
+RUN mkdir -p ${MAGMA} && chown magma:magma ${MAGMA}
+COPY --chown=magma:magma ${magma_root}/${magma_path} ${MAGMA}/
+RUN ${MAGMA}/preinstall.sh
 USER magma:magma
-
-ENV CC	gcc
-ENV CXX g++
-
-COPY --chown=magma:magma ${magma_root}/${magma_path} ${MAGMA}
 RUN ${MAGMA}/prebuild.sh
 
-COPY --chown=magma:magma ${magma_root}/${fuzzer_path} ${FUZZER}
+ARG fuzzer_name
+ARG fuzzer_path=fuzzers/${fuzzer_name}
+ENV FUZZER 	${MAGMA_R}/${fuzzer_path}
+USER root:root
+RUN mkdir -p ${FUZZER} && chown magma:magma ${FUZZER}
+COPY --chown=magma:magma ${magma_root}/${fuzzer_path} ${FUZZER}/
+RUN ${FUZZER}/preinstall.sh
+USER magma:magma
 RUN ${FUZZER}/fetch.sh && ${FUZZER}/build.sh
 
-COPY --chown=magma:magma ${magma_root}/${target_path} ${TARGET}
+ARG target_name
+ARG target_path=targets/${target_name}
+ENV TARGET 	${MAGMA_R}/${target_path}
+USER root:root
+RUN mkdir -p ${TARGET} && chown magma:magma ${TARGET}
+COPY --chown=magma:magma ${magma_root}/${target_path} ${TARGET}/
+RUN ${TARGET}/preinstall.sh
+USER magma:magma
 RUN ${TARGET}/fetch.sh && ${MAGMA}/apply_patches.sh
 
 ## Configuration parameters
