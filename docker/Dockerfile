@@ -17,6 +17,11 @@ ENV SHARED 	/magma_shared
 
 ENV CC  gcc
 ENV CXX g++
+ENV LD ld
+ENV AR ar
+ENV AS as
+ENV NM nm
+ENV RANLIB ranlib
 
 ARG USER_ID=1000
 ARG GROUP_ID=1000
