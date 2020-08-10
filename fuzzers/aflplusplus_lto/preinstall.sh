@@ -2,11 +2,11 @@
 set -e
 
 apt-get update && \
-    apt-get install -y make build-essential git wget libc++-dev libstdc++-8-dev libexpat1-dev
+    apt-get install -y make build-essential git wget libexpat1-dev
 
-apt-get install -y apt-utils apt-transport-https ca-certificates
+apt-get install -y apt-utils apt-transport-https ca-certificates gnupg
 
-echo deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic main >> /etc/apt/sources.list
+echo deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-11 main >> /etc/apt/sources.list
 wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -
 
 apt-get update && \
