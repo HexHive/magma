@@ -28,7 +28,13 @@ make install
 mkdir -p "$WORK/poppler"
 cd "$WORK/poppler"
 rm -rf *
+
+EXTRA=""
+test -n "$AR" && EXTRA="$EXTRA -DCMAKE_AR=$AR"
+test -n "$RANLIB" && EXTRA="$EXTRA -DCMAKE_RANLIB=$RANLIB"
+
 cmake "$TARGET/repo" \
+  $EXTRA \
   -DCMAKE_BUILD_TYPE=debug \
   -DBUILD_SHARED_LIBS=OFF \
   -DFONT_CONFIGURATION=generic \
@@ -53,6 +59,7 @@ cmake "$TARGET/repo" \
   -DICONV_LIBRARIES="/usr/lib/x86_64-linux-gnu/libc.so" \
   -DCMAKE_EXE_LINKER_FLAGS_INIT="$LIBS"
 make -j$(nproc) poppler poppler-cpp pdfimages pdftoppm
+EXTRA=""
 
 cp "$WORK/poppler/utils/"{pdfimages,pdftoppm} "$OUT/"
 $CXX $CXXFLAGS -std=c++11 -I"$TARGET/repo/cpp" \
