@@ -329,7 +329,7 @@ class Plots:
         cbar.set_ticks(ticks)
         cbar.set_ticklabels(tick_labels)
         ax.patch.set(fill='True', color='darkgrey')
-        ax.set_title("Exptected time-to-trigger-bug for each fuzzer", fontsize=20)
+        ax.set_title("Expected time-to-trigger-bug for each fuzzer", fontsize=20)
         ax.xaxis.tick_top()
         ax.xaxis.set_label_position('top')
         plt.yticks(rotation=0)
