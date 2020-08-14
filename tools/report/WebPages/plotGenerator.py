@@ -39,6 +39,10 @@ class Plots:
         plt.clf()
         self.generate_plots_for_fuzzer()
         plt.clf()
+        
+
+
+
         self.barplot_reached_vs_triggered_bugs_by_each_fuzzer_in_a_library()
         plt.clf()
         self.heat_map_expected_time_to_bug()

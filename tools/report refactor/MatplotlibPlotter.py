@@ -1,5 +1,6 @@
 from Plotter import Plotter
 from Metric import Metric
+from BenchmarkData import BenchmarkData
 from DataProcessing import DataProcessing
 import matplotlib
 from matplotlib import colors
@@ -10,16 +11,17 @@ import scikit_posthocs as sp
 import scipy.stats as ss
 import pandas as pd
 
+TIMESTAMPS = {20850 :"6h",41700 : "12h",83400 : "24h",166800 : "48h"}
 
-class MatplotlibPlotter(Plotter,DataProcessing):
+class MatplotlibPlotter(Plotter):
 	
 
-	def __init__(self):
-		self.dp = DataProcessing()
+	def __init__(self,bd):
+		self.df = bd.get_frame()
 		
 
 	def mean_and_standard_deviation(self,metric):
-		data = self.dp.mean_and_standard_deviation_data(metric)
+		data = DataProcessing.mean_and_standard_deviation_data(metric,self.df)
 		means = data['mean'].unstack().transpose()
 		std = data['std'].unstack().transpose()
 		fig, ax = plt.subplots()
@@ -33,28 +35,30 @@ class MatplotlibPlotter(Plotter,DataProcessing):
 		plt.show(block=False)
 		plt.pause(2)
 		plt.close()
-		#plt.title("Mean number of bugs triggered by different fuzzers for each target library")
-		#plt.savefig("test.svg", format="svg")
+
 
 	def expected_time_to_trigger(self):
-		ett,agg = self.dp. expected_time_to_trigger_data()
-		#TODO Order the fuzzers -> add function to data processing
-		#fuzzer_order = self.get_fuzzer_from_most_to_less_triggered_bugs(data)
-		#df= df[fuzzer_order]
+		ett,agg = DataProcessing.expected_time_to_trigger_data(self.df)
+	
+
+		fuzzer_order = DataProcessing.number_of_unique_bugs_found_data(self.df)
+		fuzzer_order = fuzzer_order.sort_values(by=['Bugs'],ascending = False).reset_index()['Fuzzer'].tolist()
+		
 		#Sort the bug by aggragate time
 		ett = ett.droplevel(0)
 		ett["Aggregate"] = agg.droplevel(0)
 		ett.sort_values(by='Aggregate' , inplace=True)
 		ett = ett.drop(labels='Aggregate',axis=1)
-		
+		ett = ett[fuzzer_order]
 		fuzzers = list(ett.columns)
 		bug_id = list(ett.index)
 		annotations = ett.copy()
-		annotations[fuzzers] = annotations[fuzzers].applymap(lambda x : self.generate_variable_label_units(x))
+		annotations[fuzzers] = annotations[fuzzers].applymap(lambda x : self.time_labels(x))
 		fig, ax = plt.subplots(figsize=(10,10))  
 		plt.yticks(rotation=0)
 		plt.xlabel("Fuzzers")
 		plt.ylabel("Bugs") 
+		#Norm foactor has to been precomputed
 		heat_map = sns.heatmap(np.array(ett),cmap='seismic',
 		                        xticklabels=fuzzers,
 		                        yticklabels=bug_id,
@@ -62,101 +66,82 @@ class MatplotlibPlotter(Plotter,DataProcessing):
 		                        fmt='s',
 		                        norm=colors.PowerNorm(gamma=0.32),
 		                        ax=ax)
-		ticks = [20850,41700,83400,166800]
-		tick_labels = ["6h","12h","24h","48h"]
+
 		cbar = ax.collections[0].colorbar
-		cbar.set_ticks(ticks)
-		cbar.set_ticklabels(tick_labels)
+		cbar.set_ticks([x for x in TIMESTAMPS.keys()])
+		cbar.set_ticklabels([x for x in TIMESTAMPS.values()])
 		ax.patch.set(fill='True',color='darkgrey')
 		ax.set_title("Exptected time-to-trigger-bug for each fuzzer", fontsize =20)
 		ax.xaxis.tick_top()
+		plt.show()
 		
-		plt.show(block=False)
-		plt.pause(2)
+
+	def statistical_significance(self,library,symmetric):
+		data = DataProcessing.statistical_significance_data(self.df)
+		rename = {"aflplusplus" : "afl++","honggfuzz": "hfuzz"}
+		data = data.replace({"Fuzzer": rename})
+		#retrieve onky the data from the target library
+		lib_data = data.xs(library, level='Library',drop_level=True)
+		fig, ax = plt.subplots(figsize=(10, 10))
+		ax.set_title(library)
+
+		#computing p_values of the library
+		p_values = self.compute_p_values(lib_data)
+		self.heatmap_plot(p_values, symmetric=symmetric, axes=ax, labels=False, cbar_ax_bbox=[1, 0.4, 0.02, 0.2])
+
+		fig.savefig('signplot.svg', bbox_inches=matplotlib.transforms.Bbox.from_bounds(0, 0, 13, 10))
 		plt.close()
 
 
-	def statistical_significance(self,symmetric):
-		data = self.dp.statistical_significance_data().reset_index().drop('Campaign',1)
-		rename = {"aflplusplus" : "afl++","honggfuzz": "hfuzz"}
-		data = data.replace({"Fuzzer": rename})
+	def bug_metric_boxplot(self, fuzzer, library, metric):
+
+		df = DataProcessing.bug_list(self.df,fuzzer,library,metric)
 		
-		g_data = data.groupby(['Library'])
-		fig, ax = plt.subplots(nrows=1, ncols=7, figsize=(14, 7))
 		
-		for i, target in enumerate(g_data.groups):
-			figx = i // 7
-			figy = i % 7
-			#axes = ax[figx, figy]
-			axes = ax[i]
-
-			if i != 0:
-			    axes.get_yaxis().set_visible(False)
-
-			axes.set_title(target)
-			p_values = self.two_sided_u_test(g_data.get_group(target))
-			print(p_values)
-			self.heatmap_plot(p_values, symmetric=False, axes=axes, labels=False, cbar_ax_bbox=[1, 0.4, 0.02, 0.2])
-
-		fig.tight_layout(pad=2.0)
-		# fig.delaxes(ax[1,3])
-		fig.savefig('signplot.svg', bbox_inches=matplotlib.transforms.Bbox.from_bounds(0, 0, 15, 7))
+		# We increase the width so smaller boxes can be seen
+		boxprops = dict(linestyle='-', linewidth=2, color='k')
+		df.transpose().boxplot(figsize=(12, 10), boxprops=boxprops, vert=False)
+		plt.title(metric + ". Fuzzer: " + fuzzer + ". Library:" + library)
+		plt.ylabel("Bug Number")
+		plt.xlabel("Time (seconds)")
+		plt.ylim(bottom=0)
+		plt.savefig(fuzzer + "_" + library + "_" + metric + "_box.svg", format="svg", bbox_inches="tight")
+		plt.close()
 
 
 
+#Helper functions
 
 
-	def two_sided_u_test(self,benchmark_snapshot_df):
-		"""Returns p-value table for two-tailed Mann-Whitney U test."""
-		return self.create_p_value_table(benchmark_snapshot_df,
-		                             ss.mannwhitneyu,
-		                             alternative='two-sided')
 
+	def compute_p_values(self,benchmark_library_data_df):
+		#For every fuzzer we gather in a list the number of times a bug was found
+		#Entry 0 in the list is for cmapaign 0
+		fuzzer_data = benchmark_library_data_df.groupby('Fuzzer')['Bugs'].apply(list)	
+		fuzzers = fuzzer_data.index.tolist()
+		#Constructing the index from the cross product of the fuzzers
+		#The index has already the shape of the targeted p_value dataframe
+		index = pd.MultiIndex.from_product([fuzzers,fuzzers],names=['Outter','Inner'])
+		#Creation of the p_value Dataframe with the previously computed index.
+		#Index has to been reset such that the multi index values can be passed as argument to the lambda function
+		p_values = pd.DataFrame(index=index,columns=['p_value']).fillna(np.nan).reset_index()
+		p_values = p_values.apply(lambda f : self.two_sided_test(f['Outter'],f['Inner'],fuzzer_data),axis=1)
+		#Index has to been reassigned as it has been reset previously
+		p_values.index = index
+		#Unstacking the Dataframe gives it the expected 2 dimensional shape for a p_value array
+		return p_values.unstack()
 
-	def create_p_value_table(self,benchmark_snapshot_df,
-	                          statistical_test,
-	                          alternative="two-sided"):
-	    """Given a benchmark snapshot data frame and a statistical test function,
-	    returns a p-value table. The |alternative| parameter defines the alternative
-	    hypothesis to be tested. Use "two-sided" for two-tailed (default), and
-	    "greater" or "less" for one-tailed test.
-	    The p-value table is a square matrix where each row and column represents a
-	    fuzzer, and each cell contains the resulting p-value of the pairwise
-	    statistical test of the fuzzer in the row and column of the cell.
-	    """
+	#Helper function to compute the p_value between two fuzzers
+	def two_sided_test(self,f1,f2,fuzzer_data) :
+		if f1 == f2 or set(fuzzer_data[f1]) == set(fuzzer_data[f2]) :
+			return
+		else :
+			return ss.mannwhitneyu(fuzzer_data[f1],fuzzer_data[f2], alternative='two-sided').pvalue
 
-	    def test_pair(measurements_x, measurements_y):
-	        return statistical_test(measurements_x,
-	                                measurements_y,
-	                                alternative=alternative).pvalue
-	  
-	    groups = benchmark_snapshot_df.groupby('Fuzzer')
-	    samples = groups['Bugs'].apply(list)
-	    fuzzers = samples.index
-
-	 
-	    data = []
-	    for f_i in fuzzers:
-	        row = []
-	        for f_j in fuzzers:
-	            if f_i == f_j:
-	                # TODO(lszekeres): With Pandas 1.0.0+, switch to:
-	                # p_value = pd.NA
-	                p_value = np.nan
-	            elif set(samples[f_i]) == set(samples[f_j]):
-	                p_value = np.nan
-	            else:
-	                p_value = test_pair(samples[f_i], samples[f_j])
-	            row.append(p_value)
-	        data.append(row)
-
-	    p_values = pd.DataFrame(data, index=fuzzers, columns=fuzzers)
-	    return p_values
 
 	def heatmap_plot(self,p_values, axes=None, symmetric=False, **kwargs):
-	    """Draws heatmap plot for visualizing statistical test results.
-	    If |symmetric| is enabled, it masks out the upper triangle of the
-	    p-value table (as it is redundant with the lower triangle).
+	    """
+	   	Heatmap for p_values
 	    """
 	    if symmetric:
 	        mask = np.zeros_like(p_values)
@@ -173,8 +158,7 @@ class MatplotlibPlotter(Plotter,DataProcessing):
 	    return sp.sign_plot(p_values, ax=axes, **heatmap_args)
 
 
-
-	def generate_variable_label_units(self,elem) :
+	def time_labels(self,elem) :
 		if self.is_nan(elem) :
 		    return elem
 		elif elem < 60 :
@@ -187,6 +171,12 @@ class MatplotlibPlotter(Plotter,DataProcessing):
 
 	def is_nan(self,x) :
 		return (x != x)
+
+
+
+
+	
+		
 
 	
 
