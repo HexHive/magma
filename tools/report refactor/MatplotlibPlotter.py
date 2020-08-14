@@ -31,7 +31,6 @@ class MatplotlibPlotter(Plotter):
 		plt.ylabel('Number of Bugs Triggered',fontsize=14)
 		plt.xlabel('Targets',fontsize=14)
 		plt.legend(loc=1, prop={'size': 17})
-
 		plt.show(block=False)
 		plt.pause(2)
 		plt.close()
@@ -40,33 +39,34 @@ class MatplotlibPlotter(Plotter):
 	def expected_time_to_trigger(self):
 		ett,agg = DataProcessing.expected_time_to_trigger_data(self.df)
 	
-
+		#Compute the order of the fuzzer that found the most bugs in descending order
 		fuzzer_order = DataProcessing.number_of_unique_bugs_found_data(self.df)
 		fuzzer_order = fuzzer_order.sort_values(by=['Bugs'],ascending = False).reset_index()['Fuzzer'].tolist()
 		
 		#Sort the bug by aggragate time
 		ett = ett.droplevel(0)
 		ett["Aggregate"] = agg.droplevel(0)
-		ett.sort_values(by='Aggregate' , inplace=True)
-		ett = ett.drop(labels='Aggregate',axis=1)
+		ett.sort_values(by='Aggregate', inplace=True)
+		ett = ett.drop(labels='Aggregate', axis=1)
+		#Reordering the fuzzers
 		ett = ett[fuzzer_order]
-		fuzzers = list(ett.columns)
-		bug_id = list(ett.index)
+		fuzzer_label = list(ett.columns)
+		bug_label  = list(ett.index)
 		annotations = ett.copy()
-		annotations[fuzzers] = annotations[fuzzers].applymap(lambda x : self.time_labels(x))
+		annotations[fuzzer_label] = annotations[fuzzer_label].applymap(lambda x : self.time_labels(x))
 		fig, ax = plt.subplots(figsize=(10,10))  
 		plt.yticks(rotation=0)
-		plt.xlabel("Fuzzers")
+		plt.xlabel("Fuzzer_label")
 		plt.ylabel("Bugs") 
 		#Norm foactor has to been precomputed
 		heat_map = sns.heatmap(np.array(ett),cmap='seismic',
-		                        xticklabels=fuzzers,
-		                        yticklabels=bug_id,
+		                        xticklabels=fuzzer_label,
+		                        yticklabels=bug_label,
 		                        annot=np.array(annotations),
 		                        fmt='s',
 		                        norm=colors.PowerNorm(gamma=0.32),
 		                        ax=ax)
-
+		#Color bar properties
 		cbar = ax.collections[0].colorbar
 		cbar.set_ticks([x for x in TIMESTAMPS.keys()])
 		cbar.set_ticklabels([x for x in TIMESTAMPS.values()])
@@ -80,12 +80,12 @@ class MatplotlibPlotter(Plotter):
 		data = DataProcessing.statistical_significance_data(self.df)
 		rename = {"aflplusplus" : "afl++","honggfuzz": "hfuzz"}
 		data = data.replace({"Fuzzer": rename})
-		#retrieve onky the data from the target library
+		#Retrieve only the data concerning the target library
 		lib_data = data.xs(library, level='Library',drop_level=True)
 		fig, ax = plt.subplots(figsize=(10, 10))
 		ax.set_title(library)
 
-		#computing p_values of the library
+		#Computing p_values of the library
 		p_values = self.compute_p_values(lib_data)
 		self.heatmap_plot(p_values, symmetric=symmetric, axes=ax, labels=False, cbar_ax_bbox=[1, 0.4, 0.02, 0.2])
 
@@ -97,8 +97,7 @@ class MatplotlibPlotter(Plotter):
 
 		df = DataProcessing.bug_list(self.df,fuzzer,library,metric)
 		
-		
-		# We increase the width so smaller boxes can be seen
+		#We increase the width so smaller boxes can be seen
 		boxprops = dict(linestyle='-', linewidth=2, color='k')
 		df.transpose().boxplot(figsize=(12, 10), boxprops=boxprops, vert=False)
 		plt.title(metric + ". Fuzzer: " + fuzzer + ". Library:" + library)
@@ -118,10 +117,10 @@ class MatplotlibPlotter(Plotter):
 		#For every fuzzer we gather in a list the number of times a bug was found
 		#Entry 0 in the list is for cmapaign 0
 		fuzzer_data = benchmark_library_data_df.groupby('Fuzzer')['Bugs'].apply(list)	
-		fuzzers = fuzzer_data.index.tolist()
-		#Constructing the index from the cross product of the fuzzers
+		fuzzer_label = fuzzer_data.index.tolist()
+		#Constructing the index from the cross product of the fuzzer_label
 		#The index has already the shape of the targeted p_value dataframe
-		index = pd.MultiIndex.from_product([fuzzers,fuzzers],names=['Outter','Inner'])
+		index = pd.MultiIndex.from_product([fuzzer_label,fuzzer_label],names=['Outter','Inner'])
 		#Creation of the p_value Dataframe with the previously computed index.
 		#Index has to been reset such that the multi index values can be passed as argument to the lambda function
 		p_values = pd.DataFrame(index=index,columns=['p_value']).fillna(np.nan).reset_index()
@@ -131,7 +130,7 @@ class MatplotlibPlotter(Plotter):
 		#Unstacking the Dataframe gives it the expected 2 dimensional shape for a p_value array
 		return p_values.unstack()
 
-	#Helper function to compute the p_value between two fuzzers
+	#Helper function to compute the p_value between two fuzzer_label
 	def two_sided_test(self,f1,f2,fuzzer_data) :
 		if f1 == f2 or set(fuzzer_data[f1]) == set(fuzzer_data[f2]) :
 			return

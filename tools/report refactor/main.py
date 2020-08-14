@@ -13,8 +13,8 @@ def main():
 	
 	bd = BenchmarkData(sys.argv[1])
 	plotter = MatplotlibPlotter(bd)
-	mean_var = plotter.mean_and_standard_deviation(metric ='triggered')
-	ett = plotter.statistical_significance('libpng',False)
+	#mean_var = plotter.mean_and_standard_deviation(metric ='triggered')
+	ett = plotter.expected_time_to_trigger()
 
 
 	
