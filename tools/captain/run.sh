@@ -135,7 +135,7 @@ start_campaign()
                 get_next_cid "$CAMPAIGN_ARDIR")
 
         errno_lock=69
-        flock -xnF -E $errno_lock "${CAMPAIGN_CACHEDIR}/${CACHECID}" \
+        SHELL=/bin/bash flock -xnF -E $errno_lock "${CAMPAIGN_CACHEDIR}/${CACHECID}" \
             flock -xnF -E $errno_lock "${CAMPAIGN_ARDIR}/${ARCID}" \
                 -c launch_campaign || \
         if [ $? -eq $errno_lock ]; then
