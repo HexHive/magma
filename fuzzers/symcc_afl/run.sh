@@ -14,5 +14,19 @@ mkdir -p "$SHARED/findings"
 
 export AFL_SKIP_CPUFREQ=1
 export AFL_NO_AFFINITY=1
-"$FUZZER/repo/afl-fuzz" -m 100M -i "$TARGET/corpus/$PROGRAM" -o "$SHARED/findings" \
-    -- "$OUT/$PROGRAM" $ARGS 2>&1
+"$FUZZER/afl/afl-fuzz" -M afl-master -m 100M -i "$TARGET/corpus/$PROGRAM" \
+    -o "$SHARED/findings" \
+    -- "$OUT/afl/$PROGRAM" $ARGS 2>&1 &
+
+FUZZER_PID=$!
+
+while ps -p $FUZZER_PID > /dev/null 2>&1 && \
+    [[ ! -f "$SHARED/findings/afl-master/fuzzer_stats" ]]; do
+    inotifywait -qq -t 1 -e create "$SHARED/findings" &> /dev/null
+done
+
+if [[ -f "$SHARED/findings/afl-master/fuzzer_stats" ]]; then
+    "$FUZZER/symcc/util/symcc_fuzzing_helper/target/release/symcc_fuzzing_helper" \
+        -a afl-master -o "$SHARED/findings" -n symcc \
+        -- "$OUT/symcc/$PROGRAM" $ARGS 2>&1
+fi

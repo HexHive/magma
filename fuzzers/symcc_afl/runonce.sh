@@ -27,4 +27,4 @@ if [ -z "$args" ]; then
 fi
 
 timeout -s KILL --preserve-status $TIMELIMIT bash -c \
-    "run_limited '$OUT/$PROGRAM' $args"
+    "run_limited '$OUT/afl/$PROGRAM' $args"
