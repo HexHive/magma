@@ -33,12 +33,18 @@ fi
 # build SymCC
 (
     cd "$FUZZER/symcc"
+
     mkdir build
-    cd build
+    pushd build
     cmake -G Ninja ../ \
         -DQSYM_BACKEND=ON \
         -DZ3_DIR="$FUZZER/z3/cmake_conf"
     ninja check
+    popd
+
+    pushd util/symcc_fuzzing_helper
+    cargo build --release
+    popd
 )
 
 # build libc++
