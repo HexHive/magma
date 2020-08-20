@@ -35,3 +35,12 @@ class BenchmarkData:
 	
 	def get_frame(self):
 		return self.df
+
+	def get_camapign_duration(self):
+		pass
+
+	def get_all_targets(self):
+		return list(set(self.df.index.get_level_values(1).tolist()))
+
+	def get_all_fuzzers(self):
+		return list(set(self.df.index.get_level_values(0).tolist()))

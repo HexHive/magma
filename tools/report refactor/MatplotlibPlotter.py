@@ -20,22 +20,36 @@ class MatplotlibPlotter(Plotter):
 		self.df = bd.get_frame()
 		
 
+	"""
+	Represents in a barplot the mean and variance of te number of bugs that
+	have satisfied the metric
+	
+	Parameters
+	----------
+ 
+    metric (string):
+    	choosen metric
+        
+	"""
 	def mean_and_standard_deviation(self,metric):
 		data = DataProcessing.mean_and_standard_deviation_data(metric,self.df)
 		means = data['mean'].unstack().transpose()
 		std = data['std'].unstack().transpose()
 		fig, ax = plt.subplots()
 		means.plot.bar(yerr=std,
-						ax=ax,figsize=(25,10),
+						ax=ax,figsize=(20,10),
 						fontsize=14)
 		plt.ylabel('Number of Bugs Triggered',fontsize=14)
 		plt.xlabel('Targets',fontsize=14)
 		plt.legend(loc=1, prop={'size': 17})
-		plt.show(block=False)
-		plt.pause(2)
+		plt.show()
+		fig.savefig('output/data/mean_variance_bar.svg')
 		plt.close()
 
-
+	"""
+	Represents the "hardness" of each triggered bug in a heatmap
+	by computing the expected time to trigger for each bug
+	"""
 	def expected_time_to_trigger(self):
 		ett,agg = DataProcessing.expected_time_to_trigger_data(self.df)
 	
@@ -45,7 +59,7 @@ class MatplotlibPlotter(Plotter):
 		
 		#Sort the bug by aggragate time
 		ett = ett.droplevel(0)
-		ett["Aggregate"] = agg.droplevel(0)
+		ett["Aggregate"] = agg
 		ett.sort_values(by='Aggregate', inplace=True)
 		ett = ett.drop(labels='Aggregate', axis=1)
 		#Reordering the fuzzers
@@ -56,8 +70,6 @@ class MatplotlibPlotter(Plotter):
 		annotations[fuzzer_label] = annotations[fuzzer_label].applymap(lambda x : self.time_labels(x))
 		fig, ax = plt.subplots(figsize=(10,10))  
 		plt.yticks(rotation=0)
-		plt.xlabel("Fuzzer_label")
-		plt.ylabel("Bugs") 
 		#Norm foactor has to been precomputed
 		heat_map = sns.heatmap(np.array(ett),cmap='seismic',
 		                        xticklabels=fuzzer_label,
@@ -73,26 +85,73 @@ class MatplotlibPlotter(Plotter):
 		ax.patch.set(fill='True',color='darkgrey')
 		ax.set_title("Exptected time-to-trigger-bug for each fuzzer", fontsize =20)
 		ax.xaxis.tick_top()
-		plt.show()
+		fig.savefig('output/data/expected_time_to_bug_heat.svg')
+		plt.close()
 		
+	"""
+	Creates a 2D array plot representing the statistical significance
+	between every pair of fuzzers on a target libary
+	
+	Parameters
+	----------
+    libraries (list):
+       The targets to plot the statistical significance from
 
-	def statistical_significance(self,library,symmetric):
+    symmetric (boolean):
+    	masks the upper-triangle of the table
+        
+	"""
+	def statistical_significance(self,libraries,symmetric):
+
+		
 		data = DataProcessing.statistical_significance_data(self.df)
 		rename = {"aflplusplus" : "afl++","honggfuzz": "hfuzz"}
 		data = data.replace({"Fuzzer": rename})
-		#Retrieve only the data concerning the target library
-		lib_data = data.xs(library, level='Library',drop_level=True)
-		fig, ax = plt.subplots(figsize=(10, 10))
-		ax.set_title(library)
 
-		#Computing p_values of the library
-		p_values = self.compute_p_values(lib_data)
-		self.heatmap_plot(p_values, symmetric=symmetric, axes=ax, labels=False, cbar_ax_bbox=[1, 0.4, 0.02, 0.2])
+		if not libraries :
+			libraries = list(set(data.index.get_level_values('Library').tolist()))
 
-		fig.savefig('signplot.svg', bbox_inches=matplotlib.transforms.Bbox.from_bounds(0, 0, 13, 10))
+		fig, ax = plt.subplots(nrows=1, ncols=len(libraries), figsize=(12, 7))
+		for library in libraries :
+			#Retrieve only the data concerning the target library
+			i = libraries.index(library)
+			figx = i
+
+			if len(libraries) == 1 :
+				axes = ax
+			else :
+				axes = ax[figx]
+
+			if i != 0:
+				axes.get_yaxis().set_visible(False)
+			lib_data = data.xs(library, level='Library',drop_level=True)
+			axes.set_title(library)
+
+
+			#Computing p_values of the library
+			p_values = self.compute_p_values(lib_data)
+			self.heatmap_plot(p_values, symmetric=symmetric, axes=axes, labels=False, cbar_ax_bbox=[1, 0.4, 0.02, 0.2])
+		fig.tight_layout(pad=2.0)
+		fig.savefig('output/data/signplot.svg', bbox_inches=matplotlib.transforms.Bbox.from_bounds(0, 0, 13, 10))
 		plt.close()
 
 
+	"""
+	Create box plot graph showing the time distribution
+	of bugs who satisfid the metric
+
+	Parameters
+	----------
+	fuzzer (string):
+        From which fuzzer
+
+    library (string):
+        From which library
+
+    metric (string):
+      	choosen metric
+
+	"""
 	def bug_metric_boxplot(self, fuzzer, library, metric):
 
 		df = DataProcessing.bug_list(self.df,fuzzer,library,metric)
@@ -104,15 +163,69 @@ class MatplotlibPlotter(Plotter):
 		plt.ylabel("Bug Number")
 		plt.xlabel("Time (seconds)")
 		plt.ylim(bottom=0)
-		plt.savefig(fuzzer + "_" + library + "_" + metric + "_box.svg", format="svg", bbox_inches="tight")
+		plt.savefig("data/" + fuzzer + "_" + library + "_" + metric + "_box.svg", format="svg", bbox_inches="tight")
+		plt.close()
+
+	"""
+	Creates a line plot for each fuzzer,target pair
+	If fuzzers is empty then a plot for every known fuzzer will be computed
+	
+	Parameters
+	----------
+	fuzzers (list) : 
+		list of fuzzer names
+	library (Ssring) :
+		target used to compute the line plots
+	metric (string)
+		choosen metric
+
+	"""
+	def line_plot_unqiue_bugs(self,fuzzers,library,metric) :
+		df, x_max, y_max, x_min = DataProcessing.line_plot_data(self.df,library,metric)
+		
+		if not fuzzers :
+			fuzzers = df.index.values.tolist()
+		fig, ax = plt.subplots(nrows=1,ncols=len(fuzzers), figsize=(10, 5))
+		for fuzzer in fuzzers:
+			i = fuzzers.index(fuzzer)
+			figx = i
+			
+			if(len(fuzzers) == 1) :
+				axes = ax
+			else :
+				axes = ax[figx]
+
+			x = np.array(df['x'][fuzzer])
+			y = np.array(df['y'][fuzzer])
+			ci = np.array(df['ci'][fuzzer])
+
+			# axes.set_xscale('log')
+			axes.step(x, y)
+			axes.fill_between(x, (y - ci), (y + ci), color='b', alpha=.1)
+
+			axes.set_title(fuzzer)
+			axes.set_ylim((0, y_max + 5))
+			axes.set_xlim((x_min, x_max + 5))
+		plt.tight_layout(pad=2.0)
+		fig.savefig('output/data/lineplot.svg', bbox_inches=matplotlib.transforms.Bbox.from_bounds(0, 0, 13, 10))
 		plt.close()
 
 
 
 #Helper functions
 
+	"""
+	Computes the p_values used in the statistical significance plot
+	for a specific target
 
+	
+	Parameters
+	----------
+	benchmark_library_data_df (Dataframe) : 
+		Data of a target
+		
 
+	"""
 	def compute_p_values(self,benchmark_library_data_df):
 		#For every fuzzer we gather in a list the number of times a bug was found
 		#Entry 0 in the list is for cmapaign 0
@@ -157,6 +270,10 @@ class MatplotlibPlotter(Plotter):
 	    return sp.sign_plot(p_values, ax=axes, **heatmap_args)
 
 
+	"""
+	Label function to make the expected time to trigger heatmap
+	more understandable
+	"""
 	def time_labels(self,elem) :
 		if self.is_nan(elem) :
 		    return elem
