@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 
 import os
+import sys
 import argparse
 import pandas as pd
-from config import *
-from formatters import format_latex_tabular
 from collections import defaultdict
 import json
 
@@ -57,13 +56,11 @@ def parse_fuzzer_campaigns(fuzzer_dir, parse_logs=True):
         if parse_logs:
             reached, triggered = parse_campaign_log(log)
             fuzzerdict[target][program][run] = {
-                "fuzzer": fuzzer,
                 "reached": reached,
                 "triggered": triggered
             }
         else:
             fuzzerdict[target][program][run] = {
-                "fuzzer": fuzzer,
                 "m_path": log
             }
     return default_to_regular(fuzzerdict)
@@ -81,10 +78,10 @@ def parse_all_fuzzers(work_dir, parse_logs=True):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("work_dir",
-        help="The path to the directory where all fuzzers' campaigns are stored.")
+        help="The path to the directory where all logs are stored.")
     parser.add_argument("--out-format",
-        choices=["latex", "json"],
-        default="latex",
+        choices=["json"],
+        default="json",
         help="The format with which to print the parsed outputs.")
     parser.add_argument("--out-file",
         default="-",
@@ -92,10 +89,7 @@ def main():
     args = parser.parse_args()
 
     fuzzers = parse_all_fuzzers(args.work_dir, parse_logs=True)
-    if args.out_format == "latex":
-        order = ["afl", "aflfast", "moptafl", "fairfuzz", "honggfuzz", "angora"]
-        data = format_latex_tabular(fuzzers, order).encode()
-    elif args.out_format == "json":
+    if args.out_format == "json":
         data = json.dumps(fuzzers).encode()
 
     if args.out_file == "-":
