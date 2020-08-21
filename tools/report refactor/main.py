@@ -23,6 +23,7 @@ def main():
 	template = jinajEnv.get_template("report_template.md")
 	#Jinja2 is used to fill html templates witht the plots and data from the report
 	rendering = template.render(report_title="Magma benchmark report", fuzzer_list= bd.get_all_fuzzers(), plots_dir="data")
+	
 	with open("output/report.html","w") as f:
 		f.write(rendering)
 

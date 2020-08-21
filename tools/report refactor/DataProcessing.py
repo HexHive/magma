@@ -6,7 +6,7 @@ from Metric import Metric
 from BenchmarkData import BenchmarkData
 from math import inf
 
-CAMPAIGN_DURATION = 83400 #to be extracted from json
+CAMPAIGN_DURATION = 83400 #to be extracted from json (see BenchmarkData file)
 INDEX_ORDER = ["Fuzzer", "Library","Program","Campaign","Metric","BugID"]
 
 
@@ -80,7 +80,6 @@ class DataProcessing:
 		M = df_triggered.groupby(['Fuzzer','Library','Program','BugID']).count()
 		N = df.reset_index().groupby(['Fuzzer', 'Library','Program'])['Campaign'].nunique().reindex(M.index).to_frame()
 		N.columns = ['Time']
-		print(N)
 		df_ett = expected_time_to_bug(N,M,t).groupby(['Fuzzer','Library','BugID']).min().droplevel(1).unstack().transpose()
 	
 		#Aggregate time computation
@@ -245,46 +244,58 @@ class DataProcessing:
 	@staticmethod
 	def line_plot_data(df,library,metric) :
 
-
+		"""
+		For every x_value we have to compute the step values
+		"""
 		def get_step_value(fuzzer,x_values, campaigns):
+
+			#Extracting data for the correct fuzzer
 			df_fuzz = campaigns.iloc[campaigns.index.get_level_values('Fuzzer') == fuzzer]
-			g = df_fuzz.groupby(['Campaign'])['Time'].apply(lambda x : sorted(list(x)))
-			num_campaigns = len(g.index)
+
+			campaigns_data = df_fuzz.groupby(['Campaign'])['Time'].apply(lambda x : sorted(list(x)))
+			num_campaigns = len(campaigns_data.index)
+
+			#The series has the sorted time to metric for every bug as index and as value
 			def step_val(series,x):
 				serie = series[series.index <= x]
 				if (serie.empty):
 					return 0
 				return serie.iloc[-1] + 1
-			y_values = [[step_val(pd.Series([a for a in range(0,len(g.loc[str(campaign)]))],index=g.loc[str(campaign)]),x) for campaign in range(0,num_campaigns)] for x in x_values]
+			#The series has to been inverted, the index has to be the time values and the actual values have to be the index
+			##For each of the values in x we compute an array containing a step_value for each campaign
+			y_values = [[step_val(pd.Series([i for i in range(0,len(campaigns_data.loc[str(campaign)]))],index=campaigns_data.loc[str(campaign)]), x) 
+						for campaign in range(0,num_campaigns)] for x in x_values]
 			
 			return y_values
 
-		max_x = -1
-		max_y = -1
-		min_x = inf
+
 		df_metric = df.iloc[df.index.get_level_values('Metric') == metric]
 		df_lib = df_metric.iloc[df_metric.index.get_level_values('Library') == library]
-		#For each BugID in each campaign in multiple Programs, only retain the smallest time to metric
+
+		#For each unique BugID in each campaign in multiple Programs, only retain the smallest time to metric
 		df_lib = df_lib.groupby(['Fuzzer','Library','Campaign','BugID']).min()
 		
 		x_plot = df_lib.groupby(['Fuzzer'])['Time'].apply(lambda x : sorted(set(x))).to_frame()
 		x_plot.columns = ['x']
 		y_plot = x_plot
 		index = x_plot.index
+		#Reseting index to be able to pass index values as argument
 		y_plot = y_plot.reset_index()
 		y_plot = y_plot.apply(lambda f : get_step_value(f['Fuzzer'],f['x'],df_lib),axis=1).to_frame()
 		y_plot.index = index
 		y_plot.columns = ['y']
 		df_aggplot = x_plot
 		df_aggplot['y'] = y_plot
+		#Error margin computation
 		df_aggplot['ci'] = df_aggplot['y'].apply(lambda x : [1.96 * np.nanstd(i) / np.nanmean(i) for i in x])
 		df_aggplot['y'] = df_aggplot['y'].apply(lambda x : [np.nanmean(i) for i in x])
 		
-		#First weget the max values per entry of the x list.
-		#The list is already sorted therefor we take the last element
+		#FFor every fuzzer we get the max value and the min value for x and y
+		#Then we have to recompute the max between them
 		x_max = max([max(x) for x in df_aggplot['x']])
 		x_min = min([min(x) for x in df_aggplot['x']])
 		y_max = max([max(y) for y in df_aggplot['y']])
+
 		return df_aggplot, x_max, y_max, x_min
 
 

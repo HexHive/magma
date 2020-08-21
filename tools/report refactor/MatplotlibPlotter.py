@@ -42,7 +42,6 @@ class MatplotlibPlotter(Plotter):
 		plt.ylabel('Number of Bugs Triggered',fontsize=14)
 		plt.xlabel('Targets',fontsize=14)
 		plt.legend(loc=1, prop={'size': 17})
-		plt.show()
 		fig.savefig('output/data/mean_variance_bar.svg')
 		plt.close()
 
@@ -108,6 +107,7 @@ class MatplotlibPlotter(Plotter):
 		rename = {"aflplusplus" : "afl++","honggfuzz": "hfuzz"}
 		data = data.replace({"Fuzzer": rename})
 
+		#If there is no library as argument we compute the plot for every fuzzer
 		if not libraries :
 			libraries = list(set(data.index.get_level_values('Library').tolist()))
 
@@ -116,7 +116,7 @@ class MatplotlibPlotter(Plotter):
 			#Retrieve only the data concerning the target library
 			i = libraries.index(library)
 			figx = i
-
+			#Currently the plot only expand in a row
 			if len(libraries) == 1 :
 				axes = ax
 			else :
@@ -182,14 +182,15 @@ class MatplotlibPlotter(Plotter):
 	"""
 	def line_plot_unqiue_bugs(self,fuzzers,library,metric) :
 		df, x_max, y_max, x_min = DataProcessing.line_plot_data(self.df,library,metric)
-		
+		#If there is no fuzzer as argument we compute the plot for every fuzzer
 		if not fuzzers :
 			fuzzers = df.index.values.tolist()
 		fig, ax = plt.subplots(nrows=1,ncols=len(fuzzers), figsize=(10, 5))
+		
 		for fuzzer in fuzzers:
 			i = fuzzers.index(fuzzer)
 			figx = i
-			
+			#Currently the plot only expand in a row
 			if(len(fuzzers) == 1) :
 				axes = ax
 			else :
