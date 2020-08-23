@@ -15,13 +15,13 @@ ENV MAGMA_R /magma
 ENV OUT		/magma_out
 ENV SHARED 	/magma_shared
 
-ENV CC  gcc
-ENV CXX g++
-ENV LD ld
-ENV AR ar
-ENV AS as
-ENV NM nm
-ENV RANLIB ranlib
+ENV CC  /usr/bin/gcc
+ENV CXX /usr/bin/g++
+ENV LD /usr/bin/ld
+ENV AR /usr/bin/ar
+ENV AS /usr/bin/as
+ENV NM /usr/bin/nm
+ENV RANLIB /usr/bin/ranlib
 
 ARG USER_ID=1000
 ARG GROUP_ID=1000
