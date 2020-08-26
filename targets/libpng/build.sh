@@ -16,7 +16,7 @@ fi
 # build the libpng library
 cd "$TARGET/repo"
 autoreconf -f -i
-./configure --with-libpng-prefix=MAGMA_
+./configure --with-libpng-prefix=MAGMA_ --disable-shared
 make -j$(nproc) clean
 make -j$(nproc) libpng16.la
 
