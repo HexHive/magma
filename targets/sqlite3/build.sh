@@ -28,7 +28,7 @@ export CFLAGS="$CFLAGS -DSQLITE_MAX_LENGTH=128000000 \
                -DSQLITE_DEBUG=1 \
                -DSQLITE_MAX_PAGE_COUNT=16384"
 
-"$TARGET/repo"/configure
+"$TARGET/repo"/configure --disable-shared
 make clean
 make -j$(nproc)
 make sqlite3.c

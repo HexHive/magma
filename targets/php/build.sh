@@ -39,7 +39,7 @@ make -j$(nproc) clean
 # build oniguruma and link statically
 pushd oniguruma
 autoreconf -vfi
-./configure
+./configure --disable-shared
 make -j$(nproc)
 popd
 
