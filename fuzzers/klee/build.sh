@@ -77,4 +77,4 @@ wllvm++ $CXXFLAGS -g -O0 -Xclang -disable-O0-optnone -D__NO_STRING_INLINES \
 
 echo 'export PATH="$FUZZER/klee/build/bin:$FUZZER/stp/install/bin:$PATH"' >> \
     "$HOME/.bashrc"
-echo 'export LLVM_COMPILER=clang'
+echo 'export LLVM_COMPILER=clang' >> "$HOME/.bashrc"
