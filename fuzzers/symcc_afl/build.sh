@@ -6,7 +6,8 @@ set -e
 # - env FUZZER: path to fuzzer work dir
 ##
 
-if [ ! -d "$FUZZER/afl" ] || [ ! -d "$FUZZER/symcc" ]; then
+if [ ! -d "$FUZZER/afl" ] || [ ! -d "$FUZZER/symcc" ] || \
+   [ ! -d "$FUZZER/z3" ] || [ ! -d "$FUZZER/llvm" ]; then
     echo "fetch.sh must be executed first."
     exit 1
 fi
