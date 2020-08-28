@@ -15,7 +15,7 @@ fi
 # build Z3
 (
     cd "$FUZZER/z3"
-    mkdir build install cmake_conf
+    mkdir -p build install cmake_conf
     cd build
     CXX=clang++ CC=clang cmake ../ \
         -DCMAKE_INSTALL_PREFIX="$FUZZER/z3/install" \
@@ -27,8 +27,9 @@ fi
 # build SymCC
 (
     cd "$FUZZER/symcc"
+    export CXXFLAGS="$CXXFLAGS -DNDEBUG"
 
-    mkdir build
+    mkdir -p build
     pushd build
     cmake -G Ninja ../ \
         -DQSYM_BACKEND=OFF \
@@ -44,7 +45,7 @@ fi
 # build libc++
 (
     cd "$FUZZER/llvm"
-    mkdir libcxx_symcc libcxx_symcc_install
+    mkdir -p libcxx_symcc libcxx_symcc_install
     cd libcxx_symcc
     export SYMCC_REGULAR_LIBCXX=yes
     export SYMCC_NO_SYMBOLIC_INPUT=yes
