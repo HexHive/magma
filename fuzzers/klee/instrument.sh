@@ -12,6 +12,7 @@ set -e
 
 export CC="wllvm"
 export CXX="wllvm++"
+export LLVM_COMPILER=clang
 
 export CFLAGS="$CFLAGS -g -O0 -Xclang -disable-O0-optnone -D__NO_STRING_INLINES -D_FORTIFY_SOURCE=0 -U__OPTIMIZE__"
 export CXXFLAGS="$CXXFLAGS -g -O0 -Xclang -disable-O0-optnone -D__NO_STRING_INLINES -D_FORTIFY_SOURCE=0 -U__OPTIMIZE__"
