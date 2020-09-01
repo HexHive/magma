@@ -19,3 +19,26 @@ int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
   return 0;
 }
 EOF
+
+patch -p1 -d "$FUZZER/repo" << EOF
+--- a/src/afl-forkserver.c
++++ b/src/afl-forkserver.c
+@@ -937,7 +937,7 @@
+ 
+ #endif
+ 
+-  } else {
++  }
+ 
+     s32 fd = fsrv->out_fd;
+ 
+@@ -975,7 +975,7 @@
+ 
+     }
+ 
+-  }
++
+ 
+ }
+ 
+EOF
