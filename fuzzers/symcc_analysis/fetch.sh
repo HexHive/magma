@@ -7,7 +7,7 @@ set -e
 ##
 
 git clone --no-checkout https://github.com/eurecom-s3/symcc.git "$FUZZER/symcc"
-git -C "$FUZZER/symcc" checkout 1cc757dfbc9ac7e26ddcadd48d38c30c2c540116
+git -C "$FUZZER/symcc" checkout b92ccb42e8197c1c37777df1f49beead9a4f1414
 git -C "$FUZZER/symcc" submodule init
 git -C "$FUZZER/symcc" submodule update
 
