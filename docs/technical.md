@@ -258,8 +258,56 @@ script, in the first few lines of comments.
 
 ## Benchd Toolset: Processing Results
 
-This toolset is a work-in-progress and its documentation will be released when
-the scripts are ready to be publicized.
+This toolset is a work-in-progress and its documentation is not entirely stable.
+
+### exp2json.py
+
+Generates the experiment summary and outputs it as a JSON file.
+
+Requirements:
+* `pandas >= 1.1.0`
+
+Usage:
+```
+usage: exp2json.py [-h] [--workers WORKERS] workdir outfile
+
+positional arguments:
+  workdir            The path to the Captain tool output workdir.
+  outfile            The file to which the output will be written, or - for
+                     stdout.
+
+optional arguments:
+  -h, --help         show this help message and exit
+  --workers WORKERS  The number of concurrent processes to launch.
+
+```
+
+The JSON object has the following format:
+```
+{
+    "FUZZER": {
+        "TARGET": {
+            "PROGRAM": {
+                "RUN": {
+                    "reached": {
+                        "BUGID": int(TIME_TO_REACH_BUG)
+                    },
+                    "triggered": {
+                        "BUGID": int(TIME_TO_TRIGGER_BUG)
+                    }
+                },
+                "RUN": ...
+            },
+            "PROGRAM": ...
+        },
+        "TARGET": ...
+    },
+    "FUZZER": ...
+}
+```
+
+`TIME_TO_REACH_BUG` and `TIME_TO_TRIGGER_BUG` are represented in _seconds_, with
+a resolution of `POLL` seconds, since the beginning of the experiment.
 
 ## Reports Toolset: Visualizing Results
 
