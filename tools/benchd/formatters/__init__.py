@@ -1,1 +1,0 @@
-from .latex import format_latex_tabular
