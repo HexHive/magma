@@ -17,6 +17,7 @@ export CXX=clang++
 export AFL_NO_X86=1
 export PYTHON_INCLUDE=/
 make -j$(nproc) || exit 1
+export "LLVM_CONFIG=/usr/bin/llvm-config-11"
 make -C llvm_mode -j$(nproc) || exit 1
 make -C examples/aflpp_driver || exit 1
 
