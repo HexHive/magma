@@ -4,22 +4,43 @@ title: Home
 
 # Magma: A Ground-Truth Fuzzing Benchmark
 
-Magma is a collection of open-source libraries with widespread usage and a long
+<div class="intro-container">
+<div style="width: 100%">
+<p>Magma is a collection of open-source libraries with widespread usage and a long
 history of security-critical bugs and vulnerabilities. In light of the need for
-better fuzzer evaluation, we *front-ported* bugs from previous bug reports to
-the latest versions of these libraries.
+better fuzzer evaluation, we <em>front-ported</em> bugs from previous bug reports to
+the latest versions of these libraries.</p>
 
-For each ported bug, we added in-line (source-code-level) instrumentation to
-collect ground-truth information about bugs **reached** (buggy code executed)
-and **triggered** (fault condition satisfied by input). This instrumentation
-allows a monitoring utility to measure fuzzer progress in real time.
+<p>For each ported bug, we added in-line (source-code-level) instrumentation to
+collect ground-truth information about bugs <strong>reached</strong> (buggy code executed)
+and <strong>triggered</strong> (fault condition satisfied by input). This instrumentation
+allows a monitoring utility to measure fuzzer progress in real time.</p>
 
-Magma also includes the `captain` toolset which facilitates the process of
-building Magma targets and running campaigns.
+<p>Magma also includes the <code class="language-plaintext highlighter-rouge">captain</code> toolset which facilitates the process of
+building Magma targets and running campaigns.</p>
 
-Check out a [sample Magma report]({{ "/reports/sample/" | relative_url }})
-and read the [paper preprint]({{ "/docs/preprint.pdf" | relative_url }}).
-Questions, comments, and feedback are welcome!
+<p>Check out a <a href="{{ '/reports/sample/'' | relative_url }}">sample Magma report</a>
+and read the <a href="https://arxiv.org/abs/2009.01120">paper preprint</a>.
+Questions, comments, and feedback are welcome!</p>
+</div>
+<div class="thumbnail center">
+<a href="https://arxiv.org/abs/2009.01120">
+<img class="thumbnail" src="{{ '/assets/img/preprint.png' | relative_url }}">
+</a>
+</div>
+</div>
+
+## Citing Magma
+```
+@article {Hazimeh:2020:Magma,
+    title={Magma: A Ground-Truth Fuzzing Benchmark},
+    author={Ahmad Hazimeh and Adrian Herrera and Mathias Payer},
+    year={2020},
+    eprint={2009.01120},
+    archivePrefix={arXiv},
+    primaryClass={cs.CR}
+}
+```
 
 ## Overview
 
