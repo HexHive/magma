@@ -11,6 +11,7 @@ import json
 import argparse
 import errno
 import csv
+import logging
 
 ddr = lambda: defaultdict(ddr)
 
@@ -27,7 +28,10 @@ def parse_args():
     parser.add_argument("outfile",
         default="-",
         help="The file to which the output will be written, or - for stdout.")
-
+    parser.add_argument('-v', '--verbose', action='count', default=0,
+        help=("Controls the verbosity of messages. "
+            "-v prints info. -vv prints debug. Default: warnings and higher.")
+        )
     return parser.parse_args()
 
 def walklevel(some_dir, level=1):
@@ -45,13 +49,19 @@ def path_split_last(path, n):
     for i in range(n):
         path, tmp = os.path.split(path)
         sp = [tmp] + sp
-    return sp
+    return (path, *sp)
 
 def find_campaigns(workdir):
     ar_dir = os.path.join(workdir, "ar")
     for root, dirs, files, level in walklevel(ar_dir, 3):
         if level == 3:
             for run in dirs:
+                # `run` directories always have integer-only names
+                if not run.isdigit():
+                    logging.warning((
+                        "Detected invalid workdir hierarchy! Make sure to point "
+                        "the script to the root of the original workdir."
+                    ))
                 path = os.path.join(root, run)
                 yield path
 
@@ -71,7 +81,7 @@ def clear_dir(path):
             elif os.path.isdir(file_path):
                 shutil.rmtree(file_path)
         except Exception as e:
-            print('Failed to delete %s. Reason: %s' % (file_path, e))
+            logging.exception('Failed to delete %s. Reason: %s' % (file_path, e))
 
 def extract_monitor_dumps(tarball, dest):
     clear_dir(dest)
@@ -82,10 +92,9 @@ def extract_monitor_dumps(tarball, dest):
     ccount = len(monitor.split("/")) - 1
     os.system(f'tar -xf "{tarball}" --strip-components={ccount} -C "{dest}" {monitor}')
 
-def generate_monitor_df(dumpdir):
+def generate_monitor_df(dumpdir, campaign):
     def row_generator():
         files = os.listdir(dumpdir)
-
         if 'tmp' in files:
             files.remove('tmp')
         files.sort(key=int)
@@ -98,34 +107,55 @@ def generate_monitor_df(dumpdir):
                     row['TIME'] = timestamp
                     yield row
             except StopIteration:
+                logging.debug((
+                    "Truncated monitor file contains no rows!"
+                ))
                 continue
-    try:
-        rows = list(row_generator())
-        df = pd.DataFrame(rows)
-        df.set_index('TIME', inplace=True)
-        df.fillna(0, inplace=True)
-        df = df.astype(int)
-        del rows
-        return df
-    except:
-        pass
+
+    # use a list in case pd.DataFrame() can pre-allocate ahead of time
+    rows = list(row_generator())
+    if len(rows) == 0:
+        workdir, _, fuzzer, target, program, run = path_split_last(campaign, 5)
+        name = f"{fuzzer}/{target}/{program}/{run}"
+        logfile = os.path.join(workdir, "log",
+            f"{name.replace('/', '_')}_container.log")
+        logging.warning((
+            "%s contains no monitor logs. Check the corresponding campaign "
+            "log file for more information: %s" % (name, logfile)
+        ))
+
+    df = pd.DataFrame(rows)
+    df.set_index('TIME', inplace=True)
+    df.fillna(0, inplace=True)
+    df = df.astype(int)
+    del rows
+    return df
 
 def process_one_campaign(path):
-    print("Processing", path)
-    fuzzer, target, program, run = path_split_last(path, 4)
+    logging.info("Processing %s" % path)
+    _, fuzzer, target, program, run = path_split_last(path, 4)
 
     tarball = os.path.join(path, "ball.tar")
     istarball = False
     if os.path.isfile(tarball):
         istarball = True
-        path = mkdtemp(dir=tmpdir)
-        extract_monitor_dumps(tarball, path)
+        dumpdir = mkdtemp(dir=tmpdir)
+        logging.debug("Campaign is tarballed. Extracting to %s" % dumpdir)
+        extract_monitor_dumps(tarball, dumpdir)
+    else:
+        dumpdir = path
+
+    df = None
     try:
-        df = generate_monitor_df(os.path.join(path, "monitor"))
+        df = generate_monitor_df(os.path.join(dumpdir, "monitor"), path)
+    except Exception as ex:
+        name = f"{fuzzer}/{target}/{program}/{run}"
+        logging.exception(("Encountered exception when processing %s. Details: "
+            "%s") % (name, ex))
     finally:
         if istarball:
-            clear_dir(path)
-            os.rmdir(path)
+            clear_dir(dumpdir)
+            os.rmdir(dumpdir)
     return fuzzer, target, program, run, df
 
 def collect_experiment_data(workdir, workers):
@@ -142,7 +172,11 @@ def collect_experiment_data(workdir, workers):
             ((path,) for path in find_campaigns(workdir))
         )
         for fuzzer, target, program, run, df in results:
-            experiment[fuzzer][target][program][run] = df
+            if df is not None:
+                experiment[fuzzer][target][program][run] = df
+            else:
+                name = f"{fuzzer}/{target}/{program}/{run}"
+                logging.warning("%s has been omitted!" % name)
     return experiment
 
 def get_ttb_from_df(df):
@@ -150,6 +184,7 @@ def get_ttb_from_df(df):
     triggered = {}
 
     bugs = set(x[:-2] for x in df.columns)
+    logging.debug("Bugs found: %s" % bugs)
     for bug in bugs:
         R = df[df[f"{bug}_R"] > 0]
         if not R.empty:
@@ -177,8 +212,19 @@ def get_experiment_summary(experiment):
                     }
     return default_to_regular(summary)
 
+def configure_verbosity(level):
+    mapping = {
+        0: logging.WARNING,
+        1: logging.INFO,
+        2: logging.DEBUG
+    }
+    # will raise exception when level is invalid
+    numeric_level = mapping[level]
+    logging.basicConfig(level=numeric_level)
+
 def main():
     args = parse_args()
+    configure_verbosity(args.verbose)
     experiment = collect_experiment_data(args.workdir, int(args.workers))
     summary = get_experiment_summary(experiment)
 
