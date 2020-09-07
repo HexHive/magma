@@ -14,7 +14,12 @@ if [ ! -d "$TARGET/repo" ]; then
 fi
 
 cd "$TARGET/repo"
-./autogen.sh --with-http=no --with-python=no --with-lzma=no --disable-shared
+./autogen.sh \
+	--with-http=no \
+	--with-python=no \
+	--with-lzma=no \
+	--with-threads=no \
+	--disable-shared
 make -j$(nproc) clean
 make -j$(nproc) all
 
