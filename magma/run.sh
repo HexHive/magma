@@ -70,6 +70,10 @@ echo "Campaign launched at $(date '+%F %R')"
 timeout $TIMEOUT "$FUZZER/run.sh" | \
     multilog n2 s$LOGSIZE "$SHARED/log"
 
+if [ -f "$SHARED/log/current" ]; then
+    cat "$SHARED/log/current"
+fi
+
 echo "Campaign terminated at $(date '+%F %R')"
 
 kill $(jobs -p)
