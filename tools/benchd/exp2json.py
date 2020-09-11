@@ -175,6 +175,7 @@ def collect_experiment_data(workdir, workers):
             if df is not None:
                 experiment[fuzzer][target][program][run] = df
             else:
+                # TODO add an empty df so that the run is accounted for
                 name = f"{fuzzer}/{target}/{program}/{run}"
                 logging.warning("%s has been omitted!" % name)
     return experiment
