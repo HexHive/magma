@@ -74,7 +74,8 @@ POLL=5
 FUZZERS=(afl aflfast moptafl aflplusplus fairfuzz honggfuzz)
 
 # [fuzzer_TARGETS]: an array of target names (from magma/targets/*) to fuzz with
-# `fuzzer` (default: all targets)
+# `fuzzer`. The `fuzzer` prefix is a fuzzer listed in the FUZZERS array
+# (default: all targets)
 # afl_TARGETS=(libpng libtiff libxml2)
 
 # [fuzzer_target_PROGRAMS]: an array of program names (from
