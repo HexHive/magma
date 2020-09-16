@@ -1,0 +1,325 @@
+    #T_survival_table tr:nth-child(even) {
+          background-color: #ececec;
+    }    #T_survival_table tbody tr:hover {
+          background-color: #d9edfd;
+    }    #T_survival_table thead tr:not(:last-child) .index_name {
+          visibility: hidden;
+    }    #T_survival_table thead tr:nth-child(3) {
+          display: none;
+    }    #T_survival_table tbody td {
+          padding: 2px 5px 2px 15px;
+          text-align: right;
+    }    #T_survival_table th {
+          padding: 2px 5px 2px 5px;
+          text-align: center;
+    }    #T_survival_table th, td, tr {
+          border-top: none;
+          border-bottom: none;
+          border-radius: 0px;
+    }    #T_survival_table thead tr:first-child th:not(:last-child), th:nth-child(odd):not(:last-child), td:nth-child(odd):not(:last-child) {
+          border-right: 1px solid #888888;
+    }    #T_survival_table  {
+          border-collapse: collapse;
+    }#T_survival_tablerow0_col0,#T_survival_tablerow0_col1,#T_survival_tablerow0_col2,#T_survival_tablerow0_col3,#T_survival_tablerow0_col4,#T_survival_tablerow0_col5,#T_survival_tablerow0_col6,#T_survival_tablerow0_col7,#T_survival_tablerow0_col8,#T_survival_tablerow0_col9,#T_survival_tablerow0_col10,#T_survival_tablerow0_col11,#T_survival_tablerow1_col0,#T_survival_tablerow1_col1,#T_survival_tablerow1_col2,#T_survival_tablerow1_col3,#T_survival_tablerow1_col4,#T_survival_tablerow1_col5,#T_survival_tablerow1_col6,#T_survival_tablerow1_col7,#T_survival_tablerow1_col8,#T_survival_tablerow1_col9,#T_survival_tablerow1_col10,#T_survival_tablerow1_col11,#T_survival_tablerow2_col0,#T_survival_tablerow2_col1,#T_survival_tablerow2_col2,#T_survival_tablerow2_col3,#T_survival_tablerow2_col4,#T_survival_tablerow2_col5,#T_survival_tablerow2_col6,#T_survival_tablerow2_col7,#T_survival_tablerow2_col8,#T_survival_tablerow2_col9,#T_survival_tablerow2_col10,#T_survival_tablerow2_col11,#T_survival_tablerow3_col0,#T_survival_tablerow3_col1,#T_survival_tablerow3_col2,#T_survival_tablerow3_col3,#T_survival_tablerow3_col4,#T_survival_tablerow3_col5,#T_survival_tablerow3_col6,#T_survival_tablerow3_col7,#T_survival_tablerow3_col8,#T_survival_tablerow3_col9,#T_survival_tablerow3_col10,#T_survival_tablerow3_col11,#T_survival_tablerow4_col0,#T_survival_tablerow4_col1,#T_survival_tablerow4_col2,#T_survival_tablerow4_col3,#T_survival_tablerow4_col4,#T_survival_tablerow4_col5,#T_survival_tablerow4_col6,#T_survival_tablerow4_col7,#T_survival_tablerow4_col8,#T_survival_tablerow4_col9,#T_survival_tablerow4_col10,#T_survival_tablerow4_col11,#T_survival_tablerow5_col0,#T_survival_tablerow5_col1,#T_survival_tablerow5_col2,#T_survival_tablerow5_col3,#T_survival_tablerow5_col4,#T_survival_tablerow5_col5,#T_survival_tablerow5_col6,#T_survival_tablerow5_col7,#T_survival_tablerow5_col8,#T_survival_tablerow5_col9,#T_survival_tablerow5_col10,#T_survival_tablerow5_col11,#T_survival_tablerow6_col0,#T_survival_tablerow6_col1,#T_survival_tablerow6_col2,#T_survival_tablerow6_col3,#T_survival_tablerow6_col4,#T_survival_tablerow6_col5,#T_survival_tablerow6_col6,#T_survival_tablerow6_col8,#T_survival_tablerow6_col10,#T_survival_tablerow6_col11,#T_survival_tablerow7_col0,#T_survival_tablerow7_col1,#T_survival_tablerow7_col2,#T_survival_tablerow7_col3,#T_survival_tablerow7_col4,#T_survival_tablerow7_col6,#T_survival_tablerow7_col8,#T_survival_tablerow7_col10,#T_survival_tablerow8_col0,#T_survival_tablerow8_col2,#T_survival_tablerow8_col4,#T_survival_tablerow8_col5,#T_survival_tablerow8_col6,#T_survival_tablerow8_col8,#T_survival_tablerow8_col9,#T_survival_tablerow8_col10,#T_survival_tablerow9_col0,#T_survival_tablerow9_col1,#T_survival_tablerow9_col2,#T_survival_tablerow9_col3,#T_survival_tablerow9_col4,#T_survival_tablerow9_col6,#T_survival_tablerow9_col8,#T_survival_tablerow9_col10,#T_survival_tablerow10_col0,#T_survival_tablerow10_col1,#T_survival_tablerow10_col2,#T_survival_tablerow10_col3,#T_survival_tablerow10_col4,#T_survival_tablerow10_col6,#T_survival_tablerow10_col8,#T_survival_tablerow10_col9,#T_survival_tablerow10_col10,#T_survival_tablerow12_col0,#T_survival_tablerow12_col2,#T_survival_tablerow12_col4,#T_survival_tablerow12_col8,#T_survival_tablerow13_col0,#T_survival_tablerow13_col1,#T_survival_tablerow13_col2,#T_survival_tablerow13_col3,#T_survival_tablerow13_col4,#T_survival_tablerow13_col5,#T_survival_tablerow13_col6,#T_survival_tablerow13_col7,#T_survival_tablerow13_col8,#T_survival_tablerow13_col9,#T_survival_tablerow14_col0,#T_survival_tablerow14_col2,#T_survival_tablerow14_col3,#T_survival_tablerow14_col4,#T_survival_tablerow14_col5,#T_survival_tablerow14_col6,#T_survival_tablerow14_col7,#T_survival_tablerow14_col8,#T_survival_tablerow14_col9,#T_survival_tablerow15_col0,#T_survival_tablerow15_col2,#T_survival_tablerow15_col4,#T_survival_tablerow15_col5,#T_survival_tablerow15_col6,#T_survival_tablerow15_col7,#T_survival_tablerow15_col8,#T_survival_tablerow15_col9,#T_survival_tablerow16_col0,#T_survival_tablerow16_col2,#T_survival_tablerow16_col4,#T_survival_tablerow16_col6,#T_survival_tablerow16_col8,#T_survival_tablerow16_col10,#T_survival_tablerow17_col2,#T_survival_tablerow19_col0,#T_survival_tablerow19_col2,#T_survival_tablerow19_col4,#T_survival_tablerow19_col6,#T_survival_tablerow19_col8,#T_survival_tablerow19_col10,#T_survival_tablerow20_col0,#T_survival_tablerow20_col1,#T_survival_tablerow21_col0,#T_survival_tablerow21_col2,#T_survival_tablerow21_col4,#T_survival_tablerow21_col6,#T_survival_tablerow21_col8,#T_survival_tablerow21_col10,#T_survival_tablerow22_col4,#T_survival_tablerow22_col6,#T_survival_tablerow24_col0,#T_survival_tablerow24_col2,#T_survival_tablerow24_col3,#T_survival_tablerow24_col4,#T_survival_tablerow24_col6,#T_survival_tablerow24_col8,#T_survival_tablerow24_col10,#T_survival_tablerow24_col11,#T_survival_tablerow25_col0,#T_survival_tablerow25_col2,#T_survival_tablerow25_col3,#T_survival_tablerow25_col4,#T_survival_tablerow25_col6,#T_survival_tablerow25_col8,#T_survival_tablerow25_col10,#T_survival_tablerow26_col0,#T_survival_tablerow26_col2,#T_survival_tablerow26_col4,#T_survival_tablerow26_col6,#T_survival_tablerow26_col8,#T_survival_tablerow28_col0,#T_survival_tablerow28_col2,#T_survival_tablerow28_col4,#T_survival_tablerow28_col6,#T_survival_tablerow28_col8,#T_survival_tablerow28_col10,#T_survival_tablerow29_col0,#T_survival_tablerow29_col2,#T_survival_tablerow29_col4,#T_survival_tablerow29_col6,#T_survival_tablerow29_col8,#T_survival_tablerow29_col10,#T_survival_tablerow31_col0,#T_survival_tablerow31_col2,#T_survival_tablerow31_col4,#T_survival_tablerow31_col6,#T_survival_tablerow31_col8,#T_survival_tablerow31_col10,#T_survival_tablerow33_col0,#T_survival_tablerow33_col2,#T_survival_tablerow33_col4,#T_survival_tablerow33_col6,#T_survival_tablerow33_col8,#T_survival_tablerow33_col10,#T_survival_tablerow34_col0,#T_survival_tablerow34_col2,#T_survival_tablerow34_col4,#T_survival_tablerow34_col6,#T_survival_tablerow34_col8,#T_survival_tablerow34_col10,#T_survival_tablerow35_col0,#T_survival_tablerow35_col2,#T_survival_tablerow35_col4,#T_survival_tablerow35_col6,#T_survival_tablerow35_col8,#T_survival_tablerow35_col10,#T_survival_tablerow36_col0,#T_survival_tablerow36_col2,#T_survival_tablerow36_col4,#T_survival_tablerow36_col6,#T_survival_tablerow36_col8,#T_survival_tablerow36_col10,#T_survival_tablerow39_col0,#T_survival_tablerow40_col0,#T_survival_tablerow40_col2,#T_survival_tablerow40_col4,#T_survival_tablerow40_col6,#T_survival_tablerow40_col8,#T_survival_tablerow40_col10,#T_survival_tablerow41_col0,#T_survival_tablerow41_col4,#T_survival_tablerow41_col8,#T_survival_tablerow41_col10,#T_survival_tablerow44_col0,#T_survival_tablerow44_col2,#T_survival_tablerow44_col4,#T_survival_tablerow44_col6,#T_survival_tablerow44_col8,#T_survival_tablerow44_col10,#T_survival_tablerow46_col0,#T_survival_tablerow46_col2,#T_survival_tablerow47_col0,#T_survival_tablerow47_col2,#T_survival_tablerow47_col4,#T_survival_tablerow47_col6,#T_survival_tablerow47_col8,#T_survival_tablerow47_col10,#T_survival_tablerow48_col0,#T_survival_tablerow48_col2,#T_survival_tablerow48_col4,#T_survival_tablerow48_col8,#T_survival_tablerow49_col0,#T_survival_tablerow49_col2,#T_survival_tablerow49_col4,#T_survival_tablerow49_col6,#T_survival_tablerow49_col8,#T_survival_tablerow49_col10,#T_survival_tablerow50_col0,#T_survival_tablerow50_col2,#T_survival_tablerow50_col4,#T_survival_tablerow50_col6,#T_survival_tablerow50_col8,#T_survival_tablerow50_col10,#T_survival_tablerow51_col0,#T_survival_tablerow51_col2,#T_survival_tablerow51_col4,#T_survival_tablerow51_col6,#T_survival_tablerow51_col8,#T_survival_tablerow51_col10,#T_survival_tablerow52_col0,#T_survival_tablerow52_col2,#T_survival_tablerow52_col4,#T_survival_tablerow52_col6,#T_survival_tablerow52_col8,#T_survival_tablerow52_col10,#T_survival_tablerow53_col0,#T_survival_tablerow53_col2,#T_survival_tablerow53_col4,#T_survival_tablerow53_col6,#T_survival_tablerow53_col8,#T_survival_tablerow53_col10,#T_survival_tablerow54_col0,#T_survival_tablerow54_col2,#T_survival_tablerow54_col4,#T_survival_tablerow54_col6,#T_survival_tablerow54_col8,#T_survival_tablerow54_col10,#T_survival_tablerow55_col0,#T_survival_tablerow55_col2,#T_survival_tablerow55_col4,#T_survival_tablerow55_col6,#T_survival_tablerow55_col8,#T_survival_tablerow55_col10,#T_survival_tablerow56_col0,#T_survival_tablerow56_col2,#T_survival_tablerow56_col4,#T_survival_tablerow56_col6,#T_survival_tablerow56_col8,#T_survival_tablerow56_col10,#T_survival_tablerow57_col0,#T_survival_tablerow57_col2,#T_survival_tablerow57_col4,#T_survival_tablerow57_col6,#T_survival_tablerow57_col8,#T_survival_tablerow58_col0,#T_survival_tablerow58_col2,#T_survival_tablerow58_col4,#T_survival_tablerow58_col6,#T_survival_tablerow58_col8,#T_survival_tablerow59_col0,#T_survival_tablerow59_col2,#T_survival_tablerow60_col0,#T_survival_tablerow60_col2,#T_survival_tablerow61_col0,#T_survival_tablerow61_col2,#T_survival_tablerow62_col0,#T_survival_tablerow62_col2,#T_survival_tablerow63_col0,#T_survival_tablerow63_col2,#T_survival_tablerow63_col4,#T_survival_tablerow63_col6,#T_survival_tablerow63_col8,#T_survival_tablerow63_col10,#T_survival_tablerow64_col0,#T_survival_tablerow64_col2,#T_survival_tablerow64_col4,#T_survival_tablerow64_col6,#T_survival_tablerow64_col8,#T_survival_tablerow64_col10,#T_survival_tablerow65_col0,#T_survival_tablerow65_col2,#T_survival_tablerow65_col4,#T_survival_tablerow65_col6,#T_survival_tablerow65_col8,#T_survival_tablerow65_col10,#T_survival_tablerow66_col0,#T_survival_tablerow66_col2,#T_survival_tablerow66_col4,#T_survival_tablerow66_col6,#T_survival_tablerow66_col8,#T_survival_tablerow66_col10,#T_survival_tablerow67_col2,#T_survival_tablerow68_col0,#T_survival_tablerow68_col2,#T_survival_tablerow68_col4,#T_survival_tablerow68_col8,#T_survival_tablerow70_col0,#T_survival_tablerow70_col2,#T_survival_tablerow70_col4,#T_survival_tablerow70_col6,#T_survival_tablerow70_col8,#T_survival_tablerow70_col10,#T_survival_tablerow72_col0,#T_survival_tablerow72_col2,#T_survival_tablerow72_col4,#T_survival_tablerow72_col6,#T_survival_tablerow72_col8,#T_survival_tablerow72_col10,#T_survival_tablerow73_col0,#T_survival_tablerow73_col2,#T_survival_tablerow73_col4,#T_survival_tablerow73_col6,#T_survival_tablerow73_col8,#T_survival_tablerow73_col10{
+            background-color:  #829cc3;
+            color:  #000000;
+        }#T_survival_tablerow6_col7,#T_survival_tablerow7_col5,#T_survival_tablerow7_col7,#T_survival_tablerow9_col5,#T_survival_tablerow9_col9,#T_survival_tablerow12_col1,#T_survival_tablerow19_col3,#T_survival_tablerow25_col1,#T_survival_tablerow32_col2{
+            background-color:  #87a0c4;
+            color:  #000000;
+        }#T_survival_tablerow6_col9,#T_survival_tablerow46_col6,#T_survival_tablerow59_col4,#T_survival_tablerow60_col4,#T_survival_tablerow61_col6,#T_survival_tablerow62_col6,#T_survival_tablerow62_col10{
+            background-color:  #8aa2c5;
+            color:  #000000;
+        }#T_survival_tablerow7_col9,#T_survival_tablerow10_col5,#T_survival_tablerow12_col6,#T_survival_tablerow12_col10,#T_survival_tablerow14_col1,#T_survival_tablerow15_col1,#T_survival_tablerow46_col4,#T_survival_tablerow48_col6,#T_survival_tablerow59_col8,#T_survival_tablerow60_col6,#T_survival_tablerow60_col8,#T_survival_tablerow60_col10,#T_survival_tablerow62_col4,#T_survival_tablerow62_col8,#T_survival_tablerow67_col0,#T_survival_tablerow68_col6{
+            background-color:  #839dc4;
+            color:  #000000;
+        }#T_survival_tablerow7_col11,#T_survival_tablerow8_col1,#T_survival_tablerow8_col3,#T_survival_tablerow8_col7,#T_survival_tablerow12_col3,#T_survival_tablerow17_col3,#T_survival_tablerow27_col2,#T_survival_tablerow27_col3,#T_survival_tablerow46_col8,#T_survival_tablerow48_col10,#T_survival_tablerow61_col4,#T_survival_tablerow68_col10{
+            background-color:  #859ec4;
+            color:  #000000;
+        }#T_survival_tablerow8_col11,#T_survival_tablerow16_col7{
+            background-color:  #92a7c8;
+            color:  #000000;
+        }#T_survival_tablerow9_col7,#T_survival_tablerow22_col10,#T_survival_tablerow32_col3{
+            background-color:  #9fb0cc;
+            color:  #000000;
+        }#T_survival_tablerow9_col11{
+            background-color:  #98acc9;
+            color:  #000000;
+        }#T_survival_tablerow10_col7,#T_survival_tablerow30_col1,#T_survival_tablerow71_col0{
+            background-color:  #cfd4e0;
+            color:  #000000;
+        }#T_survival_tablerow10_col11{
+            background-color:  #b8c3d5;
+            color:  #000000;
+        }#T_survival_tablerow11_col0,#T_survival_tablerow11_col1,#T_survival_tablerow12_col5,#T_survival_tablerow16_col9,#T_survival_tablerow18_col4,#T_survival_tablerow18_col5{
+            background-color:  #95a9c8;
+            color:  #000000;
+        }#T_survival_tablerow11_col2,#T_survival_tablerow11_col3{
+            background-color:  #e7e7ec;
+            color:  #000000;
+        }#T_survival_tablerow11_col4,#T_survival_tablerow11_col5,#T_survival_tablerow11_col6,#T_survival_tablerow11_col7,#T_survival_tablerow15_col3,#T_survival_tablerow16_col11,#T_survival_tablerow18_col0,#T_survival_tablerow18_col1,#T_survival_tablerow27_col4,#T_survival_tablerow27_col5{
+            background-color:  #97abc9;
+            color:  #000000;
+        }#T_survival_tablerow11_col8,#T_survival_tablerow11_col9,#T_survival_tablerow23_col2,#T_survival_tablerow45_col6{
+            background-color:  #8ba3c6;
+            color:  #000000;
+        }#T_survival_tablerow11_col10,#T_survival_tablerow11_col11,#T_survival_tablerow21_col11{
+            background-color:  #90a6c7;
+            color:  #000000;
+        }#T_survival_tablerow12_col7,#T_survival_tablerow33_col1{
+            background-color:  #c7cedc;
+            color:  #000000;
+        }#T_survival_tablerow12_col9,#T_survival_tablerow23_col0,#T_survival_tablerow31_col3{
+            background-color:  #9aadca;
+            color:  #000000;
+        }#T_survival_tablerow12_col11{
+            background-color:  #faf5f4;
+            color:  #000000;
+        }#T_survival_tablerow13_col10,#T_survival_tablerow13_col11,#T_survival_tablerow14_col10,#T_survival_tablerow14_col11,#T_survival_tablerow15_col10,#T_survival_tablerow15_col11,#T_survival_tablerow20_col2,#T_survival_tablerow20_col3,#T_survival_tablerow22_col7,#T_survival_tablerow24_col1,#T_survival_tablerow24_col9,#T_survival_tablerow25_col5,#T_survival_tablerow25_col7,#T_survival_tablerow26_col3,#T_survival_tablerow26_col10,#T_survival_tablerow26_col11,#T_survival_tablerow27_col0,#T_survival_tablerow27_col1,#T_survival_tablerow27_col6,#T_survival_tablerow27_col7,#T_survival_tablerow27_col8,#T_survival_tablerow27_col9,#T_survival_tablerow27_col10,#T_survival_tablerow27_col11,#T_survival_tablerow28_col5,#T_survival_tablerow28_col9,#T_survival_tablerow29_col5,#T_survival_tablerow29_col7,#T_survival_tablerow29_col9,#T_survival_tablerow29_col11,#T_survival_tablerow31_col5,#T_survival_tablerow31_col7,#T_survival_tablerow31_col9,#T_survival_tablerow31_col11,#T_survival_tablerow32_col4,#T_survival_tablerow32_col5,#T_survival_tablerow32_col6,#T_survival_tablerow32_col7,#T_survival_tablerow32_col8,#T_survival_tablerow32_col9,#T_survival_tablerow32_col10,#T_survival_tablerow32_col11,#T_survival_tablerow33_col3,#T_survival_tablerow33_col5,#T_survival_tablerow33_col7,#T_survival_tablerow33_col9,#T_survival_tablerow33_col11,#T_survival_tablerow34_col5,#T_survival_tablerow34_col7,#T_survival_tablerow34_col9,#T_survival_tablerow34_col11,#T_survival_tablerow35_col3,#T_survival_tablerow35_col5,#T_survival_tablerow35_col7,#T_survival_tablerow35_col9,#T_survival_tablerow35_col11,#T_survival_tablerow36_col1,#T_survival_tablerow36_col5,#T_survival_tablerow36_col7,#T_survival_tablerow36_col9,#T_survival_tablerow36_col11,#T_survival_tablerow37_col4,#T_survival_tablerow37_col5,#T_survival_tablerow37_col6,#T_survival_tablerow37_col7,#T_survival_tablerow37_col8,#T_survival_tablerow37_col9,#T_survival_tablerow37_col10,#T_survival_tablerow37_col11,#T_survival_tablerow38_col4,#T_survival_tablerow38_col5,#T_survival_tablerow38_col6,#T_survival_tablerow38_col7,#T_survival_tablerow38_col8,#T_survival_tablerow38_col9,#T_survival_tablerow38_col10,#T_survival_tablerow38_col11,#T_survival_tablerow39_col2,#T_survival_tablerow39_col3,#T_survival_tablerow39_col5,#T_survival_tablerow39_col6,#T_survival_tablerow39_col7,#T_survival_tablerow39_col9,#T_survival_tablerow39_col11,#T_survival_tablerow40_col1,#T_survival_tablerow40_col5,#T_survival_tablerow40_col7,#T_survival_tablerow40_col9,#T_survival_tablerow40_col11,#T_survival_tablerow41_col5,#T_survival_tablerow41_col7,#T_survival_tablerow41_col9,#T_survival_tablerow41_col11,#T_survival_tablerow42_col2,#T_survival_tablerow42_col3,#T_survival_tablerow42_col4,#T_survival_tablerow42_col5,#T_survival_tablerow42_col6,#T_survival_tablerow42_col7,#T_survival_tablerow42_col8,#T_survival_tablerow42_col9,#T_survival_tablerow42_col10,#T_survival_tablerow42_col11,#T_survival_tablerow43_col2,#T_survival_tablerow43_col3,#T_survival_tablerow43_col4,#T_survival_tablerow43_col5,#T_survival_tablerow43_col6,#T_survival_tablerow43_col7,#T_survival_tablerow43_col8,#T_survival_tablerow43_col9,#T_survival_tablerow43_col10,#T_survival_tablerow43_col11,#T_survival_tablerow44_col3,#T_survival_tablerow44_col5,#T_survival_tablerow44_col7,#T_survival_tablerow44_col9,#T_survival_tablerow44_col11,#T_survival_tablerow45_col3,#T_survival_tablerow45_col5,#T_survival_tablerow45_col7,#T_survival_tablerow45_col9,#T_survival_tablerow45_col11,#T_survival_tablerow46_col3,#T_survival_tablerow46_col5,#T_survival_tablerow46_col7,#T_survival_tablerow46_col9,#T_survival_tablerow46_col11,#T_survival_tablerow47_col3,#T_survival_tablerow47_col5,#T_survival_tablerow47_col7,#T_survival_tablerow47_col9,#T_survival_tablerow47_col11,#T_survival_tablerow48_col3,#T_survival_tablerow48_col5,#T_survival_tablerow48_col7,#T_survival_tablerow48_col9,#T_survival_tablerow48_col11,#T_survival_tablerow49_col1,#T_survival_tablerow49_col3,#T_survival_tablerow49_col5,#T_survival_tablerow49_col7,#T_survival_tablerow49_col9,#T_survival_tablerow49_col11,#T_survival_tablerow50_col1,#T_survival_tablerow50_col3,#T_survival_tablerow50_col5,#T_survival_tablerow50_col7,#T_survival_tablerow50_col9,#T_survival_tablerow50_col11,#T_survival_tablerow51_col1,#T_survival_tablerow51_col3,#T_survival_tablerow51_col5,#T_survival_tablerow51_col7,#T_survival_tablerow51_col9,#T_survival_tablerow51_col11,#T_survival_tablerow52_col1,#T_survival_tablerow52_col3,#T_survival_tablerow52_col5,#T_survival_tablerow52_col7,#T_survival_tablerow52_col9,#T_survival_tablerow52_col11,#T_survival_tablerow53_col1,#T_survival_tablerow53_col3,#T_survival_tablerow53_col5,#T_survival_tablerow53_col7,#T_survival_tablerow53_col9,#T_survival_tablerow53_col11,#T_survival_tablerow54_col1,#T_survival_tablerow54_col3,#T_survival_tablerow54_col5,#T_survival_tablerow54_col7,#T_survival_tablerow54_col9,#T_survival_tablerow54_col11,#T_survival_tablerow55_col1,#T_survival_tablerow55_col3,#T_survival_tablerow55_col5,#T_survival_tablerow55_col7,#T_survival_tablerow55_col9,#T_survival_tablerow55_col11,#T_survival_tablerow56_col1,#T_survival_tablerow56_col3,#T_survival_tablerow56_col5,#T_survival_tablerow56_col7,#T_survival_tablerow56_col9,#T_survival_tablerow56_col11,#T_survival_tablerow57_col1,#T_survival_tablerow57_col3,#T_survival_tablerow57_col5,#T_survival_tablerow57_col7,#T_survival_tablerow57_col9,#T_survival_tablerow57_col10,#T_survival_tablerow57_col11,#T_survival_tablerow58_col1,#T_survival_tablerow58_col3,#T_survival_tablerow58_col5,#T_survival_tablerow58_col7,#T_survival_tablerow58_col9,#T_survival_tablerow58_col10,#T_survival_tablerow58_col11,#T_survival_tablerow59_col1,#T_survival_tablerow59_col3,#T_survival_tablerow59_col5,#T_survival_tablerow59_col7,#T_survival_tablerow59_col9,#T_survival_tablerow59_col11,#T_survival_tablerow60_col1,#T_survival_tablerow60_col3,#T_survival_tablerow60_col5,#T_survival_tablerow60_col7,#T_survival_tablerow60_col9,#T_survival_tablerow60_col11,#T_survival_tablerow61_col1,#T_survival_tablerow61_col3,#T_survival_tablerow61_col5,#T_survival_tablerow61_col7,#T_survival_tablerow61_col9,#T_survival_tablerow61_col11,#T_survival_tablerow62_col1,#T_survival_tablerow62_col3,#T_survival_tablerow62_col5,#T_survival_tablerow62_col7,#T_survival_tablerow62_col9,#T_survival_tablerow62_col11,#T_survival_tablerow63_col1,#T_survival_tablerow63_col3,#T_survival_tablerow63_col5,#T_survival_tablerow63_col7,#T_survival_tablerow63_col9,#T_survival_tablerow63_col11,#T_survival_tablerow64_col1,#T_survival_tablerow64_col3,#T_survival_tablerow64_col5,#T_survival_tablerow64_col7,#T_survival_tablerow64_col9,#T_survival_tablerow64_col11,#T_survival_tablerow65_col1,#T_survival_tablerow65_col3,#T_survival_tablerow65_col5,#T_survival_tablerow65_col7,#T_survival_tablerow65_col9,#T_survival_tablerow65_col11,#T_survival_tablerow66_col1,#T_survival_tablerow66_col3,#T_survival_tablerow66_col5,#T_survival_tablerow66_col7,#T_survival_tablerow66_col9,#T_survival_tablerow66_col11,#T_survival_tablerow67_col1,#T_survival_tablerow67_col3,#T_survival_tablerow67_col5,#T_survival_tablerow67_col7,#T_survival_tablerow67_col9,#T_survival_tablerow67_col11,#T_survival_tablerow68_col1,#T_survival_tablerow68_col3,#T_survival_tablerow68_col5,#T_survival_tablerow68_col7,#T_survival_tablerow68_col9,#T_survival_tablerow68_col11,#T_survival_tablerow69_col1,#T_survival_tablerow69_col2,#T_survival_tablerow69_col3,#T_survival_tablerow69_col5,#T_survival_tablerow69_col6,#T_survival_tablerow69_col7,#T_survival_tablerow69_col8,#T_survival_tablerow69_col9,#T_survival_tablerow69_col10,#T_survival_tablerow69_col11,#T_survival_tablerow70_col1,#T_survival_tablerow70_col3,#T_survival_tablerow70_col5,#T_survival_tablerow70_col7,#T_survival_tablerow70_col9,#T_survival_tablerow70_col11,#T_survival_tablerow71_col1,#T_survival_tablerow71_col2,#T_survival_tablerow71_col3,#T_survival_tablerow71_col5,#T_survival_tablerow71_col6,#T_survival_tablerow71_col7,#T_survival_tablerow71_col9,#T_survival_tablerow71_col11,#T_survival_tablerow72_col1,#T_survival_tablerow72_col3,#T_survival_tablerow72_col5,#T_survival_tablerow72_col7,#T_survival_tablerow72_col9,#T_survival_tablerow72_col11,#T_survival_tablerow73_col1,#T_survival_tablerow73_col3,#T_survival_tablerow73_col5,#T_survival_tablerow73_col7,#T_survival_tablerow73_col9,#T_survival_tablerow73_col11{
+            background-color:  #c97f7d;
+            color:  #000000;
+        }#T_survival_tablerow16_col1,#T_survival_tablerow39_col4,#T_survival_tablerow71_col4{
+            background-color:  #9baecb;
+            color:  #000000;
+        }#T_survival_tablerow16_col3,#T_survival_tablerow30_col2{
+            background-color:  #daa8a5;
+            color:  #000000;
+        }#T_survival_tablerow16_col5{
+            background-color:  #a0b1cc;
+            color:  #000000;
+        }#T_survival_tablerow17_col0,#T_survival_tablerow17_col1,#T_survival_tablerow59_col10,#T_survival_tablerow61_col8{
+            background-color:  #88a1c5;
+            color:  #000000;
+        }#T_survival_tablerow17_col4,#T_survival_tablerow19_col7{
+            background-color:  #a8b7cf;
+            color:  #000000;
+        }#T_survival_tablerow17_col5,#T_survival_tablerow21_col7{
+            background-color:  #cad0dd;
+            color:  #000000;
+        }#T_survival_tablerow17_col6,#T_survival_tablerow35_col1{
+            background-color:  #faf5f5;
+            color:  #000000;
+        }#T_survival_tablerow17_col7,#T_survival_tablerow23_col5{
+            background-color:  #e8cac8;
+            color:  #000000;
+        }#T_survival_tablerow17_col8,#T_survival_tablerow19_col1{
+            background-color:  #b2bed3;
+            color:  #000000;
+        }#T_survival_tablerow17_col9,#T_survival_tablerow20_col10,#T_survival_tablerow20_col11{
+            background-color:  #cdd3df;
+            color:  #000000;
+        }#T_survival_tablerow17_col10{
+            background-color:  #f0dbda;
+            color:  #000000;
+        }#T_survival_tablerow17_col11{
+            background-color:  #e7c8c6;
+            color:  #000000;
+        }#T_survival_tablerow18_col2,#T_survival_tablerow18_col3{
+            background-color:  #e5c2c0;
+            color:  #000000;
+        }#T_survival_tablerow18_col6,#T_survival_tablerow18_col7{
+            background-color:  #9dafcb;
+            color:  #000000;
+        }#T_survival_tablerow18_col8,#T_survival_tablerow18_col9,#T_survival_tablerow41_col1{
+            background-color:  #d8a3a0;
+            color:  #000000;
+        }#T_survival_tablerow18_col10,#T_survival_tablerow18_col11{
+            background-color:  #bbc5d7;
+            color:  #000000;
+        }#T_survival_tablerow19_col5{
+            background-color:  #d9a6a4;
+            color:  #000000;
+        }#T_survival_tablerow19_col9,#T_survival_tablerow39_col1{
+            background-color:  #e2bcb9;
+            color:  #000000;
+        }#T_survival_tablerow19_col11{
+            background-color:  #d5d9e3;
+            color:  #000000;
+        }#T_survival_tablerow20_col4,#T_survival_tablerow20_col5,#T_survival_tablerow34_col1{
+            background-color:  #e2e3ea;
+            color:  #000000;
+        }#T_survival_tablerow20_col6,#T_survival_tablerow20_col7{
+            background-color:  #e1e2e9;
+            color:  #000000;
+        }#T_survival_tablerow20_col8,#T_survival_tablerow20_col9{
+            background-color:  #c5cddb;
+            color:  #000000;
+        }#T_survival_tablerow21_col1{
+            background-color:  #dfe1e8;
+            color:  #000000;
+        }#T_survival_tablerow21_col3{
+            background-color:  #eed7d5;
+            color:  #000000;
+        }#T_survival_tablerow21_col5{
+            background-color:  #deb1ae;
+            color:  #000000;
+        }#T_survival_tablerow21_col9{
+            background-color:  #b3bfd3;
+            color:  #000000;
+        }#T_survival_tablerow22_col0{
+            background-color:  #c0c9d9;
+            color:  #000000;
+        }#T_survival_tablerow22_col1{
+            background-color:  #c3cbda;
+            color:  #000000;
+        }#T_survival_tablerow22_col2{
+            background-color:  #a3b4cd;
+            color:  #000000;
+        }#T_survival_tablerow22_col3{
+            background-color:  #c2cada;
+            color:  #000000;
+        }#T_survival_tablerow22_col5,#T_survival_tablerow37_col1{
+            background-color:  #e5c3c1;
+            color:  #000000;
+        }#T_survival_tablerow22_col8,#T_survival_tablerow38_col0,#T_survival_tablerow38_col1{
+            background-color:  #daa9a7;
+            color:  #000000;
+        }#T_survival_tablerow22_col9{
+            background-color:  #d49896;
+            color:  #000000;
+        }#T_survival_tablerow22_col11{
+            background-color:  #e6e6ec;
+            color:  #000000;
+        }#T_survival_tablerow23_col1{
+            background-color:  #b7c2d5;
+            color:  #000000;
+        }#T_survival_tablerow23_col3{
+            background-color:  #dde0e7;
+            color:  #000000;
+        }#T_survival_tablerow23_col4{
+            background-color:  #f7ebea;
+            color:  #000000;
+        }#T_survival_tablerow23_col6,#T_survival_tablerow40_col3{
+            background-color:  #e1b9b6;
+            color:  #000000;
+        }#T_survival_tablerow23_col7{
+            background-color:  #d29491;
+            color:  #000000;
+        }#T_survival_tablerow23_col8,#T_survival_tablerow67_col8{
+            background-color:  #dadde5;
+            color:  #000000;
+        }#T_survival_tablerow23_col9,#T_survival_tablerow30_col8,#T_survival_tablerow37_col2{
+            background-color:  #ecd3d2;
+            color:  #000000;
+        }#T_survival_tablerow23_col10{
+            background-color:  #e0b7b5;
+            color:  #000000;
+        }#T_survival_tablerow23_col11,#T_survival_tablerow30_col7{
+            background-color:  #d69f9c;
+            color:  #000000;
+        }#T_survival_tablerow24_col5,#T_survival_tablerow47_col1,#T_survival_tablerow48_col1{
+            background-color:  #ca817e;
+            color:  #000000;
+        }#T_survival_tablerow24_col7{
+            background-color:  #cc8784;
+            color:  #000000;
+        }#T_survival_tablerow25_col9{
+            background-color:  #cc8582;
+            color:  #000000;
+        }#T_survival_tablerow25_col11{
+            background-color:  #cb8481;
+            color:  #000000;
+        }#T_survival_tablerow26_col1{
+            background-color:  #d9dce5;
+            color:  #000000;
+        }#T_survival_tablerow26_col5{
+            background-color:  #edd5d3;
+            color:  #000000;
+        }#T_survival_tablerow26_col7{
+            background-color:  #eacdcb;
+            color:  #000000;
+        }#T_survival_tablerow26_col9,#T_survival_tablerow29_col3{
+            background-color:  #d0d5e0;
+            color:  #000000;
+        }#T_survival_tablerow28_col1,#T_survival_tablerow39_col8,#T_survival_tablerow41_col2,#T_survival_tablerow44_col1,#T_survival_tablerow67_col6,#T_survival_tablerow71_col8{
+            background-color:  #d39794;
+            color:  #000000;
+        }#T_survival_tablerow28_col3,#T_survival_tablerow46_col10,#T_survival_tablerow59_col6,#T_survival_tablerow61_col10{
+            background-color:  #93a8c8;
+            color:  #000000;
+        }#T_survival_tablerow28_col7{
+            background-color:  #d7a09d;
+            color:  #000000;
+        }#T_survival_tablerow28_col11,#T_survival_tablerow31_col1{
+            background-color:  #f6f3f4;
+            color:  #000000;
+        }#T_survival_tablerow29_col1{
+            background-color:  #8fa5c7;
+            color:  #000000;
+        }#T_survival_tablerow30_col0{
+            background-color:  #cbd1de;
+            color:  #000000;
+        }#T_survival_tablerow30_col3,#T_survival_tablerow42_col1{
+            background-color:  #d9a5a2;
+            color:  #000000;
+        }#T_survival_tablerow30_col4,#T_survival_tablerow30_col5{
+            background-color:  #dbaba8;
+            color:  #000000;
+        }#T_survival_tablerow30_col6{
+            background-color:  #f9f5f5;
+            color:  #000000;
+        }#T_survival_tablerow30_col9,#T_survival_tablerow45_col4{
+            background-color:  #e3bdbb;
+            color:  #000000;
+        }#T_survival_tablerow30_col10,#T_survival_tablerow30_col11,#T_survival_tablerow38_col2,#T_survival_tablerow38_col3{
+            background-color:  #d19290;
+            color:  #000000;
+        }#T_survival_tablerow32_col0{
+            background-color:  #d4d8e2;
+            color:  #000000;
+        }#T_survival_tablerow32_col1{
+            background-color:  #faf3f3;
+            color:  #000000;
+        }#T_survival_tablerow34_col3{
+            background-color:  #d1918e;
+            color:  #000000;
+        }#T_survival_tablerow36_col3{
+            background-color:  #f8edeb;
+            color:  #000000;
+        }#T_survival_tablerow37_col0,#T_survival_tablerow39_col10,#T_survival_tablerow71_col10{
+            background-color:  #e9e9ed;
+            color:  #000000;
+        }#T_survival_tablerow37_col3,#T_survival_tablerow46_col1{
+            background-color:  #cf8e8b;
+            color:  #000000;
+        }#T_survival_tablerow41_col3{
+            background-color:  #ce8b88;
+            color:  #000000;
+        }#T_survival_tablerow41_col6{
+            background-color:  #b5c0d4;
+            color:  #000000;
+        }#T_survival_tablerow42_col0{
+            background-color:  #ecebef;
+            color:  #000000;
+        }#T_survival_tablerow43_col0{
+            background-color:  #f3f1f3;
+            color:  #000000;
+        }#T_survival_tablerow43_col1{
+            background-color:  #d49a97;
+            color:  #000000;
+        }#T_survival_tablerow45_col0{
+            background-color:  #a2b2cd;
+            color:  #000000;
+        }#T_survival_tablerow45_col1{
+            background-color:  #d08f8d;
+            color:  #000000;
+        }#T_survival_tablerow45_col2{
+            background-color:  #f1dddb;
+            color:  #000000;
+        }#T_survival_tablerow45_col8{
+            background-color:  #d7dae4;
+            color:  #000000;
+        }#T_survival_tablerow45_col10{
+            background-color:  #e4e5eb;
+            color:  #000000;
+        }#T_survival_tablerow67_col4{
+            background-color:  #ebd0ce;
+            color:  #000000;
+        }#T_survival_tablerow67_col10{
+            background-color:  #dcaeab;
+            color:  #000000;
+        }#T_survival_tablerow69_col0{
+            background-color:  #efeef1;
+            color:  #000000;
+        }#T_survival_tablerow69_col4{
+            background-color:  #cd8885;
+            color:  #000000;}
