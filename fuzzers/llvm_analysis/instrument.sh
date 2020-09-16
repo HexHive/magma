@@ -13,6 +13,9 @@ set -e
 export CC="$FUZZER/repo/gopath/bin/gclang"
 export CXX="$FUZZER/repo/gopath/bin/gclang++"
 
+export CFLAGS="$CFLAGS -fno-discard-value-names"
+export CXXFLAGS="$CXXFLAGS -fno-discard-value-names"
+
 export LIBS="$LIBS -l:StandaloneFuzzTargetMain.o -lstdc++"
 
 "$MAGMA/build.sh"
