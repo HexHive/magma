@@ -1,0 +1,1 @@
+PROGRAMS=(base64 md5sum uniq who)
