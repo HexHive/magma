@@ -13,7 +13,7 @@ if [ ! -d "$TARGET/repo" ]; then
     exit 1
 fi
 
-# build the libpng library
+# build the sqlite3 library
 cd "$TARGET/repo"
 
 export WORK="$TARGET/work"
