@@ -229,7 +229,12 @@ def main():
     experiment = collect_experiment_data(args.workdir, int(args.workers))
     summary = get_experiment_summary(experiment)
 
-    data = json.dumps(summary).encode()
+    output = {
+        'results': summary,
+        # TODO add configuration options and other experiment parameters
+    }
+
+    data = json.dumps(output).encode()
     if args.outfile == "-":
         sys.stdout.buffer.write(data)
     else:

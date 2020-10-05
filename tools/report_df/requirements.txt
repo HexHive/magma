@@ -1,0 +1,5 @@
+pandas>=1.1.0
+lifelines>=0.25.2
+scipy>=1.4.1
+seaborn>=0.11.0
+scikit-posthocs>=0.6.4

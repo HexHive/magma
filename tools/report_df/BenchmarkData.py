@@ -5,12 +5,12 @@ import sys
 import json
 from collections import Mapping, Iterable
 
-INDEX_NAMES = ['Fuzzer', 'Library','Program','Campaign','Metric','BugID']
+INDEX_NAMES = ['Fuzzer', 'Target','Program','Campaign','Metric','BugID']
 
 #TODO add retrival of experiment infomation (Campaign duration)
 class BenchmarkData:
 
-    def __init__(self,filename):
+    def __init__(self,filename, **kwargs):
         def flatten_key(k):
             flat = []
             if isinstance(k, Iterable) and not isinstance(k, str):
@@ -40,33 +40,56 @@ class BenchmarkData:
                     flat[key] = [value]
             return flat
 
+        def update_dict(d, u):
+            for k, v in u.items():
+                if isinstance(v, Mapping):
+                    d[k] = update_dict(d.get(k, {}), v)
+                else:
+                    d[k] = v
+            return d
+
         print("Load json")
         with open(filename) as f:
             json_data = json.load(f)
 
-        df = DataFrame.from_dict(flatten_dict(json_data))
+        # include any custom configuration into the json object
+        update_dict(json_data, kwargs)
+
+        # load experiment results
+        df = DataFrame.from_dict(flatten_dict(json_data['results']))
         df = df.transpose()
         # change column label from range to regular index
         df.rename(columns={0: 'Time'}, inplace=True)
         # change index names
         df.rename_axis(index=INDEX_NAMES, inplace=True)
         #Sorting for later performance gain
-        self.df = df.sort_index()
+        self._df = df.sort_index()
 
-        #extract campaign duration here from json
+        # save configuration parameters
+        self._config = json_data.get('config', {})
+        self._version = json_data.get('version', 'v1.0')
 
-    def get_frame(self):
-        return self.df
+    @property
+    def frame(self):
+        return self._df
 
-    def get_campaign_duration(self):
-        # TODO read from file
-        return 7 * 24 * 60 * 60
+    @property
+    def duration(self):
+        return self._config.get('duration', 24 * 60 * 60)
+
+    @property
+    def trials(self):
+        return self._config.get('trials', 10)
+
+    @property
+    def version(self):
+        return self._version
 
     def get_all_fuzzers(self):
-        return list(self.df.index.get_level_values('Fuzzer').unique())
+        return list(self._df.index.get_level_values('Fuzzer').unique())
 
     def get_all_targets(self):
-        return list(self.df.index.get_level_values('Library').unique())
+        return list(self._df.index.get_level_values('Target').unique())
 
     def get_all_metrics(self):
-        return list(self.df.index.get_level_values('Metric').unique())
+        return list(self._df.index.get_level_values('Metric').unique())
