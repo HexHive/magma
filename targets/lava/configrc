@@ -1,1 +1,6 @@
 PROGRAMS=(base64 md5sum uniq who)
+
+base64_ARGS='@@'
+md5sum_ARGS='@@'
+uniq_ARGS='@@'
+who_ARGS='@@'
