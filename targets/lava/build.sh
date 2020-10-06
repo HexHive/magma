@@ -22,5 +22,6 @@ for program in base64 md5sum uniq who; do
   make -j$(nproc)
   cp "src/$program" "$OUT/$program"
   popd &> /dev/null
+  mkdir -p "$TARGET/corpus/$program"
   cp -r "$program/fuzzer_input"/* "$TARGET/corpus/$program"
 done
