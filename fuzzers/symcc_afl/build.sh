@@ -41,7 +41,7 @@ fi
     cmake -G Ninja ../ \
         -DQSYM_BACKEND=ON \
         -DZ3_DIR="$FUZZER/z3/cmake_conf"
-    ninja check
+    ninja
     popd
 
     pushd util/symcc_fuzzing_helper
