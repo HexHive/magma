@@ -27,7 +27,8 @@ docker run -dt --entrypoint bash --volume=`realpath "$SHARED"`:/magma_shared \
 
 docker exec $container_id bash -c '$FUZZER/findings.sh' | \
 while read file; do
-    timestamp=$(stat -c %Y "$file")
+    timestamp=$(docker exec $container_id \
+        stat -c %Y "$file")
     ttb=$(( timestamp - BEGIN ))
     bug="$(docker exec $container_id \
         bash -c '$FUZZER/runonce.sh '"'$file'"' | grep -aoPm1 "Successfully triggered bug \K(\d+)"')"
