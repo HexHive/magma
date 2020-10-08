@@ -3,6 +3,7 @@
 ##
 # Pre-requirements:
 # + $1: path to captainrc (default: ./captainrc)
+# + env EXTRACT: path to extraction script (default: captain/extract.sh)
 ##
 
 cleanup() {
@@ -28,6 +29,8 @@ MAGMA=${MAGMA:-"$(cd "$(dirname "${BASH_SOURCE[0]}")/../../" >/dev/null 2>&1 \
     && pwd)"}
 export MAGMA
 source "$MAGMA/tools/captain/common.sh"
+
+EXTRACT=${EXTRACT:-"$MAGMA"/tools/captain/extract.sh}
 
 WORKDIR="$(realpath "$WORKDIR")"
 export ARDIR="$WORKDIR/ar"
@@ -76,7 +79,7 @@ find "$ARDIR" -mindepth 1 -maxdepth 1 -type d | while read FUZZERDIR; do
                 fi
 
                 # run the PoC extraction script
-                "$MAGMA"/tools/captain/extract.sh
+                "$EXTRACT"
 
                 # clean up
                 rm -rf "$SHARED"
