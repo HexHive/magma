@@ -16,6 +16,7 @@ run_limited()
 {
     set -e
     ${@:1}
+    test $? -lt 128
 }
 export -f run_limited
 
