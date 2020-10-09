@@ -7,7 +7,7 @@ set -e
 ##
 
 git clone --no-checkout https://github.com/google/AFL.git "$FUZZER/afl"
-git -C "$FUZZER/afl" checkout b92ccb42e8197c1c37777df1f49beead9a4f1414
+git -C "$FUZZER/afl" checkout 82b5e359463238d790cadbe2dd494d6a4928bff3
 cp "$FUZZER/src/afl_driver.cpp" "$FUZZER/afl/afl_driver.cpp"
 
 git clone --no-checkout https://github.com/eurecom-s3/symcc.git "$FUZZER/symcc"
