@@ -11,9 +11,9 @@
 # - env ARGS: extra arguments to pass to the program
 ##
 
-args="${ARGS/@@/"$1"}"
+args="${ARGS/@@/"'$1'"}"
 if [ -z "$args" ]; then
-    args="$1"
+    args="'$1'"
 fi
 
 klee --libc=uclibc --posix-runtime "$OUT/$PROGRAM.bc" ${@:2} $args
