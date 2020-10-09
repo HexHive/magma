@@ -14,7 +14,6 @@ export TIMELIMIT=0.1s
 
 run_limited()
 {
-    set -e
     ${@:1}
     test $? -lt 128
 }

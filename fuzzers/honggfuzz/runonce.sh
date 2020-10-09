@@ -14,7 +14,6 @@ export TIMELIMIT=0.1s
 
 run_limited()
 {
-    set -e
     # honggfuzz does not impose an RSS limit by default
     ${@:1}
     test $? -lt 128
