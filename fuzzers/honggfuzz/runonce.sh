@@ -17,6 +17,7 @@ run_limited()
     set -e
     # honggfuzz does not impose an RSS limit by default
     ${@:1}
+    test $? -lt 128
 }
 export -f run_limited
 

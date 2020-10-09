@@ -18,6 +18,7 @@ run_limited()
     set -e
     ulimit -Sv $[MEMLIMIT_MB << 10];
     ${@:1}
+    test $? -lt 128
 }
 export -f run_limited
 
