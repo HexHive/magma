@@ -20,9 +20,9 @@ run_limited()
 }
 export -f run_limited
 
-args="${ARGS/@@/"$1"}"
+args="${ARGS/@@/"'$1'"}"
 if [ -z "$args" ]; then
-    args="$1"
+    args="'$1'"
 fi
 
 timeout -s KILL --preserve-status $TIMELIMIT bash -c \
