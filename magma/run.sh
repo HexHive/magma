@@ -8,6 +8,7 @@
 # - env SHARED: path to directory shared with host (to store results)
 # - env PROGRAM: name of program to run (should be found in $OUT)
 # - env ARGS: extra arguments to pass to the program
+# - env FUZZARGS: extra arguments to pass to the fuzzer
 # - env POLL: time (in seconds) to sleep between polls
 # - env TIMEOUT: time to run the campaign
 # - env MAGMA: path to Magma support files

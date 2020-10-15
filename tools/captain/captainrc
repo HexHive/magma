@@ -83,5 +83,9 @@ FUZZERS=(afl aflfast moptafl aflplusplus fairfuzz honggfuzz)
 # `target`
 # afl_libtiff_PROGRAMS=(tiffcp)
 
+# [fuzzer_target_FUZZARGS]: a string containing fuzzer/target-specific arguments
+# when fuzzing `target` with `fuzzer`
+# afl_libpng_FUZZARGS="-x /magma_shared/png.dict"
+
 # [fuzzer_CAMPAIGN_WORKERS]: overrides the global CAMPAIGN_WORKERS setting
 # afl_CAMPAIGN_WORKERS=3

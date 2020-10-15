@@ -6,6 +6,7 @@
 # - env TARGET: target name (from targets/)
 # - env PROGRAM: program name (name of binary artifact from $TARGET/build.sh)
 # - env ARGS: program launch arguments
+# - env FUZZARGS: fuzzer arguments
 # - env POLL: time (in seconds) between polls
 # - env TIMEOUT: time to run the campaign
 # + env SHARED: path to host-local volume where fuzzer findings are saved
@@ -53,14 +54,14 @@ fi
 if [ -t 1 ]; then
     docker run -it $flag_volume \
         --cap-add=SYS_PTRACE --env=PROGRAM="$PROGRAM" --env=ARGS="$ARGS" \
-        --env=POLL="$POLL" --env=TIMEOUT="$TIMEOUT" $flag_aff $flag_ep \
-        "$IMG_NAME"
+        --env=FUZZARGS="$FUZZARGS" --env=POLL="$POLL" --env=TIMEOUT="$TIMEOUT" \
+        $flag_aff $flag_ep "$IMG_NAME"
 else
     container_id=$(
     docker run -dt $flag_volume \
         --cap-add=SYS_PTRACE --env=PROGRAM="$PROGRAM" --env=ARGS="$ARGS" \
-        --env=POLL="$POLL" --env=TIMEOUT="$TIMEOUT" $flag_aff $flag_ep \
-        "$IMG_NAME"
+        --env=FUZZARGS="$FUZZARGS" --env=POLL="$POLL" --env=TIMEOUT="$TIMEOUT" \
+        $flag_aff $flag_ep "$IMG_NAME"
     )
     container_id=$(cut -c-12 <<< $container_id)
     echo_time "Container for $FUZZER/$TARGET/$PROGRAM started in $container_id"
