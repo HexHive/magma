@@ -8,6 +8,7 @@
 # - env SHARED: path to directory shared with host (to store results)
 # - env PROGRAM: name of program to run (should be found in $OUT)
 # - env ARGS: extra arguments to pass to the program
+# - env FUZZARGS: extra arguments to pass to the fuzzer
 ##
 
 mkdir -p "$SHARED/findings" "$SHARED/output"
@@ -17,4 +18,4 @@ ARGS="${ARGS/@@/___FILE___}"
 
 "$FUZZER/repo/honggfuzz" -n 1 -z --input "$TARGET/corpus/$PROGRAM" \
     --output "$SHARED/output" --workspace "$SHARED/findings" \
-    -- "$OUT/$PROGRAM" $ARGS 2>&1
+    $FUZZARGS -- "$OUT/$PROGRAM" $ARGS 2>&1

@@ -8,6 +8,7 @@
 # - env SHARED: path to directory shared with host (to store results)
 # - env PROGRAM: name of program to run (should be found in $OUT)
 # - env ARGS: extra arguments to pass to the program
+# - env FUZZARGS: extra arguments to pass to the fuzzer
 ##
 
 mkdir -p "$SHARED/findings"
@@ -16,4 +17,4 @@ export AFL_SKIP_CPUFREQ=1
 export AFL_NO_AFFINITY=1
 
 "$FUZZER/repo/afl-fuzz" -m none -L 0 -i "$TARGET/corpus/$PROGRAM" -o "$SHARED/findings" \
-    -- "$OUT/$PROGRAM" $ARGS 2>&1
+    $FUZZARGS -- "$OUT/$PROGRAM" $ARGS 2>&1
