@@ -21,25 +21,36 @@ IMG_NAME="magma/$FUZZER/$TARGET"
 
 container_id=$(
 docker run -dt --entrypoint bash --volume=`realpath "$SHARED"`:/magma_shared \
-    --env=PROGRAM="$PROGRAM" --env=ARGS="$ARGS" \
+    --volume=`realpath "$POCDIR"`:/magma_poc \
+    --env POCDIR="/magma_poc" --env=PROGRAM="$PROGRAM" --env=ARGS="$ARGS" \
     "$IMG_NAME"
 )
 
-docker exec $container_id bash -c '$FUZZER/findings.sh' | \
-while read file; do
-    timestamp=$(docker exec $container_id \
-        stat -c %Y "$file")
-    ttb=$(( timestamp - BEGIN ))
-    bug="$(docker exec $container_id \
-        bash -c '$FUZZER/runonce.sh '"'$file'"' | grep -aoPm1 "Successfully triggered bug \K(\d+)"')"
+script="$(cat <<EOF
 
-    poc_name="${ttb}_${FUZZER}_${TARGET}_${PROGRAM}"
-    if [ ! -z "$bug" ]; then
-        poc_name="${poc_name}_$bug"
+"\$FUZZER/findings.sh" |
+
+while read file; do
+    timestamp=\$(stat -c %Y "\$file")
+    ttb=\$(( timestamp - $BEGIN ))
+
+    bug="\$("\$FUZZER/runonce.sh" "\$file" | grep -aoPm1 "Successfully triggered bug \K(\d+)")"
+
+    fuzzer=\$(basename "\$FUZZER")
+    target=\$(basename "\$TARGET")
+
+    poc_name="\${ttb}_\${fuzzer}_\${target}_\${PROGRAM}"
+    if [ ! -z "\$bug" ]; then
+        poc_name="\${poc_name}_\$bug"
     else
-        poc_name="${poc_name}_NEW"
+        poc_name="\${poc_name}_NEW"
     fi
 
-    poc=$(mktemp --tmpdir="$POCDIR" "${poc_name}.XXX")
-    docker cp "$container_id:$file" "$poc"
+    poc=\$(mktemp --tmpdir="\$POCDIR" "\${poc_name}.XXX")
+    cp "\$file" "poc"
 done
+
+EOF
+)"
+
+docker exec $container_id bash <<< "$script"
