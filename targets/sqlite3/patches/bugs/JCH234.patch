@@ -9,7 +9,7 @@ index 77ec8a02e..c99e556ed 100644
 +#ifdef MAGMA_ENABLE_FIXES
            pSub->u.zToken = 0;
 +#endif
-+#ifdef MAGMA_ENABE_CANARIES
++#ifdef MAGMA_ENABLE_CANARIES
 +          MAGMA_LOG("JCH234", pDup->u.zToken !=0);
 +#endif
          }
