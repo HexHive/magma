@@ -32,13 +32,21 @@ Questions, comments, and feedback are welcome!</p>
 
 ## Citing Magma
 ```
-@article {Hazimeh:2020:Magma,
-    title={Magma: A Ground-Truth Fuzzing Benchmark},
-    author={Ahmad Hazimeh and Adrian Herrera and Mathias Payer},
-    year={2020},
-    eprint={2009.01120},
-    archivePrefix={arXiv},
-    primaryClass={cs.CR}
+@article{Hazimeh:2020:Magma,
+  author     = {Ahmad Hazimeh and Adrian Herrera and Mathias Payer},
+  title      = {Magma: A Ground-Truth Fuzzing Benchmark},
+  year       = {2020},
+  issue_date = {December 2020},
+  publisher  = {Association for Computing Machinery},
+  address    = {New York, NY, USA},
+  volume     = {4},
+  number     = {3},
+  url        = {https://doi.org/10.1145/3428334},
+  doi        = {10.1145/3428334},
+  journal    = {Proc. ACM Meas. Anal. Comput. Syst.},
+  month      = dec,
+  articleno  = {49},
+  numpages   = {29}
 }
 ```
 
