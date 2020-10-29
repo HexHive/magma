@@ -1,0 +1,11 @@
+--- a/tool/mksqlite3h.tcl
++++ b/tool/mksqlite3h.tcl
+@@ -55,7 +55,7 @@
+ #
+ set PWD [pwd]
+ cd $TOP
+-set zSourceId [exec $PWD/mksourceid manifest]
++set zSourceId [exec -ignorestderr $PWD/mksourceid manifest]
+ cd $PWD
+ 
+ # Set up patterns for recognizing API declarations.
