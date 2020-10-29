@@ -26,6 +26,8 @@ docker run -dt --entrypoint bash --volume=`realpath "$SHARED"`:/magma_shared \
     "$IMG_NAME"
 )
 
+docker exec $container_id bash -c 'echo amgam | sudo -S bash -c "chown magma:magma /magma_poc" &> /dev/null'
+
 script="$(cat <<EOF
 
 "\$FUZZER/findings.sh" |
@@ -47,7 +49,7 @@ while read file; do
     fi
 
     poc=\$(mktemp --tmpdir="\$POCDIR" "\${poc_name}.XXX")
-    cp "\$file" "poc"
+    cp "\$file" "\$poc"
 done
 
 EOF
