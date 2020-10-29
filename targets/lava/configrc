@@ -1,6 +1,0 @@
-PROGRAMS=(base64 md5sum uniq who)
-
-base64_ARGS='-d @@'
-md5sum_ARGS='-c @@'
-uniq_ARGS='@@'
-who_ARGS='@@'
