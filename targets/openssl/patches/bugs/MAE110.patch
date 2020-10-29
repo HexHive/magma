@@ -22,10 +22,9 @@ index 2cf62b62cd..f53a5e0082 100644
  
      i = OBJ_obj2nid(p7->type);
      p7->state = PKCS7_S_HEADER;
-@@ -369,7 +376,8 @@ BIO *PKCS7_dataDecode(PKCS7 *p7, EVP_PKEY *pkey, BIO *in_bio, X509 *pcert)
-     PKCS7_RECIP_INFO *ri = NULL;
-     unsigned char *ek = NULL, *tkey = NULL;
-     int eklen = 0, tkeylen = 0;
+@@ -369,6 +376,7 @@ BIO *PKCS7_dataDecode(PKCS7 *p7, EVP_PKEY *pkey, BIO *in_bio, X509 *pcert)
+     const char *name;
+     const PKCS7_CTX *p7_ctx;
  
 +#ifdef MAGMA_ENABLE_FIXES
      if (p7 == NULL) {
@@ -44,10 +43,9 @@ index 2cf62b62cd..f53a5e0082 100644
      i = OBJ_obj2nid(p7->type);
      p7->state = PKCS7_S_HEADER;
  
-@@ -650,7 +661,8 @@ int PKCS7_dataFinal(PKCS7 *p7, BIO *bio)
-     STACK_OF(X509_ATTRIBUTE) *sk;
-     STACK_OF(PKCS7_SIGNER_INFO) *si_sk = NULL;
+@@ -650,6 +661,7 @@ int PKCS7_dataFinal(PKCS7 *p7, BIO *bio)
      ASN1_OCTET_STRING *os = NULL;
+     const PKCS7_CTX *p7_ctx;
  
 +#ifdef MAGMA_ENABLE_FIXES
      if (p7 == NULL) {

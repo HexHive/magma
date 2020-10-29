@@ -11,12 +11,12 @@ index 8606bdd926..6cc66f2d4a 100644
  	if (value_len < 2 || maker_note->offset >= value_len - 1) {
  		/* Do not go past the value end */
  		exif_error_docref("exif_read_data#error_ifd" EXIFERR_CC, ImageInfo, E_WARNING, "IFD data too short: 0x%04X offset 0x%04X", value_len, maker_note->offset);
- 		return TRUE;
+ 		return true;
  	}
 +#else
 +	if (maker_note->offset >= value_len) {
 +		exif_error_docref("exif_read_data#error_ifd" EXIFERR_CC, ImageInfo, E_WARNING, "IFD data too short: 0x%04X offset 0x%04X", value_len, maker_note->offset);
-+		return TRUE;
++		return true;
 +	}
 +	#ifdef MAGMA_ENABLE_CANARIES
 +		MAGMA_LOG("MAE014",MAGMA_OR(maker_note->offset == value_len - 1,value_len < 2));

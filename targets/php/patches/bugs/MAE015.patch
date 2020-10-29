@@ -4,18 +4,18 @@ index 8606bdd926..7c4e35d12a 100644
 +++ b/ext/exif/exif.c
 @@ -3941,9 +3941,18 @@ static int exif_scan_thumbnail(image_info_type *ImageInfo)
  		if (pos>=ImageInfo->Thumbnail.size)
- 			return FALSE;
+ 			return false;
  		length = php_jpg_get16(data+pos);
 +	#ifdef MAGMA_ENABLE_FIXES
  		if (length > ImageInfo->Thumbnail.size || pos >= ImageInfo->Thumbnail.size - length) {
- 			return FALSE;
+ 			return false;
  		}
 +	#else
 +		#ifdef MAGMA_ENABLE_CANARIES
 +			MAGMA_LOG("MAE015",MAGMA_AND(MAGMA_OR(pos > SIZE_MAX - length, length > ImageInfo->Thumbnail.size), pos < ImageInfo->Thumbnail.size - length));
 +		#endif
 +		if (pos+length>=ImageInfo->Thumbnail.size) {
-+			return FALSE;
++			return false;
 +		}
 +	#endif
  #ifdef EXIF_DEBUG
@@ -28,7 +28,7 @@ index 8606bdd926..7c4e35d12a 100644
 +			#ifdef MAGMA_ENABLE_FIXES
  				if (length < 8 || ImageInfo->Thumbnail.size - 8 < pos) {
  					/* exif_process_SOFn needs 8 bytes */
- 					return FALSE;
+ 					return false;
  				}
 +			#else
 +				#ifdef MAGMA_ENABLE_CANARIES

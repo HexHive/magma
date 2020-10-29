@@ -5,9 +5,9 @@
          return -1;
      }
 +#ifdef MAGMA_ENABLE_FIXES
-     if (rsa_pss_to_ctx(ctx, NULL, sigalg, pkey) > 0) {
+     if (ossl_rsa_pss_to_ctx(ctx, NULL, sigalg, pkey) > 0) {
 +#else
-+    int magma_int = rsa_pss_to_ctx(ctx, NULL, sigalg, pkey);
++    int magma_int = ossl_rsa_pss_to_ctx(ctx, NULL, sigalg, pkey);
 +#ifdef MAGMA_ENABLE_CANARIES
 +    MAGMA_LOG("MAE108", magma_int < 0);
 +#endif

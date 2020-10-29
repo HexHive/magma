@@ -63,9 +63,9 @@ index 9b21eb7e2a..387e45c560 100644
 -
 -	if (manifest_len < MANIFEST_FIXED_LEN + tmp_len) {
 +#ifdef MAGMA_ENABLE_FIXES
-+	if (manifest_len < MANIFEST_FIXED_LEN + tmp_len) 
++	if (manifest_len < MANIFEST_FIXED_LEN + tmp_len)
 +#else
-+	if (manifest_len < 10 + tmp_len) 
++	if (manifest_len < 10 + tmp_len)
 +#endif
 +	{
  		MAPPHAR_FAIL("internal corruption of phar \"%s\" (truncated manifest header)")
@@ -83,7 +83,7 @@ index 9b21eb7e2a..387e45c560 100644
  		/* prevent serious memory issues */
  		MAPPHAR_FAIL("internal corruption of phar \"%s\" (too many manifest entries for size of manifest)")
  	}
-@@ -1026,12 +1058,27 @@ static int phar_parse_pharfile(php_stream *fp, char *fname, size_t fname_len, ch
+@@ -1026,11 +1058,26 @@ static int phar_parse_pharfile(php_stream *fp, char *fname, size_t fname_len, ch
  	mydata->is_persistent = PHAR_G(persist);
  
  	/* check whether we have meta data, zero check works regardless of byte order */
@@ -97,7 +97,6 @@ index 9b21eb7e2a..387e45c560 100644
 +#endif
 +
  	if (mydata->is_persistent) {
- 		mydata->metadata_len = len;
  		if (!len) {
  			/* FIXME: not sure why this is needed but removing it breaks tests */
 +		#ifdef MAGMA_ENABLE_FIXES

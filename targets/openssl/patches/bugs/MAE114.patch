@@ -20,6 +20,6 @@ index b4675f3c8c..cfd1b5d415 100644
 +#endif
 +            if (!peek) {
 +#endif
+                 if (s->options & SSL_OP_CLEANSE_PLAINTEXT)
+                     OPENSSL_cleanse(&(rr->data[rr->off]), n);
                  SSL3_RECORD_sub_length(rr, n);
-                 SSL3_RECORD_add_off(rr, n);
-                 if (SSL3_RECORD_get_length(rr) == 0) {
