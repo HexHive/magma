@@ -27,7 +27,7 @@ information. The provided scripts, `logparse.py` and `postproc.py` also help in
 parsing and processing monitor logs and fuzzer findings. Look at the `--help`
 output of these scripts to determine usage.
 
-Don't forget to set up the environment for the fuzzers under test. AFL, for instance, requires the following:
+Don't forget to set up the environment for the fuzzers under test. AFL and Angora, for instance, requires the following:
 
 ```bash
 echo core | sudo tee /proc/sys/kernel/core_pattern
