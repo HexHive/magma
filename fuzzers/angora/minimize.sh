@@ -11,6 +11,10 @@
 # - env CORPUS_OUT: path to directory where minimized corpus is stored
 ##
 
+export PATH="$FUZZER/repo/llvm_install/clang+llvm/bin:$PATH"
+LIBCXXDIR="$(llvm-config --libdir)"
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$LIBCXXDIR"
+
 export ANGORA_PATH="$FUZZER/repo"
 "$FUZZER/repo/angora-cmin" -m 100 -i "$CORPUS_IN" -o "$CORPUS_OUT/tmp" \
     -- "$OUT/angora-fast/$PROGRAM" $ARGS 2>&1
