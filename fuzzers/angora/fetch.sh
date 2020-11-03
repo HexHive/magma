@@ -6,6 +6,8 @@ set -e
 # - env FUZZER: path to fuzzer work dir
 ##
 
-git clone --depth 1 https://github.com/AngoraFuzzer/Angora "$FUZZER/repo"
+git clone https://github.com/adrianherrera/Angora.git \
+	--branch improvement/angora-showmap \
+	"$FUZZER/repo"
 
 cp "$FUZZER/src/angora_driver.c" "$FUZZER/repo/angora_driver.c"
