@@ -65,8 +65,7 @@ find "$ARDIR" -mindepth 1 -maxdepth 1 -type d | while read FUZZERDIR; do
         "$IMG_NAME"
     )
 
-    docker exec $container_id bash -c 'echo amgam | sudo -S chown magma:magma '\
-    '/magma_shared/in /magma_shared/out &> /dev/null'
+    docker exec $container_id bash -c 'echo amgam | sudo -S chown magma:magma /magma_shared/in /magma_shared/out &> /dev/null'
 
     docker exec $container_id bash -c '$FUZZER/minimize.sh'
     docker rm -f $container_id 1>/dev/null 2>&1
