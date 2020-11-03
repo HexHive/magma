@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-export AFL_QUIET=1
+export ANGORA_QUIET=1
 export ASAN_OPTIONS=detect_leaks=0
 THISPATH=`dirname ${0}`
 export PATH="${THISPATH}:$PATH"
@@ -8,7 +8,7 @@ awk -f - -- ${@+"$@"} <<'EOF'
 
 # awk script to minimize a test corpus of input files
 #
-# based on afl-cmin bash script written by Michal Zalewski
+# based on angora-cmin bash script written by Michal Zalewski
 # rewritten by Heiko Eißfeldt (hexcoder-)
 # tested with:
 #   gnu awk (x86 Linux)
@@ -96,7 +96,7 @@ function getopt(argc, argv, options,    thisopt, i)
 
 function usage() {
    print \
-"afl-cmin [ options ] -- /path/to/target_app [ ... ]\n" \
+"angora-cmin [ options ] -- /path/to/target_app [ ... ]\n" \
 "\n" \
 "Required parameters:\n" \
 "  -i dir        - input directory with starting corpus\n" \
@@ -116,11 +116,10 @@ function usage() {
 "For additional tips, please consult docs/README.md\n" \
 "\n" \
 "Environment variables used:\n" \
-"AFL_KEEP_TRACES: leave the temporary <out_dir>/.traces directory\n" \
-"AFL_PATH: path for the afl-showmap binary\n" \
-"AFL_SKIP_BIN_CHECK: skip check for target binary\n" \
-"AFL_ALLOW_TMP: allow unsafe use of input/output directories under {/var}/tmp\n"
-"AFL_FORKSRV_INIT_TMOUT: time the fuzzer waits for the target to come up, initially\n"
+"ANGORA_KEEP_TRACES: leave the temporary <out_dir>/.traces directory\n" \
+"ANGORA_PATH: path for the afl-showmap binary\n" \
+"ANGORA_ALLOW_TMP: allow unsafe use of input/output directories under {/var}/tmp\n"
+"ANGORA_FORKSRV_INIT_TMOUT: time the fuzzer waits for the target to come up, initially\n"
    exit 1
 }
 
@@ -169,7 +168,7 @@ BEGIN {
       continue
     } else 
     if (_go_c == "C") {
-      ENVIRON["AFL_CMIN_CRASHES_ONLY"] = 1
+      ENVIRON["ANGORA_CMIN_CRASHES_ONLY"] = 1
       continue
     } else 
     if (_go_c == "e") {
@@ -216,7 +215,7 @@ BEGIN {
   # Do a sanity check to discourage the use of /tmp, since we can't really
   # handle this safely from an awk script.
 
-  if (!ENVIRON["AFL_ALLOW_TMP"]) {
+  if (!ENVIRON["ANGORA_ALLOW_TMP"]) {
     dirlist[0] = in_dir
     dirlist[1] = target_bin
     dirlist[2] = out_dir
@@ -273,13 +272,6 @@ BEGIN {
     target_bin = tnew
   }
 
-  if (!ENVIRON["AFL_SKIP_BIN_CHECK"] && !qemu_mode && !unicorn_mode) {
-    if (0 != system( "grep -q __AFL_SHM_ID "target_bin )) {
-      print "[-] Error: binary '"target_bin"' doesn't appear to be instrumented." > "/dev/stderr"
-      exit 1
-    }
-  }
-
   if (0 != system( "test -d "in_dir )) {
     print "[-] Error: directory '"in_dir"' not found." > "/dev/stderr"
     exit 1
@@ -310,18 +302,18 @@ BEGIN {
     close( stdin_file )
   }
 
-  if (!ENVIRON["AFL_PATH"]) {
-    if (0 == system("test -f afl-cmin")) {
-      showmap = "./afl-showmap"
+  if (!ENVIRON["ANGORA_PATH"]) {
+    if (0 == system("test -f angora-cmin")) {
+      showmap = "./target/release/showmap"
     } else {
-      "command -v afl-showmap 2>/dev/null" | getline showmap
+      "command -v showmap 2>/dev/null" | getline showmap
     }
   } else {
-    showmap = ENVIRON["AFL_PATH"] "/afl-showmap"
+    showmap = ENVIRON["ANGORA_PATH"] "/target/release/showmap"
   }
 
   if (!showmap || 0 != system("test -x "showmap )) {
-    print "[-] Error: can't find 'afl-showmap' - please set AFL_PATH." > "/dev/stderr"
+    print "[-] Error: can't find 'showmap' - please set ANGORA_PATH." > "/dev/stderr"
     exit 1
   }
 
@@ -365,10 +357,10 @@ BEGIN {
   print "[*] Testing the target binary..."
 
   if (!stdin_file) {
-    system( "AFL_CMIN_ALLOW_ANY=1 \""showmap"\" -m "mem_limit" -t "timeout" -o \""trace_dir"/.run_test\" -Z "extra_par" -- \""target_bin"\" "prog_args_string" <\""in_dir"/"first_file"\"")
+    system( "ANGORA_CMIN_ALLOW_ANY=1 \""showmap"\" -m "mem_limit" -t "timeout" -o \""trace_dir"/.run_test\" -Z "extra_par" -- \""target_bin"\" "prog_args_string" <\""in_dir"/"first_file"\"")
   } else {
     system("cp "in_dir"/"first_file" "stdin_file)
-    system( "AFL_CMIN_ALLOW_ANY=1 \""showmap"\" -m "mem_limit" -t "timeout" -o \""trace_dir"/.run_test\" -Z "extra_par" -A \""stdin_file"\" -- \""target_bin"\" "prog_args_string" </dev/null")
+    system( "ANGORA_CMIN_ALLOW_ANY=1 \""showmap"\" -m "mem_limit" -t "timeout" -o \""trace_dir"/.run_test\" -Z "extra_par" -A \""stdin_file"\" -- \""target_bin"\" "prog_args_string" </dev/null")
   }
 
   first_count = 0
@@ -382,7 +374,7 @@ BEGIN {
     print "[+] OK, "first_count" tuples recorded."
   } else {
     print "[-] Error: no instrumentation output detected (perhaps crash or timeout)." > "/dev/stderr"
-    if (!ENVIRON["AFL_KEEP_TRACES"]) {
+    if (!ENVIRON["ANGORA_KEEP_TRACES"]) {
       system("rm -rf "trace_dir" 2>/dev/null")
     }
     exit 1
@@ -399,16 +391,16 @@ BEGIN {
   cur = 0;
   if (!stdin_file) {
     print "    Processing "in_count" files (forkserver mode)..."
-    retval = system( "AFL_CMIN_ALLOW_ANY=1 \""showmap"\" -m "mem_limit" -t "timeout" -o \""trace_dir"\" -Z "extra_par" -i \""in_dir"\" -- \""target_bin"\" "prog_args_string)
+    retval = system( "ANGORA_CMIN_ALLOW_ANY=1 \""showmap"\" -m "mem_limit" -t "timeout" -o \""trace_dir"\" -Z "extra_par" -i \""in_dir"\" -- \""target_bin"\" "prog_args_string)
   } else {
     print "    Processing "in_count" files (forkserver mode)..."
-    retval = system( "AFL_CMIN_ALLOW_ANY=1 \""showmap"\" -m "mem_limit" -t "timeout" -o \""trace_dir"\" -Z "extra_par" -i \""in_dir"\" -- \""target_bin"\" "prog_args_string" </dev/null")
+    retval = system( "ANGORA_CMIN_ALLOW_ANY=1 \""showmap"\" -m "mem_limit" -t "timeout" -o \""trace_dir"\" -Z "extra_par" -i \""in_dir"\" -- \""target_bin"\" "prog_args_string" </dev/null")
   }
 
   if (retval) {
     print "[!]Exit code != 0 received from afl-showmap, terminating..."
 
-    if (!ENVIRON["AFL_KEEP_TRACES"]) {
+    if (!ENVIRON["ANGORA_KEEP_TRACES"]) {
       system("rm -rf "trace_dir" 2>/dev/null")
       system("rmdir "out_dir)
     }
@@ -501,7 +493,7 @@ BEGIN {
   }
   print "[+] Narrowed down to "out_count" files, saved in '"out_dir"'."
 
-  if (!ENVIRON["AFL_KEEP_TRACES"]) {
+  if (!ENVIRON["ANGORA_KEEP_TRACES"]) {
     system("rm -rf "trace_dir" 2>/dev/null")
   }
 

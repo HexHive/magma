@@ -11,4 +11,4 @@ git clone https://github.com/adrianherrera/Angora.git \
 	"$FUZZER/repo"
 
 cp "$FUZZER/src/angora_driver.c" "$FUZZER/repo"
-cp "$FUZZER/src/afl-cmin" "$FUZZER/repo"
+cp "$FUZZER/src/angora-cmin" "$FUZZER/repo"
