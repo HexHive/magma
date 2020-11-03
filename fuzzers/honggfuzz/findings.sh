@@ -18,4 +18,4 @@ if [ ! -d "$CRASH_DIR" ]; then
     exit 1
 fi
 
-find "$CRASH_DIR" -type f -name '*$CRASH_EXT'
+find "$CRASH_DIR" -type f -name "*$CRASH_EXT"
