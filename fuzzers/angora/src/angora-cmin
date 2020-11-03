@@ -259,12 +259,12 @@ echo "[*] Testing the target binary..."
 
 if [ "$STDIN_FILE" = "" ]; then
 
-  ANGORA_CMIN_ALLOW_ANY=1 "$SHOWMAP" -M "$MEM_LIMIT" -T "$TIMEOUT" -o "$TRACE_DIR/.run_test" $EXTRA_PAR -- "$@" <"$IN_DIR/$FIRST_FILE"
+  ANGORA_CMIN_ALLOW_ANY=1 "$SHOWMAP" -M "$MEM_LIMIT" -T "$TIMEOUT" -o "$TRACE_DIR/.run_test" -Z $EXTRA_PAR -- "$@" <"$IN_DIR/$FIRST_FILE"
 
 else
 
   cp "$IN_DIR/$FIRST_FILE" "$STDIN_FILE"
-  ANGORA_CMIN_ALLOW_ANY=1 "$SHOWMAP" -M "$MEM_LIMIT" -T "$TIMEOUT" -o "$TRACE_DIR/.run_test" $EXTRA_PAR -A "$STDIN_FILE" -- "$@" </dev/null
+  ANGORA_CMIN_ALLOW_ANY=1 "$SHOWMAP" -M "$MEM_LIMIT" -T "$TIMEOUT" -o "$TRACE_DIR/.run_test" -Z $EXTRA_PAR -A "$STDIN_FILE" -- "$@" </dev/null
 
 fi
 
@@ -301,7 +301,7 @@ echo "[*] Obtaining traces for input files in '$IN_DIR'..."
       CUR=$((CUR+1))
       printf "\\r    Processing file $CUR/$IN_COUNT... "
 
-      "$SHOWMAP" -M "$MEM_LIMIT" -T "$TIMEOUT" -o "$TRACE_DIR/$fn" $EXTRA_PAR -- "$@" <"$IN_DIR/$fn"
+      "$SHOWMAP" -M "$MEM_LIMIT" -T "$TIMEOUT" -o "$TRACE_DIR/$fn" -Z $EXTRA_PAR -- "$@" <"$IN_DIR/$fn"
 
     done < <(ls "$IN_DIR")
 
@@ -314,7 +314,7 @@ echo "[*] Obtaining traces for input files in '$IN_DIR'..."
 
       cp "$IN_DIR/$fn" "$STDIN_FILE"
 
-      "$SHOWMAP" -M "$MEM_LIMIT" -T "$TIMEOUT" -o "$TRACE_DIR/$fn" $EXTRA_PAR -A "$STDIN_FILE" -- "$@" </dev/null
+      "$SHOWMAP" -M "$MEM_LIMIT" -T "$TIMEOUT" -o "$TRACE_DIR/$fn" -Z $EXTRA_PAR -A "$STDIN_FILE" -- "$@" </dev/null
 
     done < <(ls "$IN_DIR")
 

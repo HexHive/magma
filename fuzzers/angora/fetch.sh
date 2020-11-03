@@ -6,7 +6,7 @@ set -e
 # - env FUZZER: path to fuzzer work dir
 ##
 
-git clone https://github.com/adrianherrera/Angora.git \
+git clone https://github.com/hazimeh/Angora.git \
 	--branch improvement/angora-showmap \
 	"$FUZZER/repo"
 
