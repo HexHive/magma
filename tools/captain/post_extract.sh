@@ -153,7 +153,7 @@ find "$ARDIR" -mindepth 1 -maxdepth 1 -type d | while read FUZZERDIR; do
                     cp -r "$CAMPAIGNDIR" "$SHARED"
                 fi
 
-                export NUMWORKERS="$(get_var_or_default $FUZZER 'CAMPAIGN_WORKERS')"
+                export NUMWORKERS=1
                 export AFFINITY=$(allocate_workers)
                 start_ex &
             done
