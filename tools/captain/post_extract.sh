@@ -87,3 +87,5 @@ find "$ARDIR" -mindepth 1 -maxdepth 1 -type d | while read FUZZERDIR; do
         done
     done
 done
+
+echo_time "Post-processing script successfully terminating"
