@@ -30,7 +30,7 @@ docker run -dt --entrypoint bash --volume=`realpath "$SHARED"`:/magma_shared \
 
 docker exec -i $container_id bash << 'EOF'
 delete=("$SHARED"/*)
-mkdir -p "$SHARED/orig"
+mkdir -p "$SHARED/orig" "$SHARED/min"
 MODE=cov $FUZZER/findings.sh | while read file; do
     delete=( "${delete[@]/$file}" )
     cp "$file" "$SHARED/orig"
@@ -39,9 +39,10 @@ rm -rf ${delete[@]}
 
 # Minimize the corpus according to the generator's view (for one-sided overlap)
 export CORPUS_IN="$SHARED/orig"
-export CORPUS_OUT="$SHARED"
+export CORPUS_OUT="$SHARED/min"
 "$FUZZER"/minimize.sh
-rm -rf "$SHARED/orig"
+find "$SHARED/min" -maxdepth 1 -type f -exec mv {} "$SHARED" \;
+rm -rf "$SHARED/min" $SHARED/orig"
 EOF
 
 docker rm -f $container_id 1>/dev/null 2>&1
