@@ -52,6 +52,15 @@ export BASEFUZZER=$FUZZER
 find "$ARDIR" -mindepth 1 -maxdepth 1 -type d | while read FUZZERDIR; do
     export FUZZER="$(basename "$FUZZERDIR")"
 
+    outdir="$POCDIR/$TARGET/$PROGRAM/$CID/$BASEFUZZER/$FUZZER"
+    mkdir -p "$outdir"
+
+    if [ "$FUZZER" = "$BASEFUZZER" ]; then
+        # skip minimization because it's already done above
+        find "$SHARED" -maxdepth 1 -type f -exec cp {} "$outdir" \;
+        continue
+    fi
+
     # build the Docker image
     IMG_NAME="magma/$FUZZER/$TARGET"
     echo_time "Building $IMG_NAME"
@@ -60,9 +69,6 @@ find "$ARDIR" -mindepth 1 -maxdepth 1 -type d | while read FUZZERDIR; do
         echo_time "Failed to build $IMG_NAME. Check build log for info."
         continue
     fi
-
-    outdir="$POCDIR/$TARGET/$PROGRAM/$CID/$BASEFUZZER/$FUZZER"
-    mkdir -p "$outdir"
 
     container_id=$(
     docker run -dt --entrypoint bash \
