@@ -90,6 +90,6 @@ for OBSERVER in */; do
     varname_OBSERVER=var_$OBSERVER
     varname_IDENTICAL=var_identical
     echo $TARGET, $PROGRAM, $CID, $BASEFUZZER, $OBSERVER, \
-         ${!varname_BASEFUZZER:-0}, ${!varname_OBSERVER:-0}, ${!varname_IDENTICAL:-0} >>
+         ${!varname_BASEFUZZER:-0}, ${!varname_OBSERVER:-0}, ${!varname_IDENTICAL:-0} >> \
         ./stats
 done
