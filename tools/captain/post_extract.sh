@@ -30,6 +30,13 @@ MAGMA=${MAGMA:-"$(cd "$(dirname "${BASH_SOURCE[0]}")/../../" >/dev/null 2>&1 \
 export MAGMA
 source "$MAGMA/tools/captain/common.sh"
 
+if [ -z "$WORKER_POOL" ]; then
+    WORKER_MODE=${WORKER_MODE:-1}
+    WORKERS_ALL=($(lscpu -b -p | sed '/^#/d' | sort -u -t, -k ${WORKER_MODE}g | cut -d, -f1))
+    WORKERS=${WORKERS:-${#WORKERS_ALL[@]}}
+    export WORKER_POOL="${WORKERS_ALL[@]:0:WORKERS}"
+fi
+
 EXTRACT=${EXTRACT:-"$MAGMA"/tools/captain/extract.sh}
 
 WORKDIR="$(realpath "$WORKDIR")"
