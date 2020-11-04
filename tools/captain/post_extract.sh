@@ -131,6 +131,25 @@ if [ -z "$ARDIR" ] || [ ! -d "$ARDIR" ]; then
     exit 1
 fi
 
+cleanup()
+{
+    trap 'echo Cleaning up...' SIGINT
+    echo_time "Waiting for jobs to finish"
+    for job in `jobs -p`; do
+        if ! wait $job; then
+            continue
+        fi
+    done
+
+    find "$LOCKDIR" -type f | while read lock; do
+        if inotifywait -qq -e delete_self "$lock" &> /dev/null; then
+            continue
+        fi
+    done
+}
+
+trap cleanup EXIT
+
 find "$ARDIR" -mindepth 1 -maxdepth 1 -type d | while read FUZZERDIR; do
     export FUZZER="$(basename "$FUZZERDIR")"
     find "$FUZZERDIR" -mindepth 1 -maxdepth 1 -type d | while read TARGETDIR; do
