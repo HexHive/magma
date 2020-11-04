@@ -79,6 +79,17 @@ find "$ARDIR" -mindepth 1 -maxdepth 1 -type d | while read FUZZERDIR; do
     docker rm -f $container_id 1>/dev/null 2>&1
 done
 container_id=""
+
+cd "$POCDIR/$TARGET/$PROGRAM/$CID/$BASEFUZZER"
+find . -mindepth 1 -maxdepth 1 -type d |
+while read OBSERVER; do
+    corpus_size=$(ls "$OBSERVER" | wc -l)
+    OBSERVER=$(basename $OBSERVER)
+
+    echo $TARGET, $PROGRAM, $CID, $BASEFUZZER, $OBSERVER, $corpus_size >> \
+        ./stats
+done
+
 exit 0
 
 # After further thought, the following part is invalid. Distinct seeds can yield
