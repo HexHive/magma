@@ -80,7 +80,6 @@ start_ex()
     trap release_workers EXIT
 
     start_extract
-    exit 0
 }
 export -f start_ex
 
@@ -143,7 +142,6 @@ cleanup()
 
     rm -rf "$TMPDIR"
 }
-
 trap cleanup EXIT
 
 find "$ARDIR" -mindepth 1 -maxdepth 1 -type d | while read FUZZERDIR; do
