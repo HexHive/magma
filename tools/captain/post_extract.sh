@@ -50,7 +50,7 @@ shopt -s nullglob
 rm -f "$LOCKDIR"/*
 shopt -u nullglob
 
-launch_extract()
+start_extract()
 {
     echo_time "Processing ${FUZZER}/${TARGET}/${PROGRAM}/${CID} on CPU $AFFINITY"
 
@@ -63,7 +63,7 @@ launch_extract()
 
     echo_time "Finished extracting ${FUZZER}/${TARGET}/${PROGRAM}/${CID}"
 }
-export -f start_campaign
+export -f start_extract
 
 start_ex()
 {
