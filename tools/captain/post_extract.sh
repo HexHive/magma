@@ -6,12 +6,6 @@
 # + env EXTRACT: path to extraction script (default: captain/extract.sh)
 ##
 
-cleanup() {
-    rm -rf "$TMPDIR"
-}
-
-trap cleanup EXIT
-
 if [ -z $1 ]; then
     set -- "./captainrc"
 fi
@@ -146,6 +140,8 @@ cleanup()
             continue
         fi
     done
+
+    rm -rf "$TMPDIR"
 }
 
 trap cleanup EXIT
