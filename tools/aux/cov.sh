@@ -68,6 +68,28 @@ find "$ARDIR" -mindepth 1 -maxdepth 1 -type d | while read FUZZERDIR; do
     docker exec $container_id bash -c 'echo amgam | sudo -S chown magma:magma /magma_shared/in /magma_shared/out &> /dev/null'
 
     docker exec $container_id bash -c '$FUZZER/minimize.sh'
+
     docker rm -f $container_id 1>/dev/null 2>&1
 done
 container_id=""
+
+cd "$POCDIR/$TARGET/$PROGRAM/$CID/$BASEFUZZER"
+for OBSERVER in */; do
+    if [ "$OBSERVER" = "$BASEFUZZER" ]; then
+        var_identical=1
+    else
+        values="$(diff -srq $BASEFUZZER $OBSERVER |
+            sed -nE 's/^Only in (\w+).*?:.*$|^.*(identical)$/\1\2/p' |
+            sort |
+            uniq -c |
+            sed -nE 's/^\s*([0-9]+) (\w+)$/var_\2=\1/p')"
+        eval "$values"
+    fi
+
+    varname_BASEFUZZER=var_$BASEFUZZER
+    varname_OBSERVER=var_$OBSERVER
+    varname_IDENTICAL=var_identical
+    echo $TARGET, $PROGRAM, $CID, $BASEFUZZER, $OBSERVER, \
+         ${!varname_BASEFUZZER:-0}, ${!varname_OBSERVER:-0}, ${!varname_IDENTICAL:-0} >>
+        ./stats
+done
