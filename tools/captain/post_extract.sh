@@ -15,8 +15,8 @@ set -a
 source "$1"
 set +a
 
-if [ -z $WORKDIR ] || [ -z $REPEAT ]; then
-    echo '$WORKDIR and $REPEAT must be specified as environment variables.'
+if [ -z $WORKDIR ]; then
+    echo '$WORKDIR must be specified as an environment variable.'
     exit 1
 fi
 MAGMA=${MAGMA:-"$(cd "$(dirname "${BASH_SOURCE[0]}")/../../" >/dev/null 2>&1 \
