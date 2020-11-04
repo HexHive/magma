@@ -42,7 +42,7 @@ export CORPUS_IN="$SHARED/orig"
 export CORPUS_OUT="$SHARED/min"
 "$FUZZER"/minimize.sh
 find "$SHARED/min" -maxdepth 1 -type f -exec mv {} "$SHARED" \;
-rm -rf "$SHARED/min" $SHARED/orig"
+rm -rf "$SHARED/min" "$SHARED/orig"
 EOF
 
 docker rm -f $container_id 1>/dev/null 2>&1
