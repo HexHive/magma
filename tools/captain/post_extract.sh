@@ -38,11 +38,86 @@ export CACHEDIR="$WORKDIR/cache"
 export LOGDIR="$WORKDIR/log"
 export POCDIR="$WORKDIR/poc"
 export TMPDIR="$WORKDIR/tmp"
+export LOCKDIR="$WORKDIR/lock"
 mkdir -p "$ARDIR"
 mkdir -p "$CACHEDIR"
 mkdir -p "$LOGDIR"
 mkdir -p "$POCDIR"
 mkdir -p "$TMPDIR"
+mkdir -p "$LOCKDIR"
+
+shopt -s nullglob
+rm -f "$LOCKDIR"/*
+shopt -u nullglob
+
+launch_extract()
+{
+    echo_time "Processing ${FUZZER}/${TARGET}/${PROGRAM}/${CID} on CPU $AFFINITY"
+
+    # run the PoC extraction script
+    "$EXTRACT" &> \
+        "${LOGDIR}/${FUZZER}_${TARGET}_${PROGRAM}_${CID}_extract.log"
+
+    # clean up
+    rm -rf "$SHARED"
+
+    echo_time "Finished extracting ${FUZZER}/${TARGET}/${PROGRAM}/${CID}"
+}
+export -f start_campaign
+
+start_ex()
+{
+    release_workers()
+    {
+        IFS=','
+        read -a workers <<< "$AFFINITY"
+        unset IFS
+        for i in "${workers[@]}"; do
+            rm -rf "$LOCKDIR/magma_cpu_$i"
+        done
+    }
+    trap release_workers EXIT
+
+    start_extract
+    exit 0
+}
+export -f start_ex
+
+allocate_workers()
+{
+    ##
+    # Pre-requirements:
+    # - env NUMWORKERS
+    # - env WORKERSET
+    ##
+    cleanup()
+    {
+        IFS=','
+        read -a workers <<< "$WORKERSET"
+        unset IFS
+        for i in "${workers[@]:1}"; do
+            rm -rf "$LOCKDIR/magma_cpu_$i"
+        done
+        exit 0
+    }
+    trap cleanup SIGINT
+
+    while [ $NUMWORKERS -gt 0 ]; do
+        for i in $WORKER_POOL; do
+            if ( set -o noclobber; > "$LOCKDIR/magma_cpu_$i" ) &>/dev/null; then
+                export WORKERSET="$WORKERSET,$i"
+                export NUMWORKERS=$(( NUMWORKERS - 1 ))
+                allocate_workers
+                return
+            fi
+        done
+        # This times-out every 1 second to force a refresh, since a worker may
+        #   have been released by the time inotify instance is set up.
+        inotifywait -qq -t 1 -e delete "$LOCKDIR" &> /dev/null
+    done
+    cut -d',' -f2- <<< $WORKERSET
+}
+export -f allocate_workers
 
 if [ -z "$ARDIR" ] || [ ! -d "$ARDIR" ]; then
     echo "Invalid archive directory!"
@@ -78,11 +153,9 @@ find "$ARDIR" -mindepth 1 -maxdepth 1 -type d | while read FUZZERDIR; do
                     cp -r "$CAMPAIGNDIR" "$SHARED"
                 fi
 
-                # run the PoC extraction script
-                "$EXTRACT"
-
-                # clean up
-                rm -rf "$SHARED"
+                export NUMWORKERS="$(get_var_or_default $FUZZER 'CAMPAIGN_WORKERS')"
+                export AFFINITY=$(allocate_workers)
+                start_ex &
             done
         done
     done
