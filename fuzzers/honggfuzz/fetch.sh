@@ -6,4 +6,5 @@ set -e
 # - env FUZZER: path to fuzzer work dir
 ##
 
-git clone --depth 1 https://github.com/google/honggfuzz.git "$FUZZER/repo"
+git clone https://github.com/hazimeh/honggfuzz.git \
+	--branch improvement/preserve_seeds "$FUZZER/repo"
