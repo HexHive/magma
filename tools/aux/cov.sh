@@ -10,7 +10,7 @@
 # - env CID: campaign ID
 # - env SHARED: path to host-local volume where fuzzer findings are saved
 # - env POCDIR: path to the directory where minimized corpora will be saved
-# - env ARDIR: path to the archive directory (needed for cross-comparisons)
+# - env LOCKDIR: path to the locks directory
 ##
 
 if [ -z $1 ]; then
@@ -21,6 +21,23 @@ fi
 set -a
 source "$1"
 set +a
+
+mutex()
+{
+    ##
+    # Pre-requirements:
+    # - $1: the mutex ID (file descriptor)
+    # - $2..N: command to run
+    ##
+    trap 'rm -f "$LOCKDIR/$mux"' EXIT
+    mux=$1
+    shift
+    (
+      flock -xF 200 &> /dev/null
+      "${@}"
+    ) 200>"$LOCKDIR/$mux"
+}
+export -f mutex
 
 cleanup() {
     if [ ! -z "$container_id" ]; then
@@ -74,7 +91,7 @@ for FUZZER in "${FUZZERS[@]}"; do
     # build the Docker image
     IMG_NAME="magma/$FUZZER/$TARGET"
     echo_time "Building $IMG_NAME"
-    if ! "$MAGMA"/tools/captain/build.sh &> \
+    if ! mutex 'magma_build_cov' "$MAGMA"/tools/captain/build.sh &> \
         "${LOGDIR}/${FUZZER}_${TARGET}_build.log"; then
         echo_time "Failed to build $IMG_NAME. Check build log for info."
         continue
