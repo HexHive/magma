@@ -2,6 +2,7 @@
 
 ##
 # Pre-requirements:
+# - $1: path to captainrc (default: ./captainrc)
 # - env FUZZER: fuzzer name (from fuzzers/)
 # - env TARGET: target name (from targets/)
 # - env PROGRAM: program name (name of binary artifact from $TARGET/build.sh)
@@ -11,6 +12,15 @@
 # - env POCDIR: path to the directory where minimized corpora will be saved
 # - env ARDIR: path to the archive directory (needed for cross-comparisons)
 ##
+
+if [ -z $1 ]; then
+    set -- "./captainrc"
+fi
+
+# load the configuration file (captainrc)
+set -a
+source "$1"
+set +a
 
 cleanup() {
     if [ ! -z "$container_id" ]; then
@@ -49,8 +59,8 @@ docker rm -f $container_id 1>/dev/null 2>&1
 
 echo_time "Processing $IMG_NAME/$PROGRAM/$CID"
 export BASEFUZZER=$FUZZER
-find "$ARDIR" -mindepth 1 -maxdepth 1 -type d | while read FUZZERDIR; do
-    export FUZZER="$(basename "$FUZZERDIR")"
+for FUZZER in "${FUZZERS[@]}"; do
+    export FUZZER
 
     outdir="$POCDIR/$TARGET/$PROGRAM/$CID/$BASEFUZZER/$FUZZER"
     mkdir -p "$outdir"
