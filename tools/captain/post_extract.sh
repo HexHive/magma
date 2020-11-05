@@ -77,7 +77,7 @@ start_ex()
             rm -rf "$LOCKDIR/magma_cpu_$i"
         done
     }
-    trap release_workers EXIT
+    trap release_workers RETURN
 
     start_extract
 }
