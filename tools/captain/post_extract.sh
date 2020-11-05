@@ -140,7 +140,7 @@ cleanup()
         fi
     done
 
-    rm -rf "$TMPDIR"
+    # rm -rf "$TMPDIR"
 }
 trap cleanup EXIT
 
