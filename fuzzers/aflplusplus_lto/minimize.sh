@@ -11,6 +11,7 @@
 # - env CORPUS_OUT: path to directory where minimized corpus is stored
 ##
 
+export AFL_MAP_SIZE=256000
 export AFL_PATH="$FUZZER/repo"
 "$FUZZER/repo/afl-cmin" -m 100 -i "$CORPUS_IN" -o "$CORPUS_OUT/tmp" \
     -- "$OUT/afl/$PROGRAM" $ARGS 2>&1
