@@ -6,7 +6,9 @@ set -e
 # - env FUZZER: path to fuzzer work dir
 ##
 
-git clone --depth 1 https://github.com/AFLplusplus/AFLplusplus "$FUZZER/repo"
+
+git clone --no-checkout https://github.com/AFLplusplus/AFLplusplus "$FUZZER/repo"
+git -C "$FUZZER/repo" checkout 5ee63a6e6267e448342ccb28cc8d3c0d34ffc1cd
 
 # Fix: CMake-based build systems fail with duplicate (of main) or undefined references (of LLVMFuzzerTestOneInput)
 sed -i '{s/^int main/__attribute__((weak)) &/}' $FUZZER/repo/examples/aflpp_driver/aflpp_driver.c
