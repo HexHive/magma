@@ -28,6 +28,8 @@ LIB_FUZZING_ENGINE="-Wall" ./configure \
     --enable-option-checking=fatal \
     --enable-fuzzer \
     --enable-exif \
+    --enable-phar \
+    --enable-intl \
     --enable-mbstring \
     --without-pcre-jit \
     --disable-phpdbg \
