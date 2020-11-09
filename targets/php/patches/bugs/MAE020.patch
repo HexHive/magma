@@ -36,7 +36,7 @@ index 9b21eb7e2a..d0092ab528 100644
 +		#ifdef MAGMA_ENABLE_CANARIES
 +			MAGMA_LOG("MAE020",entry.filename_len > INT_MAX - 20);
 +			MAGMA_LOG("MAE020",MAGMA_AND(entry.filename_len > (size_t)(endbuffer - buffer - 24),
-+								entry.filename_len <= (size_t)(endbuffer - buffer - 20));
++								entry.filename_len <= (size_t)(endbuffer - buffer - 20)));
 +		#endif
 +		if (entry.filename_len + 20 > endbuffer - buffer) {
 +			MAPPHAR_FAIL("internal corruption of phar \"%s\" (truncated manifest entry)");
