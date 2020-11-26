@@ -12,7 +12,7 @@
 ##
 
 export AFL_PATH="$FUZZER/repo"
-"$FUZZER/repo/afl-cmin" -m 100 -i "$CORPUS_IN" -o "$CORPUS_OUT/tmp" \
+"$FUZZER/repo/afl-cmin" -m 100 -t 100 -i "$CORPUS_IN" -o "$CORPUS_OUT/tmp" \
     -- "$OUT/$PROGRAM" $ARGS 2>&1
 
 find "$CORPUS_OUT/tmp" -maxdepth 1 -type f -exec mv {} "$CORPUS_OUT" \;

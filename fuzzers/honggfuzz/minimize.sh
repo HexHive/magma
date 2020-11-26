@@ -14,6 +14,6 @@
 # replace AFL-style input file parameter with honggfuzz-style one
 ARGS="${ARGS/@@/___FILE___}"
 
-"$FUZZER/repo/honggfuzz" --minimize --preserve_seeds \
+"$FUZZER/repo/honggfuzz" --minimize -t 1 --preserve_seeds \
     --input "$CORPUS_IN" --output "$CORPUS_OUT" \
     -- "$OUT/$PROGRAM" $ARGS 2>&1

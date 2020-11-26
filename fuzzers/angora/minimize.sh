@@ -21,7 +21,7 @@ if [ "$ARGS" = "" ]; then
 fi
 
 export ANGORA_PATH="$FUZZER/repo"
-"$FUZZER/repo/angora-cmin" -m 100 -i "$CORPUS_IN" -o "$CORPUS_OUT/tmp" \
+"$FUZZER/repo/angora-cmin" -m 100 -t 1 -i "$CORPUS_IN" -o "$CORPUS_OUT/tmp" \
     -- "$OUT/angora-fast/$PROGRAM" $ARGS 2>&1
 
 find "$CORPUS_OUT/tmp" -maxdepth 1 -type f -exec mv {} "$CORPUS_OUT" \;
