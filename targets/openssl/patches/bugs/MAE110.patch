@@ -71,10 +71,10 @@ index 2cf62b62cd..f53a5e0082 100644
  
 +#ifdef MAGMA_ENABLE_FIXES
      if (p7 == NULL) {
-         PKCS7err(PKCS7_F_PKCS7_DATAVERIFY, PKCS7_R_INVALID_NULL_POINTER);
+         ERR_raise(ERR_LIB_PKCS7, PKCS7_R_INVALID_NULL_POINTER);
          return 0;
 @@ -930,7 +970,12 @@ int PKCS7_dataVerify(X509_STORE *cert_store, X509_STORE_CTX *ctx, BIO *bio,
-         PKCS7err(PKCS7_F_PKCS7_DATAVERIFY, PKCS7_R_NO_CONTENT);
+         ERR_raise(ERR_LIB_PKCS7, PKCS7_R_NO_CONTENT);
          return 0;
      }
  

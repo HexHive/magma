@@ -6,7 +6,7 @@
      /* Detached content must be supplied via in_bio instead. */
 +#ifdef MAGMA_ENABLE_FIXES
      if (data_body == NULL && in_bio == NULL) {
-         PKCS7err(PKCS7_F_PKCS7_DATADECODE, PKCS7_R_NO_CONTENT);
+         ERR_raise(ERR_LIB_PKCS7, PKCS7_R_NO_CONTENT);
          goto err;
      }
 +#endif
