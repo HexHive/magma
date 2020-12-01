@@ -3,7 +3,7 @@ set -e
 
 apt-get update && \
     apt-get install -y make build-essential cmake git golang-go \
-    python-pip python-dev wget zlib1g-dev
+    python-pip python-dev wget zlib1g-dev gawk
 
 # Install Python packages
 pip install --upgrade pip==9.0.3

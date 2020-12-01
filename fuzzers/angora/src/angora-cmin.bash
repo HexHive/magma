@@ -168,15 +168,6 @@ if [ ! "$MEM_LIMIT" = "none" ]; then
 
 fi
 
-if [ ! "$TIMEOUT" = "none" ]; then
-
-  if [ "$TIMEOUT" -lt "10" ]; then
-    echo "[-] Error: dangerously low timeout." 1>&2
-    exit 1
-  fi
-
-fi
-
 if [ ! -f "$TARGET_BIN" -o ! -x "$TARGET_BIN" ]; then
 
   TNEW="`which "$TARGET_BIN" 2>/dev/null`"

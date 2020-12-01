@@ -3,8 +3,8 @@ export ANGORA_QUIET=1
 export ASAN_OPTIONS=detect_leaks=0
 THISPATH=`dirname ${0}`
 export PATH="${THISPATH}:$PATH"
-awk -f - -- ${@+"$@"} <<'EOF'
-#!/usr/bin/awk -f
+gawk -f - -- ${@+"$@"} <<'EOF'
+#!/usr/bin/gawk -f
 
 # awk script to minimize a test corpus of input files
 #
