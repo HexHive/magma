@@ -65,6 +65,7 @@ mkdir -p "$LIBCXX_DIR"
         -DKLEE_UCLIBC_PATH="$UCLIBC_DIR" \
         -DENABLE_KLEE_LIBCXX=ON \
         -DKLEE_LIBCXX_DIR="$LIBCXX_DIR/libc++-install-9/" \
+        -DKLEE_LIBCXXABI_SRC_DIR="$LIBCXX_DIR" \
         -DKLEE_LIBCXX_INCLUDE_DIR="$LIBCXX_DIR/libc++-install-9/include/c++/v1/" \
         -DENABLE_UNIT_TESTS=OFF \
         -DENABLE_SYSTEM_TESTS=OFF
