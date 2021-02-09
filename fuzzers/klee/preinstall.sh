@@ -6,7 +6,7 @@ apt-get update && \
         libncurses5-dev python-minimal python-pip unzip libtcmalloc-minimal4 \
         libgoogle-perftools-dev libsqlite3-dev doxygen \
         clang-9 llvm-9 llvm-9-dev llvm-9-tools \
-        cmake bison flex libboost-all-dev perl zlib1g-dev minisat
+        cmake bison flex libboost-all-dev perl zlib1g-dev minisat libc6-dev-i386
 
 pip install --upgrade wllvm
 

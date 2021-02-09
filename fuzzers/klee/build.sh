@@ -64,8 +64,10 @@ mkdir -p "$LIBCXX_DIR"
         -DENABLE_POSIX_RUNTIME=ON \
         -DKLEE_UCLIBC_PATH="$UCLIBC_DIR" \
         -DENABLE_KLEE_LIBCXX=ON \
-        -DKLEE_LIBCXX_DIR="$LIBCXX_DIR/libc++-install-9/" \
-        -DKLEE_LIBCXX_INCLUDE_DIR="$LIBCXX_DIR/libc++-install-9/include/c++/v1/" \
+        -DKLEE_LIBCXX_DIR="$LIBCXX_DIR/libc++-install-90/" \
+        -DKLEE_LIBCXX_INCLUDE_DIR="$LIBCXX_DIR/libc++-install-90/include/c++/v1/" \
+        -DENABLE_KLEE_EH_CXX=ON \
+        -DKLEE_LIBCXXABI_SRC_DIR="$LIBCXX_DIR/llvm-90/libcxxabi" \
         -DENABLE_UNIT_TESTS=OFF \
         -DENABLE_SYSTEM_TESTS=OFF
     make -j $(nproc)
