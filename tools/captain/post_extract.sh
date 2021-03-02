@@ -51,6 +51,23 @@ shopt -s nullglob
 rm -f "$LOCKDIR"/*
 shopt -u nullglob
 
+mutex()
+{
+    ##
+    # Pre-requirements:
+    # - $1: the mutex ID (file descriptor)
+    # - $2..N: command to run
+    ##
+    trap 'rm -f "$LOCKDIR/$mux"' EXIT RETURN
+    mux=$1
+    shift
+    (
+      flock -xF 200 &> /dev/null
+      "${@}"
+    ) 200>"$LOCKDIR/$mux"
+}
+export -f mutex
+
 start_extract()
 {
     echo_time "Processing ${FUZZER}/${TARGET}/${PROGRAM}/${CID} on CPU $AFFINITY"
@@ -152,7 +169,7 @@ find "$ARDIR" -mindepth 1 -maxdepth 1 -type d | while read FUZZERDIR; do
         # build the Docker image
         IMG_NAME="magma/$FUZZER/$TARGET"
         echo_time "Building $IMG_NAME"
-        if ! "$MAGMA"/tools/captain/build.sh &> \
+        if ! mutex 'magma_build_cov' "$MAGMA"/tools/captain/build.sh &> \
             "${LOGDIR}/${FUZZER}_${TARGET}_build.log"; then
             echo_time "Failed to build $IMG_NAME. Check build log for info."
             continue

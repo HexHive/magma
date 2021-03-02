@@ -29,7 +29,7 @@ mutex()
     # - $1: the mutex ID (file descriptor)
     # - $2..N: command to run
     ##
-    trap 'rm -f "$LOCKDIR/$mux"' EXIT
+    trap 'rm -f "$LOCKDIR/$mux"' EXIT RETURN
     mux=$1
     shift
     (
@@ -123,7 +123,9 @@ while read OBSERVER; do
     echo $TARGET, $PROGRAM, $CID, $BASEFUZZER, $OBSERVER, $corpus_size >> \
         ./stats
 done
-
+shopt -s extglob
+rm -rf !(stats)
+shopt -u extglob
 exit 0
 
 # After further thought, the following part is invalid. Distinct seeds can yield

@@ -11,11 +11,11 @@
 # - env FUZZARGS: extra arguments to pass to the fuzzer
 ##
 
-mkdir -p "$SHARED/findings" "$SHARED/output"
+mkdir -p "$SHARED/findings/crash" "$SHARED/findings/queue"
 
 # replace AFL-style input file parameter with honggfuzz-style one
 ARGS="${ARGS/@@/___FILE___}"
 
 "$FUZZER/repo/honggfuzz" -n 1 -z --input "$TARGET/corpus/$PROGRAM" \
-    --output "$SHARED/output" --workspace "$SHARED/findings" \
+    --output "$SHARED/findings/queue" --workspace "$SHARED/findings/crash" \
     $FUZZARGS -- "$OUT/$PROGRAM" $ARGS 2>&1
