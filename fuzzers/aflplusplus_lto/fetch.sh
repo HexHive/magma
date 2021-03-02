@@ -22,24 +22,25 @@ int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
 EOF
 
 patch -p1 -d "$FUZZER/repo" << EOF
---- a/src/afl-forkserver.c
-+++ b/src/afl-forkserver.c
-@@ -937,7 +937,7 @@
+--- a/examples/aflpp_driver/aflpp_driver.c
++++ b/examples/aflpp_driver/aflpp_driver.c
+@@ -111,7 +111,8 @@ extern unsigned int * __afl_fuzz_len;
+ __attribute__((weak)) int LLVMFuzzerInitialize(int *argc, char ***argv);
  
- #endif
+ // Notify AFL about persistent mode.
+-static volatile char AFL_PERSISTENT[] = "##SIG_AFL_PERSISTENT##";
++// DISABLED to avoid afl-showmap misbehavior
++static volatile char AFL_PERSISTENT[] = "##SIG_AFL_NOT_PERSISTENT##";
+ int                  __afl_persistent_loop(unsigned int);
  
--  } else {
-+  }
+ // Notify AFL about deferred forkserver.
+--- a/src/afl-showmap.c
++++ b/src/afl-showmap.c
+@@ -1021,6 +1021,7 @@ int main(int argc, char **argv_orig, char **envp) {
+     if (arg_offset && use_argv[arg_offset] != stdin_file) {
  
-     s32 fd = fsrv->out_fd;
- 
-@@ -975,7 +975,7 @@
+       use_argv[arg_offset] = strdup(stdin_file);
++      fsrv->out_file = use_argv[arg_offset];
  
      }
- 
--  }
-+
- 
- }
- 
 EOF
