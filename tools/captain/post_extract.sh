@@ -9,6 +9,7 @@
 if [ -z $1 ]; then
     set -- "./captainrc"
 fi
+export CAPTAINRC="$1"
 
 # load the configuration file (captainrc)
 set -a
@@ -73,7 +74,7 @@ start_extract()
     echo_time "Processing ${FUZZER}/${TARGET}/${PROGRAM}/${CID} on CPU $AFFINITY"
 
     # run the PoC extraction script
-    "$EXTRACT" &> \
+    "$EXTRACT" "$CAPTAINRC" &> \
         "${LOGDIR}/${FUZZER}_${TARGET}_${PROGRAM}_${CID}_extract.log"
 
     # clean up
@@ -157,7 +158,7 @@ cleanup()
         fi
     done
 
-    # rm -rf "$TMPDIR"
+    rm -rf "$TMPDIR"
 }
 trap cleanup EXIT
 
