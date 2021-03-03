@@ -67,7 +67,7 @@ rm -rf ${delete[@]}
 # Minimize the corpus according to the generator's view (for one-sided overlap)
 export CORPUS_IN="$SHARED/orig"
 export CORPUS_OUT="$SHARED/min"
-"$FUZZER"/minimize.sh
+(cd /tmp && "$FUZZER"/minimize.sh)
 find "$SHARED/min" -maxdepth 1 -type f -exec mv {} "$SHARED" \;
 rm -rf "$SHARED/min" "$SHARED/orig"
 EOF
@@ -108,7 +108,7 @@ for FUZZER in "${FUZZERS[@]}"; do
 
     docker exec $container_id bash -c 'echo amgam | sudo -S chown magma:magma /magma_shared/in /magma_shared/out &> /dev/null'
 
-    docker exec $container_id bash -c '$FUZZER/minimize.sh'
+    docker exec $container_id bash -c 'cd /tmp && $FUZZER/minimize.sh'
 
     docker rm -f $container_id 1>/dev/null 2>&1
 done

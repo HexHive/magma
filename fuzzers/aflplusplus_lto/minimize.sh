@@ -13,6 +13,7 @@
 
 export AFL_MAP_SIZE=256000
 export AFL_PATH="$FUZZER/repo"
+export AFL_ALLOW_TMP=1
 "$FUZZER/repo/afl-cmin" -m 100 -t 100 -i "$CORPUS_IN" -o "$CORPUS_OUT/tmp" \
     -- "$OUT/afl/$PROGRAM" $ARGS 2>&1
 
