@@ -21,6 +21,7 @@ if [ "$ARGS" = "" ]; then
 fi
 
 export ANGORA_PATH="$FUZZER/repo"
+export ANGORA_ALLOW_TMP=1
 "$FUZZER/repo/angora-cmin" -m 100 -t 1 -i "$CORPUS_IN" -o "$CORPUS_OUT/tmp" \
     -- "$OUT/angora-fast/$PROGRAM" $ARGS 2>&1
 

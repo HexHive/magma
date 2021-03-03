@@ -393,7 +393,8 @@ BEGIN {
     if (!stdin_file) {
       retval = system( ANGORA_CMIN_CRASHES_ONLY"\""showmap"\" -M "mem_limit" -T "timeout" -o \""trace_dir"/"in_file"\" -Z "extra_par" -- \""target_bin"\" "prog_args_string" <\""in_dir"/"in_file"\"")
     } else {
-      retval = system( ANGORA_CMIN_CRASHES_ONLY"\""showmap"\" -M "mem_limit" -T "timeout" -o \""trace_dir"/"in_file"\" -Z "extra_par" -A \""in_dir"/"in_file"\" -- \""target_bin"\" "prog_args_string" </dev/null")
+      system("cp "in_dir"/"in_file" "stdin_file)
+      retval = system( ANGORA_CMIN_CRASHES_ONLY"\""showmap"\" -M "mem_limit" -T "timeout" -o \""trace_dir"/"in_file"\" -Z "extra_par" -A \""stdin_file"\" -- \""target_bin"\" "prog_args_string" </dev/null")
     }
 
     if (retval && !ANGORA_CMIN_CRASHES_ONLY) {
