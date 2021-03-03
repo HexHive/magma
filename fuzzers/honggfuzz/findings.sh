@@ -7,10 +7,10 @@
 ##
 
 if [[ $MODE == crash ]]; then
-    CRASH_DIR="$SHARED/findings/crash"
+    CRASH_DIR="$SHARED/findings"
     CRASH_EXT=".fuzz"
 elif [[ $MODE == cov ]]; then
-    CRASH_DIR="$SHARED/findings/queue"
+    CRASH_DIR="$SHARED/findings/output"
     CRASH_EXT=".cov"
 fi
 
