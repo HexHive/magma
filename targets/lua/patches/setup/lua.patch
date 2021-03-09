@@ -1,0 +1,33 @@
+diff --git a/makefile b/makefile
+index 7cfcbfe1..f13897f7 100644
+--- a/makefile
++++ b/makefile
+@@ -70,8 +70,8 @@ MYLDFLAGS= $(LOCAL) -Wl,-E
+ MYLIBS= -ldl -lreadline
+ 
+ 
+-CC= gcc
+-CFLAGS= -Wall -O2 $(MYCFLAGS) -fno-stack-protector -fno-common -march=native
++CC ?= gcc
++CFLAGS += -Wall $(MYCFLAGS) -fno-stack-protector -fno-common -march=native
+ AR= ar rc
+ RANLIB= ranlib
+ RM= rm -f
+@@ -81,7 +81,7 @@ RM= rm -f
+ # == END OF USER SETTINGS. NO NEED TO CHANGE ANYTHING BELOW THIS LINE =========
+ 
+ 
+-LIBS = -lm
++LIBS += -lm
+ 
+ CORE_T=	liblua.a
+ CORE_O=	lapi.o lcode.o lctype.o ldebug.o ldo.o ldump.o lfunc.o lgc.o llex.o \
+@@ -111,7 +111,7 @@ $(CORE_T): $(CORE_O) $(AUX_O) $(LIB_O)
+ 	$(RANLIB) $@
+ 
+ $(LUA_T): $(LUA_O) $(CORE_T)
+-	$(CC) -o $@ $(MYLDFLAGS) $(LUA_O) $(CORE_T) $(LIBS) $(MYLIBS) $(DL)
++	$(CC) -o $@ $(LDFLAGS) $(MYLDFLAGS) $(LUA_O) $(CORE_T) $(LIBS) $(MYLIBS) $(DL)
+ 
+ 
+ clean:
