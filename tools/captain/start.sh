@@ -61,6 +61,7 @@ else
     docker run -dt $flag_volume \
         --cap-add=SYS_PTRACE --env=PROGRAM="$PROGRAM" --env=ARGS="$ARGS" \
         --env=FUZZARGS="$FUZZARGS" --env=POLL="$POLL" --env=TIMEOUT="$TIMEOUT" \
+        --network=none \
         $flag_aff $flag_ep "$IMG_NAME"
     )
     container_id=$(cut -c-12 <<< $container_id)
