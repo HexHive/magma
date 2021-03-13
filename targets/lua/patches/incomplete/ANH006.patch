@@ -1,0 +1,53 @@
+diff --git a/lgc.c b/lgc.c
+index b360eed0..f389116d 100644
+--- a/lgc.c
++++ b/lgc.c
+@@ -217,8 +217,12 @@ void luaC_barrier_ (lua_State *L, GCObject *o, GCObject *v) {
+   }
+   else {  /* sweep phase */
+     lua_assert(issweepphase(g));
++#ifdef MAGMA_ENABLE_FIXES
+     if (g->gckind == KGC_INC)  /* incremental mode? */
+       makewhite(g, o);  /* mark 'o' as white to avoid other barriers */
++#else
++    makewhite(g, o);  /* mark main obj. as white to avoid other barriers */
++#endif
+   }
+ }
+ 
+@@ -368,11 +372,15 @@ static int remarkupvals (global_State *g) {
+       p = &thread->twups;  /* keep marked thread with upvalues in the list */
+     else {  /* thread is not marked or without upvalues */
+       UpVal *uv;
++#ifdef MAGMA_ENABLE_FIXES
+       lua_assert(!isold(thread) || thread->openupval == NULL);
++#endif
+       *p = thread->twups;  /* remove thread from the list */
+       thread->twups = thread;  /* mark that it is out of list */
+       for (uv = thread->openupval; uv != NULL; uv = uv->u.open.next) {
++#ifdef MAGMA_ENABLE_FIXES
+         lua_assert(getage(uv) <= getage(thread));
++#endif
+         work++;
+         if (!iswhite(uv)) {  /* upvalue already visited? */
+           lua_assert(upisopen(uv) && isgray(uv));
+@@ -1234,7 +1242,9 @@ static void youngcollection (lua_State *L, global_State *g) {
+   atomic(L);
+ 
+   /* sweep nursery and get a pointer to its last live element */
++#ifdef MAGMA_ENABLE_FIXES
+   g->gcstate = GCSswpallgc;
++#endif
+   psurvival = sweepgen(L, g, &g->allgc, g->survival, &g->firstold1);
+   /* sweep 'survival' */
+   sweepgen(L, g, psurvival, g->old1, &g->firstold1);
+@@ -1265,7 +1275,9 @@ static void youngcollection (lua_State *L, global_State *g) {
+ static void atomic2gen (lua_State *L, global_State *g) {
+   cleargraylists(g);
+   /* sweep all elements making them old */
++#ifdef MAGMA_ENABLE_FIXES
+   g->gcstate = GCSswpallgc;
++#endif
+   sweep2old(L, &g->allgc);
+   /* everything alive now is old */
+   g->reallyold = g->old1 = g->survival = g->allgc;
