@@ -242,7 +242,7 @@ for FUZZER in "${FUZZERS[@]}"; do
     for TARGET in "${TARGETS[@]}"; do
         export TARGET
 
-        export FUZZARGS=($(get_var_or_default $FUZZER $TARGET 'FUZZARGS'))
+        export FUZZARGS="$(get_var_or_default $FUZZER $TARGET 'FUZZARGS')"
 
         # build the Docker image
         IMG_NAME="magma/$FUZZER/$TARGET"
