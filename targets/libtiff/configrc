@@ -1,3 +1,4 @@
-PROGRAMS=(tiff_read_rgba_fuzzer tiffcp)
+#PROGRAMS=(tiff_read_rgba_fuzzer tiffcp)
+PROGRAMS=(tiff_read_rgba_fuzzer)
 
 tiffcp_ARGS="-M @@ tmp.out"
