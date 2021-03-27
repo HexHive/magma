@@ -238,7 +238,7 @@ trap cleanup EXIT
 for FUZZER in "${FUZZERS[@]}"; do
     export FUZZER
 
-    TARGETS=($(get_var_or_default $FUZZER 'TARGETS'))
+    TARGETS="$(get_var_or_default $FUZZER 'TARGETS')"
     for TARGET in "${TARGETS[@]}"; do
         export TARGET
 
@@ -253,7 +253,7 @@ for FUZZER in "${FUZZERS[@]}"; do
             continue
         fi
 
-        PROGRAMS=($(get_var_or_default $FUZZER $TARGET 'PROGRAMS'))
+        PROGRAMS="$(get_var_or_default $FUZZER $TARGET 'PROGRAMS')"
         for PROGRAM in "${PROGRAMS[@]}"; do
             export PROGRAM
             export ARGS="$(get_var_or_default $FUZZER $TARGET $PROGRAM 'ARGS')"
