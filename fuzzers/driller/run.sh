@@ -1,4 +1,4 @@
-#!/bin/bash -xe
+#!/bin/bash
 
 ##
 # Pre-requirements:
@@ -17,4 +17,4 @@ export AFL_SKIP_CPUFREQ=1
 export AFL_NO_AFFINITY=1
 cd $OUT
 shellphuzz --memory 100M -s "$TARGET/corpus/$PROGRAM" -w "$SHARED/findings" \
-    -c 1 -d 1 "$OUT/$PROGRAM"  2>&1
+    "$OUT/$PROGRAM"  2>&1

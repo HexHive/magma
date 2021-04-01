@@ -35,7 +35,7 @@ update-alternatives \
   --slave   /usr/bin/clang-cpp             clang-cpp              /usr/bin/clang-cpp-9
 
 # Install Driller & shellphish fuzzer
-apt-get install -y gcc-multilib libtool automake autoconf bison debootstrap debian-archive-keyring libtool-bin
+apt-get install -y gcc-multilib libtool automake autoconf bison debootstrap debian-archive-keyring libtool-bin lsb-release
 
 sudo cp /etc/apt/sources.list /etc/apt/sources.list~
 sudo sed -Ei 's/^# deb-src /deb-src /' /etc/apt/sources.list
@@ -47,9 +47,13 @@ pip3 install --upgrade pip
 pip3 install setuptools
 
 # Install Shellphish Fuzzer
-pip install git+https://github.com/shellphish/shellphish-afl
-pip install git+https://github.com/shellphish/fuzzer
+git clone --depth 1 https://github.com/shellphish/shellphish-afl
+pushd shellphish-afl
+python3 setup.py develop
+cp -r bin/* /usr/bin/
+popd
+pip3 install git+https://github.com/shellphish/fuzzer
 
 # Install Driller
-pip install git+https://github.com/angr/tracer
-pip install git+https://github.com/shellphish/driller
+pip3 install git+https://github.com/angr/tracer
+pip3 install git+https://github.com/shellphish/driller
