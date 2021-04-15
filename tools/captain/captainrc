@@ -7,7 +7,7 @@
 ###
 
 # WORKDIR: path to directory where shared volumes will be created
-WORKDIR=./workdir
+WORKDIR=/home/hamza/magma_docker
 
 # REPEAT: number of campaigns to run per program (per fuzzer)
 REPEAT=3
@@ -71,7 +71,7 @@ POLL=5
 ###
 
 # FUZZERS: an array of fuzzer names (from magma/fuzzers/*) to evaluate
-FUZZERS=(afl aflfast moptafl aflplusplus fairfuzz honggfuzz)
+FUZZERS=(qsym afl aflfast moptafl aflplusplus fairfuzz honggfuzz)
 
 # [fuzzer_TARGETS]: an array of target names (from magma/targets/*) to fuzz with
 # `fuzzer`. The `fuzzer` prefix is a fuzzer listed in the FUZZERS array
