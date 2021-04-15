@@ -5,8 +5,8 @@ apt-get update && \
     apt-get install -y make build-essential git wget
 
 # Install QSYM fuzzer
-#git clone https://github.com/sslab-gatech/qsym.git
-echo $PWD
+git clone https://github.com/sojhal/qsym.git
+
 pushd qsym
 # disable ptrace_scope for PIN
 #echo 0|sudo tee /proc/sys/kernel/yama/ptrace_scope
