@@ -6,6 +6,7 @@ apt-get update && \
 
 # Install QSYM fuzzer
 #git clone https://github.com/sslab-gatech/qsym.git
+echo $PWD
 pushd qsym
 # disable ptrace_scope for PIN
 #echo 0|sudo tee /proc/sys/kernel/yama/ptrace_scope
