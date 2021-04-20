@@ -40,9 +40,14 @@ index 7a00b576a..9e7d21b7f 100644
  #  define ExprIsVtab(X)  \
                ((X)->op==TK_COLUMN && (X)->y.pTab!=0 && (X)->y.pTab->nModuleArg)
  #else
++#ifdef MAGMA_ENABLE_CANARIES
 +#  define ExprIsVtab(X)  \
 +              (MAGMA_LOG_V("JCH231", MAGMA_AND((X)->op==TK_COLUMN, (X)->y.pTab == 0)), \
 +                (X)->op==TK_COLUMN && (X)->y.pTab->nModuleArg)
++#else
++#  define ExprIsVtab(X)  \                
++                ((X)->op==TK_COLUMN && (X)->y.pTab==0)
++#endif
 +#endif
 +#else
  #  define IsVirtual(X)      0
