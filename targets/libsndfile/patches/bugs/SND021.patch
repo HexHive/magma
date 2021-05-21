@@ -1,0 +1,21 @@
+diff --git a/programs/sndfile-deinterleave.c b/programs/sndfile-deinterleave.c
+index 616761e..22e9d07 100644
+--- a/programs/sndfile-deinterleave.c
++++ b/programs/sndfile-deinterleave.c
+@@ -89,11 +89,16 @@ main (int argc, char **argv)
+ 		exit (1) ;
+ 		} ;
+ 
++#ifdef MAGMA_ENABLE_FIXES
+ 	if (sfinfo.channels > MAX_CHANNELS)
+ 	{	printf ("\nError : Input file '%s' has too many (%d) channels. Limit is %d.\n",
+ 			argv [1], sfinfo.channels, MAX_CHANNELS) ;
+ 		exit (1) ;
+ 		} ;
++#endif
++#ifdef MAGMA_ENABLE_CANARIES
++    MAGMA_LOG("SND021", sfinfo.channels > MAX_CHANNELS);
++#endif
+ 
+ 
+ 	state.channels = sfinfo.channels ;

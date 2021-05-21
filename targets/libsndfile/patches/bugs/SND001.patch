@@ -1,0 +1,18 @@
+diff --git a/src/paf.c b/src/paf.c
+index 459bc46..21b3b2d 100644
+--- a/src/paf.c
++++ b/src/paf.c
+@@ -198,8 +198,13 @@ paf_read_header	(SF_PRIVATE *psf)
+ 		psf->endian = SF_ENDIAN_BIG ;
+ 		} ;
+ 
++#ifdef MAGMA_ENABLE_FIXES
+ 	if (paf_fmt.channels < 1 || paf_fmt.channels > SF_MAX_CHANNELS)
+ 		return SFE_PAF_BAD_CHANNELS ;
++#endif
++#ifdef MAGMA_ENABLE_CANARIES
++    MAGMA_LOG("SND001", MAGMA_OR(paf_fmt.channels < 1, paf_fmt.channels > SF_MAX_CHANNELS));
++#endif
+ 
+ 	psf->datalength = psf->filelength - psf->dataoffset ;
+ 
