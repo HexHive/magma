@@ -79,6 +79,9 @@ This indicates that, up until the 12-hour mark, the `AAH001` bug was reached
 *1245* times, and triggered *342* times, whereas the `AAH007` bug was reached
 *45324* times, and triggered *6345* times.
 
+These results can be summarized in a single JSON file by running
+`tools/benchd/exp2json.py workdir bugs.json`. More details are available
+[here](technical.md#exp2jsonpy).
 
 ## Manual Builds
 
