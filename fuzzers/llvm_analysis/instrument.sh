@@ -10,8 +10,11 @@ set -e
 # - env CFLAGS and CXXFLAGS must be set to link against Magma instrumentation
 ##
 
-export CC="$FUZZER/repo/gopath/bin/gclang"
-export CXX="$FUZZER/repo/gopath/bin/gclang++"
+export GOPATH="$FUZZER/repo/go"
+export PATH="$GOPATH/bin:$PATH"
+
+export CC="gclang"
+export CXX="gclang++"
 
 export CFLAGS="$CFLAGS -fno-discard-value-names"
 export CXXFLAGS="$CXXFLAGS -fno-discard-value-names"
@@ -20,6 +23,13 @@ export LIBS="$LIBS -l:StandaloneFuzzTargetMain.o -lstdc++"
 
 "$MAGMA/build.sh"
 "$TARGET/build.sh"
+
+cd $OUT
+source "$TARGET/configrc"
+
+for P in "${PROGRAMS[@]}"; do
+    get-bc "./$P"
+done
 
 # NOTE: We pass $OUT directly to the target build.sh script, since the artifact
 #       itself is the fuzz target. In the case of Angora, we might need to

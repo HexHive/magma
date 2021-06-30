@@ -11,8 +11,14 @@ if [ ! -d "$FUZZER/repo" ]; then
     exit 1
 fi
 
-export CC="$FUZZER/repo/gopath/bin/gclang"
-export CXX="$FUZZER/repo/gopath/bin/gclang++"
+export GOPATH="$FUZZER/repo/go"
+export PATH="$GOPATH/bin:$PATH"
+
+export CC="gclang"
+export CXX="gclang++"
+
+export CFLAGS="$CFLAGS -fno-discard-value-names"
+export CXXFLAGS="$CXXFLAGS -fno-discard-value-names"
 
 # compile standalone driver
 $CC $CFLAGS -c "$FUZZER/src/StandaloneFuzzTargetMain.c" -fPIC \

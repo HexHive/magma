@@ -2,7 +2,7 @@
 set -e
 
 apt-get update && \
-    apt-get install -y make build-essential clang-9 git curl
+    apt-get install -y make build-essential clang-9 git golang-go
 
 update-alternatives \
   --install /usr/lib/llvm              llvm             /usr/lib/llvm-9  20 \
