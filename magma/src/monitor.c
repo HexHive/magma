@@ -176,7 +176,13 @@ bool fetch_file(data_t *data, const char *fname)
     int fd = open(fname, O_RDWR);
     if (fd == -1) {
         fd = open(fname, O_CREAT | O_RDWR, 0666);
+        if (fd < 0) {
+            fprintf(stderr, "Error: Failed to open %s\n", fname);
+            success = false;
+            goto exit;
+        }
         if (ftruncate(fd, FILESIZE) != 0) {
+            fputs("Error: Failed to truncate file", stderr);
             success = false;
             goto exit;
         }
@@ -209,7 +215,13 @@ bool fetch_watch(data_t *data, int *status, int argc, char **argv)
     getcwd(fname, sizeof(fname));
     strcat(strcat(fname, "/"), "monitor_XXXXXX");
     int fd = mkstemp(fname);
+    if (fd < 0) {
+        fprintf(stderr, "Error: Failed to create %s\n", fname);
+        success = false;
+        goto exit;
+    }
     if (ftruncate(fd, FILESIZE) != 0) {
+        fputs("Error: Failed to truncate file", stderr);
         success = false;
         goto exit;
     }
