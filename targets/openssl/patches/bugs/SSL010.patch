@@ -1,0 +1,25 @@
+diff --git a/crypto/bn/bn_local.h b/crypto/bn/bn_local.h
+index 1c9c018cf2..3897c7238f 100644
+--- a/crypto/bn/bn_local.h
++++ b/crypto/bn/bn_local.h
+@@ -657,6 +657,7 @@ BIGNUM *int_bn_mod_inverse(BIGNUM *in,
+ 
+ static ossl_inline BIGNUM *bn_expand(BIGNUM *a, int bits)
+ {
++#ifdef MAGMA_ENABLE_FIXES
+     if (bits > (INT_MAX - BN_BITS2 + 1))
+         return NULL;
+ 
+@@ -664,6 +665,12 @@ static ossl_inline BIGNUM *bn_expand(BIGNUM *a, int bits)
+         return a;
+ 
+     return bn_expand2((a),(bits+BN_BITS2-1)/BN_BITS2);
++#else
++#ifdef MAGMA_ENABLE_CANARIES
++    MAGMA_LOG("%MAGMA_BUG%",bits > (INT_MAX - BN_BITS2 + 1));
++#endif
++    return ((((((bits+BN_BITS2-1))/BN_BITS2)) <= (a)->dmax)?(a):bn_expand2((a),(bits+BN_BITS2-1)/BN_BITS2));
++#endif
+ }
+ 
+ int bn_check_prime_int(const BIGNUM *w, int checks, BN_CTX *ctx,

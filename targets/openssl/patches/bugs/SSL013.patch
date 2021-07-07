@@ -1,0 +1,18 @@
+--- a/crypto/rsa/rsa_ameth.c
++++ b/crypto/rsa/rsa_ameth.c
+@@ -789,7 +789,15 @@ static int rsa_item_verify(EVP_MD_CTX *ctx, const ASN1_ITEM *it, void *asn,
+         RSAerr(RSA_F_RSA_ITEM_VERIFY, RSA_R_UNSUPPORTED_SIGNATURE_TYPE);
+         return -1;
+     }
++#ifdef MAGMA_ENABLE_FIXES
+     if (ossl_rsa_pss_to_ctx(ctx, NULL, sigalg, pkey) > 0) {
++#else
++    int magma_int = ossl_rsa_pss_to_ctx(ctx, NULL, sigalg, pkey);
++#ifdef MAGMA_ENABLE_CANARIES
++    MAGMA_LOG("%MAGMA_BUG%", magma_int < 0);
++#endif
++    if (magma_int) {
++#endif
+         /* Carry on */
+         return 2;
+     }

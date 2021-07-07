@@ -1,0 +1,17 @@
+diff --git a/valid.c b/valid.c
+index b1cfede..d0db16a 100644
+--- a/valid.c
++++ b/valid.c
+@@ -1324,7 +1324,12 @@ xmlSnprintfElementContent(char *buf, int size, xmlElementContentPtr content, int
+ 		xmlSnprintfElementContent(buf, size, content->c2, 0);
+ 	    break;
+     }
++#ifdef MAGMA_ENABLE_FIXES
+     if (size - strlen(buf) <= 2) return;
++#endif
++#ifdef MAGMA_ENABLE_CANARIES
++    MAGMA_LOG("%MAGMA_BUG%", size - strlen(buf) <= 2);
++#endif
+     if (englob)
+         strcat(buf, ")");
+     switch (content->ocur) {

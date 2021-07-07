@@ -1,0 +1,23 @@
+diff --git a/libtiff/tif_print.c b/libtiff/tif_print.c
+index a073794..0a0e691 100644
+--- a/libtiff/tif_print.c
++++ b/libtiff/tif_print.c
+@@ -544,9 +544,18 @@ TIFFPrintDirectory(TIFF* tif, FILE* fd, long flags)
+ 				uint16 i;
+ 				fprintf(fd, "    %2ld: %5"PRIu16,
+ 				    l, td->td_transferfunction[0][l]);
++#ifdef MAGMA_ENABLE_FIXES
+ 				for (i = 1; i < td->td_samplesperpixel - td->td_extrasamples && i < 3; i++)
++#else
++				for (i = 1; i < td->td_samplesperpixel; i++)
++#endif
++				{
++#ifdef MAGMA_ENABLE_CANARIES
++					MAGMA_LOG("%MAGMA_BUG%", MAGMA_OR(i == sizeof(td->td_transferfunction) / sizeof(*td->td_transferfunction), i == (td->td_samplesperpixel - td->td_extrasamples)));
++#endif
+ 					fprintf(fd, " %5"PRIu16,
+ 					    td->td_transferfunction[i][l]);
++				}
+ 				fputc('\n', fd);
+ 			}
+ 		} else

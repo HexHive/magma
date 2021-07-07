@@ -1,0 +1,27 @@
+diff --git a/crypto/bn/bn_gf2m.c b/crypto/bn/bn_gf2m.c
+index 7a56745fe2..4dcab8e6f5 100644
+--- a/crypto/bn/bn_gf2m.c
++++ b/crypto/bn/bn_gf2m.c
+@@ -660,13 +660,22 @@ static int BN_GF2m_mod_inv_vartime(BIGNUM *r, const BIGNUM *a,
+                 bdp[i] = b0 >> 1;
+                 ubits--;
+             }
+ 
++#ifdef MAGMA_ENABLE_FIXES
+             if (ubits <= BN_BITS2) {
+                 if (udp[0] == 0) /* poly was reducible */
+                     goto err;
+                 if (udp[0] == 1)
+                     break;
+             }
++#else
++#ifdef MAGMA_ENABLE_CANARIES
++            MAGMA_LOG("%MAGMA_BUG%", udp[0] == 0);
++#endif
++            if (ubits <= BN_BITS2 && udp[0] == 1)
++                    break;
++
++#endif
+ 
+             if (ubits < vbits) {
+                 i = ubits;

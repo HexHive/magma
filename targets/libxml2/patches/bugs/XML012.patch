@@ -1,0 +1,51 @@
+diff --git a/parser.c b/parser.c
+index 3f31329..55b4bb4 100644
+--- a/parser.c
++++ b/parser.c
+@@ -3349,6 +3349,7 @@ xmlParseNCNameComplex(xmlParserCtxtPtr ctxt) {
+     int c;
+     int count = 0;
+     size_t startPosition = 0;
++    const xmlChar *end;
+ 
+ #ifdef DEBUG
+     nbParseNCNameComplex++;
+@@ -3359,6 +3360,7 @@ xmlParseNCNameComplex(xmlParserCtxtPtr ctxt) {
+      */
+     GROW;
+     startPosition = CUR_PTR - BASE_PTR;
++    end = ctxt->input->cur;
+     c = CUR_CHAR(l);
+     if ((c == ' ') || (c == '>') || (c == '/') || /* accelerators */
+ 	(!xmlIsNameStartChar(ctxt, c) || (c == ':'))) {
+@@ -3380,6 +3382,7 @@ xmlParseNCNameComplex(xmlParserCtxtPtr ctxt) {
+ 	}
+ 	len += l;
+ 	NEXTL(l);
++	end = ctxt->input->cur;
+ 	c = CUR_CHAR(l);
+ 	if (c == 0) {
+ 	    count = 0;
+@@ -3393,6 +3396,7 @@ xmlParseNCNameComplex(xmlParserCtxtPtr ctxt) {
+             if (ctxt->instate == XML_PARSER_EOF)
+                 return(NULL);
+ 	    ctxt->input->cur += l;
++	    end = ctxt->input->cur;
+ 	    c = CUR_CHAR(l);
+ 	}
+     }
+@@ -3401,7 +3405,14 @@ xmlParseNCNameComplex(xmlParserCtxtPtr ctxt) {
+         xmlFatalErr(ctxt, XML_ERR_NAME_TOO_LONG, "NCName");
+         return(NULL);
+     }
++#ifdef MAGMA_ENABLE_FIXES
+     return(xmlDictLookup(ctxt->dict, (BASE_PTR + startPosition), len));
++#else
++#ifdef MAGMA_ENABLE_CANARIES
++    MAGMA_LOG("%MAGMA_BUG%", (end - len) != (BASE_PTR + startPosition));
++#endif
++    return(xmlDictLookup(ctxt->dict, (end - len), len));
++#endif
+ }
+ 
+ /**

@@ -1,0 +1,23 @@
+diff --git a/ssl/t1_lib.c b/ssl/t1_lib.c
+index 923cf5b5cd..6ed2362391 100644
+--- a/ssl/t1_lib.c
++++ b/ssl/t1_lib.c
+@@ -1550,11 +1556,18 @@ SSL_TICKET_STATUS tls_decrypt_ticket(SSL *s, const unsigned char *etick,
+     }
+ 
+     /* Sanity check ticket length: must exceed keyname + IV + HMAC */
++#ifdef MAGMA_ENABLE_FIXES
+     if (eticklen <=
+         TLSEXT_KEYNAME_LENGTH + EVP_CIPHER_CTX_get_iv_length(ctx) + mlen) {
++#else
++    if (eticklen < 48) {
++#endif
+         ret = SSL_TICKET_NO_DECRYPT;
+         goto end;
+     }
++#ifdef MAGMA_ENABLE_CANARIES
++    MAGMA_LOG("%MAGMA_BUG%", eticklen <= TLSEXT_KEYNAME_LENGTH + EVP_CIPHER_CTX_get_iv_length(ctx) + mlen);
++#endif
+     eticklen -= mlen;
+     /* Check HMAC of encrypted ticket */
+     if (ssl_hmac_update(hctx, etick, eticklen) <= 0

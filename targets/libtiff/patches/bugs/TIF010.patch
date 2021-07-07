@@ -1,0 +1,21 @@
+diff --git a/libtiff/tif_lzw.c b/libtiff/tif_lzw.c
+index 21064f2..fb63a80 100644
+--- a/libtiff/tif_lzw.c
++++ b/libtiff/tif_lzw.c
+@@ -764,9 +764,16 @@ LZWDecodeCompat(TIFF* tif, uint8* op0, tmsize_t occ0, uint16 s)
+ 			len = codep->length;
+ 			tp = op + len;
+ 			do {
++#ifdef MAGMA_ENABLE_CANARIES
++				MAGMA_LOG("%MAGMA_BUG%", tp <= op); // or use == instead of <= so the bug is reported once only
++#endif
+ 				*--tp = codep->value;
+ 				codep = codep->next;
++#ifdef MAGMA_ENABLE_FIXES
+ 			} while (codep && tp > op);
++#else
++			} while (codep);
++#endif
+ 			assert(occ >= len);
+ 			op += len;
+ 			occ -= len;

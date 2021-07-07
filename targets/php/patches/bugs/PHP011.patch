@@ -1,0 +1,33 @@
+diff --git a/ext/exif/exif.c b/ext/exif/exif.c
+index 57ca8fdaa6..8d07216877 100644
+--- a/ext/exif/exif.c
++++ b/ext/exif/exif.c
+@@ -2062,6 +2062,7 @@ static inline void exif_offset_info_init(
+ /* Try to get a pointer at offset_base+offset with length dereferenceable bytes. */
+ static inline char *exif_offset_info_try_get(
+ 		const exif_offset_info *info, size_t offset, size_t length) {
++#ifdef MAGMA_ENABLE_FIXES
+ 	char *start, *end;
+ 	if (ptr_offset_overflows(info->offset_base, offset)) {
+ 		return NULL;
+@@ -2078,6 +2079,20 @@ static inline char *exif_offset_info_try_get(
+ 	}
+ 
+ 	return start;
++#else
++	if ((offset + length) > (info->valid_end - info->valid_start)) {
++		return NULL;
++	}
++#ifdef MAGMA_ENABLE_CANARIES
++	// The canaries are split so that a triggered bug is recorded as early as
++	//   possible.
++	MAGMA_LOG("%MAGMA_BUG%", ptr_offset_overflows(info->offset_base, offset));
++	MAGMA_LOG("%MAGMA_BUG%", ptr_offset_overflows(info->offset_base + offset, length));
++	MAGMA_LOG("%MAGMA_BUG%", MAGMA_OR((info->offset_base + offset) < info->valid_start,
++			(info->offset_base + offset + length) > info->valid_end));
++#endif
++	return info->offset_base + offset;
++#endif
+ }
+ 
+ static inline zend_bool exif_offset_info_contains(

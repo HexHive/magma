@@ -1,0 +1,18 @@
+diff --git a/ext/intl/msgformat/msgformat_parse.c b/ext/intl/msgformat/msgformat_parse.c
+index 006d9d8999..bbf2144b9e 100644
+--- a/ext/intl/msgformat/msgformat_parse.c
++++ b/ext/intl/msgformat/msgformat_parse.c
+@@ -102,7 +102,13 @@ PHP_FUNCTION( msgfmt_parse_message )
+ 		RETURN_THROWS();
+ 	}
+ 
++#ifdef MAGMA_ENABLE_FIXES
+ 	INTL_CHECK_LOCALE_LEN(slocale_len);
++#else
++	#ifdef MAGMA_ENABLE_CANARIES
++		MAGMA_LOG("%MAGMA_BUG%",(slocale_len > INTL_MAX_LOCALE_LEN));
++	#endif
++#endif
+ 	memset(mfo, 0, sizeof(*mfo));
+ 	msgformat_data_init(&mfo->mf_data);
+ 

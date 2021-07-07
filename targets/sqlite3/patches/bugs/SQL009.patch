@@ -1,0 +1,17 @@
+diff --git a/src/vdbemem.c b/src/vdbemem.c
+index 16d1ac8b0..979e2afe8 100644
+--- a/src/vdbemem.c
++++ b/src/vdbemem.c
+@@ -1226,7 +1226,12 @@ static SQLITE_NOINLINE const void *valueToText(sqlite3_value* pVal, u8 enc){
+   assert( !sqlite3VdbeMemIsRowSet(pVal) );
+   assert( (pVal->flags & (MEM_Null))==0 );
+   if( pVal->flags & (MEM_Blob|MEM_Str) ){
++#ifdef MAGMA_ENABLE_FIXES
+     if( ExpandBlob(pVal) ) return 0;
++#endif
++#ifdef MAGMA_ENABLE_CANARIES
++    MAGMA_LOG("%MAGMA_BUG%", ExpandBlob(pVal));
++#endif
+     pVal->flags |= MEM_Str;
+     if( pVal->enc != (enc & ~SQLITE_UTF16_ALIGNED) ){
+       sqlite3VdbeChangeEncoding(pVal, enc & ~SQLITE_UTF16_ALIGNED);

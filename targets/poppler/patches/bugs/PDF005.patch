@@ -1,0 +1,21 @@
+diff --git a/poppler/JPEG2000Stream.cc b/poppler/JPEG2000Stream.cc
+index 8e6902f..0f50bc0 100644
+--- a/poppler/JPEG2000Stream.cc
++++ b/poppler/JPEG2000Stream.cc
+@@ -254,11 +254,16 @@ void JPXStream::init()
+                 break;
+             }
+             const int componentPixels = priv->image->comps[component].w * priv->image->comps[component].h;
++#ifdef MAGMA_ENABLE_FIXES
+             if (componentPixels != priv->npixels) {
+                 error(errSyntaxWarning, -1, "Component {0:d} has different WxH than component 0", component);
+                 close();
+                 break;
+             }
++#endif
++#ifdef MAGMA_ENABLE_CANARIES
++            MAGMA_LOG("%MAGMA_BUG%", componentPixels != priv->npixels);
++#endif
+             unsigned char *cdata = (unsigned char *)priv->image->comps[component].data;
+             int adjust = 0;
+             int depth = priv->image->comps[component].prec;

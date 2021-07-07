@@ -1,0 +1,19 @@
+diff --git a/poppler/FileSpec.cc b/poppler/FileSpec.cc
+index be262ad4..445931f3 100644
+--- a/poppler/FileSpec.cc
++++ b/poppler/FileSpec.cc
+@@ -97,9 +97,13 @@ bool EmbFile::save(const char *path) {
+ bool EmbFile::save2(FILE *f) {
+     int c;
+ 
++#ifdef MAGMA_ENABLE_FIXES
+     if (unlikely(!m_objStr.isStream()))
+         return false;
+-
++#endif
++#ifdef MAGMA_ENABLE_CANARIES
++    MAGMA_LOG("%MAGMA_BUG%", !m_objStr.isStream());
++#endif
+     m_objStr.streamReset();
+     while ((c = m_objStr.streamGetChar()) != EOF) {
+         fputc(c, f);

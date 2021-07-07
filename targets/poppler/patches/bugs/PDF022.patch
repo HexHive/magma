@@ -1,0 +1,108 @@
+diff --git a/poppler/GfxState.cc b/poppler/GfxState.cc
+index 9aca67b3..8d5e89f2 100644
+--- a/poppler/GfxState.cc
++++ b/poppler/GfxState.cc
+@@ -2701,16 +2701,24 @@ void GfxSeparationColorSpace::getGray(const GfxColor *color, GfxGray *gray) cons
+     GfxColor color2;
+     int i;
+ 
++#ifdef MAGMA_ENABLE_FIXES
+     if (alt->getMode() == csDeviceGray && name->cmp("Black") == 0) {
+         *gray = clip01(gfxColorComp1 - color->c[0]);
+     } else {
++#else
++#ifdef MAGMA_ENABLE_CANARIES
++        MAGMA_LOG("%MAGMA_BUG%", MAGMA_AND(alt->getMode() == csDeviceGray, name->cmp("Black") == 0));
++#endif
++#endif
+         x = colToDbl(color->c[0]);
+         func->transform(&x, c);
+         for (i = 0; i < alt->getNComps(); ++i) {
+             color2.c[i] = dblToCol(c[i]);
+         }
+         alt->getGray(&color2, gray);
++#ifdef MAGMA_ENABLE_FIXES
+     }
++#endif
+ }
+ 
+ void GfxSeparationColorSpace::getRGB(const GfxColor *color, GfxRGB *rgb) const {
+@@ -2719,24 +2727,32 @@ void GfxSeparationColorSpace::getRGB(const GfxColor *color, GfxRGB *rgb) const {
+     GfxColor color2;
+     int i;
+ 
++#ifdef MAGMA_ENABLE_FIXES
+     if (alt->getMode() == csDeviceGray && name->cmp("Black") == 0) {
+         rgb->r = clip01(gfxColorComp1 - color->c[0]);
+         rgb->g = clip01(gfxColorComp1 - color->c[0]);
+         rgb->b = clip01(gfxColorComp1 - color->c[0]);
+     } else {
++#else
++#ifdef MAGMA_ENABLE_CANARIES
++        MAGMA_LOG("%MAGMA_BUG%", MAGMA_AND(alt->getMode() == csDeviceGray, name->cmp("Black") == 0));
++#endif
++#endif
+         x = colToDbl(color->c[0]);
+         func->transform(&x, c);
+         const int altNComps = alt->getNComps();
+         for (i = 0; i < altNComps; ++i) {
+             color2.c[i] = dblToCol(c[i]);
+         }
+         if (unlikely(altNComps > func->getOutputSize())) {
+             for (i = func->getOutputSize(); i < altNComps; ++i) {
+                 color2.c[i] = 0;
+             }
+         }
+         alt->getRGB(&color2, rgb);
++#ifdef MAGMA_ENABLE_FIXES
+     }
++#endif
+ }
+ 
+ void GfxSeparationColorSpace::getCMYK(const GfxColor *color, GfxCMYK *cmyk) const {
+@@ -2745,34 +2761,45 @@ void GfxSeparationColorSpace::getCMYK(const GfxColor *color, GfxCMYK *cmyk) cons
+     GfxColor color2;
+     int i;
+ 
++#ifdef MAGMA_ENABLE_FIXES
+     if (name->cmp("Black") == 0) {
+         cmyk->c = 0;
+         cmyk->m = 0;
+         cmyk->y = 0;
+         cmyk->k = color->c[0];
+     } else if (name->cmp("Cyan") == 0) {
+         cmyk->c = color->c[0];
+         cmyk->m = 0;
+         cmyk->y = 0;
+         cmyk->k = 0;
+     } else if (name->cmp("Magenta") == 0) {
+         cmyk->c = 0;
+         cmyk->m = color->c[0];
+         cmyk->y = 0;
+         cmyk->k = 0;
+     } else if (name->cmp("Yellow") == 0) {
+         cmyk->c = 0;
+         cmyk->m = 0;
+         cmyk->y = color->c[0];
+         cmyk->k = 0;
+     } else {
++#else
++#ifdef MAGMA_ENABLE_CANARIES
++        MAGMA_LOG("%MAGMA_BUG%", MAGMA_OR(name->cmp("Black") == 0, \
++                            MAGMA_OR(name->cmp("Cyan") == 0, \
++                            MAGMA_OR(name->cmp("Magenta") == 0, \
++                                     name->cmp("Yellow") == 0))));
++#endif
++#endif
+         x = colToDbl(color->c[0]);
+         func->transform(&x, c);
+         for (i = 0; i < alt->getNComps(); ++i) {
+             color2.c[i] = dblToCol(c[i]);
+         }
+         alt->getCMYK(&color2, cmyk);
++#ifdef MAGMA_ENABLE_FIXES
+     }
++#endif
+ }
+ 
+ void GfxSeparationColorSpace::getDeviceN(const GfxColor *color, GfxColor *deviceN) const {

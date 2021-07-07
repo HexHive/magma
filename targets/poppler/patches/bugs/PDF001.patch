@@ -1,0 +1,20 @@
+diff --git a/poppler/SplashOutputDev.cc b/poppler/SplashOutputDev.cc
+index 3d2befc..078c143 100644
+--- a/poppler/SplashOutputDev.cc
++++ b/poppler/SplashOutputDev.cc
+@@ -4581,10 +4581,15 @@ bool SplashOutputDev::tilingPatternFill(GfxState *state, Gfx *gfxA, Catalog *cat
+         surface_width = (int)ceil(fabs(kx));
+         surface_height = (int)ceil(fabs(ky));
+         // adjust repeat values to completely fill region
++#ifdef MAGMA_ENABLE_FIXES
+         if (unlikely(surface_width == 0 || surface_height == 0)) {
+             state->setCTM(savedCTM[0], savedCTM[1], savedCTM[2], savedCTM[3], savedCTM[4], savedCTM[5]);
+             return false;
+         }
++#endif
++#ifdef MAGMA_ENABLE_CANARIES
++        MAGMA_LOG("%MAGMA_BUG%", MAGMA_OR(surface_width == 0, surface_height == 0));
++#endif
+         repeatX = result_width / surface_width;
+         repeatY = result_height / surface_height;
+         if (surface_width * repeatX < result_width)

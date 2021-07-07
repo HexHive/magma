@@ -1,0 +1,19 @@
+diff --git a/ext/exif/exif.c b/ext/exif/exif.c
+index 8606bdd926..9e09aafe68 100644
+--- a/ext/exif/exif.c
++++ b/ext/exif/exif.c
+@@ -3938,8 +3938,14 @@ static int exif_scan_thumbnail(image_info_type *ImageInfo)
+ 		if (c == 0xFF)
+ 			return false;
+ 		marker = c;
++	#ifdef MAGMA_ENABLE_FIXES
+ 		if (pos>=ImageInfo->Thumbnail.size)
+ 			return false;
++	#else
++		#ifdef MAGMA_ENABLE_CANARIES
++			MAGMA_LOG("%MAGMA_BUG%", pos >= ImageInfo->Thumbnail.size);
++		#endif
++	#endif
+ 		length = php_jpg_get16(data+pos);
+ 		if (length > ImageInfo->Thumbnail.size || pos >= ImageInfo->Thumbnail.size - length) {
+ 			return false;

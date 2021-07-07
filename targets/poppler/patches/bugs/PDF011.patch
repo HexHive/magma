@@ -1,0 +1,21 @@
+diff --git a/poppler/XRef.cc b/poppler/XRef.cc
+index 8f9dd7fe..84fac3fb 100644
+--- a/poppler/XRef.cc
++++ b/poppler/XRef.cc
+@@ -1568,11 +1568,15 @@ DummyXRefEntry dummyXRefEntry;
+ 
+ XRefEntry *XRef::getEntry(int i, bool complainIfMissing)
+ {
++#ifdef MAGMA_ENABLE_FIXES
+     if (unlikely(i < 0)) {
+         error(errInternal, -1, "Request for invalid XRef entry [{0:d}]", i);
+         return &dummyXRefEntry;
+     }
+-
++#endif
++#ifdef MAGMA_ENABLE_CANARIES
++    MAGMA_LOG("%MAGMA_BUG%", i < 0);
++#endif
+     if (i >= size || entries[i].type == xrefEntryNone) {
+ 
+         if ((!xRefStream) && mainXRefEntriesOffset) {

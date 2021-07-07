@@ -12,7 +12,7 @@ index fd3e453..0bdcd02 100644
  			psf->instrument->loop_count = ARRAY_LEN (psf->instrument->loops) ;
 +#endif
 +#ifdef MAGMA_ENABLE_CANARIES
-+        MAGMA_LOG("SND025", psf->instrument->loop_count > ARRAY_LEN (psf->instrument->loops));
++        MAGMA_LOG("%MAGMA_BUG%", psf->instrument->loop_count > ARRAY_LEN (psf->instrument->loops));
 +#endif
  
  		for (tmp = 0 ; tmp < psf->instrument->loop_count ; tmp++)

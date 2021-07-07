@@ -1,0 +1,28 @@
+diff --git a/valid.c b/valid.c
+index b1cfede..49e6251 100644
+--- a/valid.c
++++ b/valid.c
+@@ -4657,15 +4657,22 @@ xmlNodePtr elem, const xmlChar *prefix, xmlNsPtr ns, const xmlChar *value) {
+      * xmlAddID and xmlAddRef for namespace declarations, but it makes
+      * no practical sense to use ID types anyway.
+      */
+-#if 0
++#ifdef MAGMA_ENABLE_FIXES
++#else
+     /* Validity Constraint: ID uniqueness */
+     if (attrDecl->atype == XML_ATTRIBUTE_ID) {
++#ifdef MAGMA_ENABLE_CANARIES
++        MAGMA_LOG("%MAGMA_BUG%", 1); // type confusion on the next line
++#endif
+         if (xmlAddID(ctxt, doc, value, (xmlAttrPtr) ns) == NULL)
+ 	    ret = 0;
+     }
+ 
+     if ((attrDecl->atype == XML_ATTRIBUTE_IDREF) ||
+ 	(attrDecl->atype == XML_ATTRIBUTE_IDREFS)) {
++#ifdef MAGMA_ENABLE_CANARIES
++        MAGMA_LOG("%MAGMA_BUG%", 1); // type confusion on the next line
++#endif
+         if (xmlAddRef(ctxt, doc, value, (xmlAttrPtr) ns) == NULL)
+ 	    ret = 0;
+     }

@@ -12,7 +12,7 @@ index d872a89..1c05e2f 100644
 +	{    size_t chanmap_size = psf->sf.channels * sizeof (psf->channel_map [0]) ;
 +#endif
 +#ifdef MAGMA_ENABLE_CANARIES
-+	    MAGMA_LOG("SND005", psf->sf.channels > (layout_tag & 0xffff));
++	    MAGMA_LOG("%MAGMA_BUG%", psf->sf.channels > (layout_tag & 0xffff));
 +#endif
  
  		free (psf->channel_map) ;

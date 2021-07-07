@@ -1,0 +1,33 @@
+diff --git a/fofi/FoFiTrueType.cc b/fofi/FoFiTrueType.cc
+index 24624352..6a48384b 100644
+--- a/fofi/FoFiTrueType.cc
++++ b/fofi/FoFiTrueType.cc
+@@ -1227,16 +1227,28 @@ void FoFiTrueType::cvtSfnts(FoFiOutputFunc outputFunc,
+                 if ((j = seekTable(t42Tables[i].tag)) >= 0 && checkRegion(tables[j].offset, tables[j].len)) {
+                     dumpString(file + tables[j].offset, tables[j].len, outputFunc, outputStream);
+                 } else if (needVerticalMetrics && i == t42VheaTable) {
++#ifdef MAGMA_ENABLE_FIXES
+                     if (unlikely(length > (int)sizeof(vheaTab))) {
+                         error(errSyntaxWarning, -1, "length bigger than vheaTab size");
+                         length = sizeof(vheaTab);
+                     }
++#else
++#ifdef MAGMA_ENABLE_CANARIES
++                    MAGMA_LOG("%MAGMA_BUG%", length > (int)sizeof(vheaTab));
++#endif
++#endif
+                     dumpString(vheaTab, length, outputFunc, outputStream);
+                 } else if (needVerticalMetrics && i == t42VmtxTable) {
++#ifdef MAGMA_ENABLE_FIXES
+                     if (unlikely(length > vmtxTabLength)) {
+                         error(errSyntaxWarning, -1, "length bigger than vmtxTab size");
+                         length = vmtxTabLength;
+                     }
++#else
++#ifdef MAGMA_ENABLE_CANARIES
++                    MAGMA_LOG("%MAGMA_BUG%", length > vmtxTabLength);
++#endif
++#endif
+                     dumpString(vmtxTab, length, outputFunc, outputStream);
+                 }
+             }

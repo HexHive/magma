@@ -1,0 +1,22 @@
+diff --git a/ext/exif/exif.c b/ext/exif/exif.c
+index 8606bdd926..1a7abce6d9 100644
+--- a/ext/exif/exif.c
++++ b/ext/exif/exif.c
+@@ -3194,10 +3194,17 @@ static int exif_process_IFD_in_MAKERNOTE(image_info_type *ImageInfo, char * valu
+ 		exif_error_docref("exif_read_data#error_ifd" EXIFERR_CC, ImageInfo, E_WARNING, "Illegal IFD size: 2 + 0x%04X*12 = 0x%04X > 0x%04X", NumDirEntries, 2+NumDirEntries*12, value_len);
+ 		return false;
+ 	}
++
++	#ifdef MAGMA_ENABLE_FIXES
+ 	if ((dir_start - value_ptr) > value_len - (2+NumDirEntries*12)) {
+ 		exif_error_docref("exif_read_data#error_ifd" EXIFERR_CC, ImageInfo, E_WARNING, "Illegal IFD size: 0x%04X > 0x%04X", (dir_start - value_ptr) + (2+NumDirEntries*12), value_len);
+ 		return false;
+ 	}
++	#else
++		#ifdef MAGMA_ENABLE_CANARIES
++			MAGMA_LOG("%MAGMA_BUG%",(dir_start - value_ptr) > value_len - (2+NumDirEntries*12));
++		#endif
++	#endif
+ 
+ 	for (de=0;de<NumDirEntries;de++) {
+ 		size_t offset = 2 + 12 * de;

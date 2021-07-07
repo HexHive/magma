@@ -1,0 +1,26 @@
+diff --git a/crypto/x509/x509_vfy.c b/crypto/x509/x509_vfy.c
+index c8d1258803..3b42adc259 100644
+--- a/crypto/x509/x509_vfy.c
++++ b/crypto/x509/x509_vfy.c
+@@ -1005,10 +1005,21 @@ static int get_crl_sk(X509_STORE_CTX *ctx, X509_CRL **pcrl, X509_CRL **pdcrl,
+         crl = sk_X509_CRL_value(crls, i);
+         reasons = *preasons;
+         crl_score = get_crl_score(ctx, &crl_issuer, &reasons, crl, x);
++#ifdef MAGMA_ENABLE_FIXES
+         if (crl_score < best_score || crl_score == 0)
++#else
++        if (crl_score < best_score)
++#endif
+             continue;
+         /* If current CRL is equivalent use it if it is newer */
++#ifdef MAGMA_ENABLE_FIXES
+         if (crl_score == best_score && best_crl != NULL) {
++#else
++        if (crl_score == best_score) {
++#ifdef MAGMA_ENABLE_CANARIES
++            MAGMA_LOG("%MAGMA_BUG%", best_crl == NULL);
++#endif
++#endif
+             int day, sec;
+             if (ASN1_TIME_diff(&day, &sec, X509_CRL_get0_lastUpdate(best_crl),
+                                X509_CRL_get0_lastUpdate(crl)) == 0)

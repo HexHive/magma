@@ -1,0 +1,82 @@
+diff --git a/HTMLparser.c b/HTMLparser.c
+index de624f8d..00b2fb1c 100644
+--- a/HTMLparser.c
++++ b/HTMLparser.c
+@@ -2800,6 +2800,7 @@ htmlParseAttValue(htmlParserCtxtPtr ctxt) {
+ static xmlChar *
+ htmlParseSystemLiteral(htmlParserCtxtPtr ctxt) {
+     size_t len = 0, startPosition = 0;
++    const xmlChar *q;
+     int err = 0;
+     int quote;
+     xmlChar *ret = NULL;
+@@ -2812,9 +2813,12 @@ htmlParseSystemLiteral(htmlParserCtxtPtr ctxt) {
+     quote = CUR;
+     NEXT;
+ 
++#ifdef MAGMA_ENABLE_FIXES
+     if (CUR_PTR < BASE_PTR)
+         return(ret);
++#endif
+     startPosition = CUR_PTR - BASE_PTR;
++    q = CUR_PTR;
+ 
+     while ((CUR != 0) && (CUR != quote)) {
+         /* TODO: Handle UTF-8 */
+@@ -2830,9 +2834,17 @@ htmlParseSystemLiteral(htmlParserCtxtPtr ctxt) {
+         htmlParseErr(ctxt, XML_ERR_LITERAL_NOT_FINISHED,
+                      "Unfinished SystemLiteral\n", NULL, NULL);
+     } else {
++#ifdef MAGMA_ENABLE_FIXES
+         NEXT;
+         if (err == 0)
+             ret = xmlStrndup((BASE_PTR+startPosition), len);
++#else
++#ifdef MAGMA_ENABLE_CANARIES
++        MAGMA_LOG("%MAGMA_BUG%", q != (BASE_PTR+startPosition));
++#endif
++        ret = xmlStrndup(q, CUR_PTR - q);
++        NEXT;
++#endif
+     }
+ 
+     return(ret);
+@@ -2852,6 +2864,7 @@ htmlParseSystemLiteral(htmlParserCtxtPtr ctxt) {
+ static xmlChar *
+ htmlParsePubidLiteral(htmlParserCtxtPtr ctxt) {
+     size_t len = 0, startPosition = 0;
++    const xmlChar *q;
+     int err = 0;
+     int quote;
+     xmlChar *ret = NULL;
+@@ -2867,9 +2880,12 @@ htmlParsePubidLiteral(htmlParserCtxtPtr ctxt) {
+     /*
+      * Name ::= (Letter | '_') (NameChar)*
+      */
++#ifdef MAGMA_ENABLE_FIXES
+     if (CUR_PTR < BASE_PTR)
+         return(ret);
++#endif
+     startPosition = CUR_PTR - BASE_PTR;
++    q = CUR_PTR;
+ 
+     while ((CUR != 0) && (CUR != quote)) {
+         if (!IS_PUBIDCHAR_CH(CUR)) {
+@@ -2885,9 +2901,17 @@ htmlParsePubidLiteral(htmlParserCtxtPtr ctxt) {
+         htmlParseErr(ctxt, XML_ERR_LITERAL_NOT_FINISHED,
+                      "Unfinished PubidLiteral\n", NULL, NULL);
+     } else {
++#ifdef MAGMA_ENABLE_FIXES
+         NEXT;
+         if (err == 0)
+             ret = xmlStrndup((BASE_PTR + startPosition), len);
++#else
++#ifdef MAGMA_ENABLE_CANARIES
++        MAGMA_LOG("%MAGMA_BUG%", q != (BASE_PTR+startPosition));
++#endif
++        ret = xmlStrndup(q, CUR_PTR - q);
++        NEXT;
++#endif
+     }
+ 
+     return(ret);

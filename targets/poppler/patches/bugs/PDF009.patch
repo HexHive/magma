@@ -1,0 +1,20 @@
+diff --git a/poppler/Parser.cc b/poppler/Parser.cc
+index 0cb1f7f..d273504 100644
+--- a/poppler/Parser.cc
++++ b/poppler/Parser.cc
+@@ -283,8 +283,15 @@ Stream *Parser::makeStream(Object &&dict, unsigned char *fileKey,
+             // When building the xref we can't use it so use this
+             // kludge for broken PDF files: just add 5k to the length, and
+             // hope its enough
++#ifdef MAGMA_ENABLE_FIXES
+             if (length < LLONG_MAX - pos - 5000)
+                 length += 5000;
++#else
++#ifdef MAGMA_ENABLE_CANARIES
++            MAGMA_LOG("%MAGMA_BUG%", length >= LLONG_MAX - pos - 5000);
++#endif
++            length += 5000;
++#endif
+         }
+     }
+ 

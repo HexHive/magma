@@ -1,0 +1,24 @@
+diff --git a/ssl/statem/statem_dtls.c b/ssl/statem/statem_dtls.c
+index 564829c808..b9b180d4a9 100644
+--- a/ssl/statem/statem_dtls.c
++++ b/ssl/statem/statem_dtls.c
+@@ -423,12 +423,19 @@ static int dtls1_preprocess_fragment(SSL *s, struct hm_header_st *msg_hdr)
+     frag_off = msg_hdr->frag_off;
+     frag_len = msg_hdr->frag_len;
+ 
++#ifdef MAGMA_ENABLE_FIXES
+     /* sanity checking */
+     if ((frag_off + frag_len) > msg_len
+             || msg_len > dtls1_max_handshake_message_len(s)) {
++#else
++    if ((frag_off + frag_len) > msg_len) {
++#endif
+         SSLfatal(s, SSL_AD_ILLEGAL_PARAMETER, SSL_R_EXCESSIVE_MESSAGE_SIZE);
+         return 0;
+     }
++#ifdef MAGMA_ENABLE_CANARIES
++    MAGMA_LOG("%MAGMA_BUG%", msg_len > dtls1_max_handshake_message_len(s));
++#endif
+ 
+     if (s->d1->r_msg_hdr.frag_off == 0) { /* first fragment */
+         /*

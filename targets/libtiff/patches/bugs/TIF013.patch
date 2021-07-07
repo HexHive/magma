@@ -1,0 +1,26 @@
+diff --git a/libtiff/tif_jbig.c b/libtiff/tif_jbig.c
+index 7ffe885..a2bc7bf 100644
+--- a/libtiff/tif_jbig.c
++++ b/libtiff/tif_jbig.c
+@@ -106,12 +106,21 @@ static int JBIGDecode(TIFF* tif, uint8* buffer, tmsize_t size, uint16 s)
+ 	}
+ 	else if( (tmsize_t)decodedSize > size )
+ 	{
++#ifdef MAGMA_ENABLE_FIXES
+ 	    TIFFErrorExt(tif->tif_clientdata, "JBIG",
+ 	                 "Decoded %lu bytes, whereas %"TIFF_SSIZE_FORMAT" were requested",
+ 	                 decodedSize, size);
+ 	    jbg_dec_free(&decoder);
+ 	    return 0;
++#else
++	    TIFFWarningExt(tif->tif_clientdata, "JBIG",
++	                 "Decoded %lu bytes, whereas %lu were requested",
++	                 decodedSize, (unsigned long)size);
++#endif
+ 	}
++#ifdef MAGMA_ENABLE_CANARIES
++	MAGMA_LOG("%MAGMA_BUG%", (tmsize_t)decodedSize > size);
++#endif
+ 	pImage = jbg_dec_getimage(&decoder, 0);
+ 	_TIFFmemcpy(buffer, pImage, decodedSize);
+ 	jbg_dec_free(&decoder);

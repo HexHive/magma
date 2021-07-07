@@ -1,0 +1,17 @@
+--- a/poppler/GfxState.cc
++++ b/poppler/GfxState.cc
+@@ -4927,7 +4927,14 @@ GfxGouraudTriangleShading *GfxGouraudTriangleShading::parse(GfxResources *res, i
+         }
+     }
+     delete bitBuf;
++#ifdef MAGMA_ENABLE_FIXES
+     if (typeA == 5 && nVerticesA > 0 && vertsPerRow > 0) {
++#else
++    if (typeA == 5 && nVerticesA > 0) {
++#ifdef MAGMA_ENABLE_CANARIES
++        MAGMA_LOG("%MAGMA_BUG%", vertsPerRow <= 0);
++#endif
++#endif
+         nRows = nVerticesA / vertsPerRow;
+         nTrianglesA = (nRows - 1) * 2 * (vertsPerRow - 1);
+         trianglesA = (int (*)[3])gmallocn_checkoverflow(nTrianglesA * 3, sizeof(int));

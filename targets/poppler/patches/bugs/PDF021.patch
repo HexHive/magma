@@ -1,0 +1,34 @@
+diff --git a/poppler/Stream.cc b/poppler/Stream.cc
+index c36ce113..588c950f 100644
+--- a/poppler/Stream.cc
++++ b/poppler/Stream.cc
+@@ -547,7 +547,14 @@ ImageStream::ImageStream(Stream *strA, int widthA, int nCompsA, int nBitsA)
+ 
+     nVals = width * nComps;
+     inputLineSize = (nVals * nBits + 7) >> 3;
++#ifdef MAGMA_ENABLE_FIXES
+     if (nComps <= 0 || nBits <= 0 || nVals > INT_MAX / nBits - 7 || width > INT_MAX / nComps) {
++#else
++#ifdef MAGMA_ENABLE_CANARIES
++    MAGMA_LOG("%MAGMA_BUG%", nComps <= 0);
++#endif
++    if (nBits <= 0 || nVals > INT_MAX / nBits - 7 || width > INT_MAX / nComps) {
++#endif
+         inputLineSize = -1;
+     }
+     inputLine = (unsigned char *)gmallocn_checkoverflow(inputLineSize, sizeof(char));
+@@ -559,7 +566,14 @@ ImageStream::ImageStream(Stream *strA, int widthA, int nCompsA, int nBitsA)
+         } else {
+             imgLineSize = nVals;
+         }
++#ifdef MAGMA_ENABLE_FIXES
+         if (nComps <= 0 || width > INT_MAX / nComps) {
++#else
++#ifdef MAGMA_ENABLE_CANARIES
++        MAGMA_LOG("%MAGMA_BUG%", nComps <= 0);
++#endif
++        if (width > INT_MAX / nComps) {
++#endif
+             imgLineSize = -1;
+         }
+         imgLine = (unsigned char *)gmallocn_checkoverflow(imgLineSize, sizeof(unsigned char));

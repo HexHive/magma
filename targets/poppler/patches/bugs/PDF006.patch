@@ -1,0 +1,28 @@
+diff --git a/splash/Splash.cc b/splash/Splash.cc
+index 654608c..2405541 100644
+--- a/splash/Splash.cc
++++ b/splash/Splash.cc
+@@ -5862,6 +5862,7 @@ SplashError Splash::blitTransparent(SplashBitmap *src, int xSrc, int ySrc,
+         return splashErrZeroImage;
+     }
+ 
++#ifdef MAGMA_ENABLE_FIXES
+     if (src->getWidth() - xSrc < width)
+         width = src->getWidth() - xSrc;
+ 
+@@ -5879,6 +5880,15 @@ SplashError Splash::blitTransparent(SplashBitmap *src, int xSrc, int ySrc,
+ 
+     if (height < 0)
+         height = 0;
++#else
++#ifdef MAGMA_ENABLE_CANARIES
++    MAGMA_LOG("%MAGMA_BUG%", MAGMA_OR(src->getWidth() - xSrc < width, \
++                        MAGMA_OR(src->getHeight() - ySrc < height, \
++                        MAGMA_OR(bitmap->getWidth() - xDest < width, \
++                        bitmap->getHeight() - yDest < height))) \
++    );
++#endif
++#endif
+ 
+     switch (bitmap->mode) {
+     case splashModeMono1:

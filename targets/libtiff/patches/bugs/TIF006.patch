@@ -1,0 +1,27 @@
+diff --git a/libtiff/tif_pixarlog.c b/libtiff/tif_pixarlog.c
+index b1e48d9..1c14581 100644
+--- a/libtiff/tif_pixarlog.c
++++ b/libtiff/tif_pixarlog.c
+@@ -1265,8 +1265,10 @@ PixarLogClose(TIFF* tif)
+ 	 * readers that don't know about PixarLog, or how to set
+ 	 * the PIXARLOGDATFMT pseudo-tag.
+ 	 */
+-
+-        if (sp->state&PLSTATE_INIT) {
++#ifdef MAGMA_ENABLE_FIXES
++        if (sp->state&PLSTATE_INIT)
++#endif
++        {
+             /* We test the state to avoid an issue such as in
+              * http://bugzilla.maptools.org/show_bug.cgi?id=2604
+              * What appends in that case is that the bitspersample is 1 and
+@@ -1278,6 +1280,9 @@ PixarLogClose(TIFF* tif)
+             td->td_bitspersample = 8;
+             td->td_sampleformat = SAMPLEFORMAT_UINT;
+         }
++#ifdef MAGMA_ENABLE_CANARIES
++    MAGMA_LOG("%MAGMA_BUG%", (sp->state&PLSTATE_INIT) == 0);
++#endif
+ }
+ 
+ static void

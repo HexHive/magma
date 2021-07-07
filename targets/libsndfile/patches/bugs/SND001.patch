@@ -11,7 +11,7 @@ index 459bc46..21b3b2d 100644
  		return SFE_PAF_BAD_CHANNELS ;
 +#endif
 +#ifdef MAGMA_ENABLE_CANARIES
-+    MAGMA_LOG("SND001", MAGMA_OR(paf_fmt.channels < 1, paf_fmt.channels > SF_MAX_CHANNELS));
++    MAGMA_LOG("%MAGMA_BUG%", MAGMA_OR(paf_fmt.channels < 1, paf_fmt.channels > SF_MAX_CHANNELS));
 +#endif
  
  	psf->datalength = psf->filelength - psf->dataoffset ;

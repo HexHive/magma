@@ -1,0 +1,20 @@
+diff --git a/src/select.c b/src/select.c
+index a9ec1e852..ad955b5de 100644
+--- a/src/select.c
++++ b/src/select.c
+@@ -3827,10 +3827,15 @@ static int flattenSubquery(
+     if( pSubSrc->nSrc>1                   /* (3a) */
+      || isAgg                             /* (3b) */
+      || IsVirtual(pSubSrc->a[0].pTab)     /* (3c) */
++#ifdef MAGMA_ENABLE_FIXES
+      || (p->selFlags & SF_Distinct)!=0    /* (3d) */
++#endif
+     ){
+       return 0;
+     }
++#ifdef MAGMA_ENABLE_CANARIES
++    MAGMA_LOG("%MAGMA_BUG%", (p->selFlags & SF_Distinct)!=0);
++#endif
+   }
+ #ifdef SQLITE_EXTRA_IFNULLROW
+   else if( iFrom>0 && !isAgg ){

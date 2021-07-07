@@ -1,0 +1,19 @@
+diff --git a/ext/phar/phar.c b/ext/phar/phar.c
+index 9b21eb7e2a..a6f0176b6e 100644
+--- a/ext/phar/phar.c
++++ b/ext/phar/phar.c
+@@ -2008,7 +2008,14 @@ next_extension:
+ 	}
+ 
+ 	while (pos != filename && (*(pos - 1) == '/' || *(pos - 1) == '\0')) {
++	#ifdef MAGMA_ENABLE_FIXES
+ 		pos = memchr(pos + 1, '.', filename_len - (pos - filename) - 1);
++	#else
++		#ifdef MAGMA_ENABLE_CANARIES
++			MAGMA_LOG("%MAGMA_BUG%", memchr(pos + 1, '.', filename_len - (pos - filename) - 1) == NULL);
++		#endif
++		pos = memchr(pos + 1, '.', filename_len - (pos - filename) + 1);
++	#endif
+ 		if (!pos) {
+ 			return FAILURE;
+ 		}

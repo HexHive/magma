@@ -1,0 +1,32 @@
+diff --git a/src/printf.c b/src/printf.c
+index fc77f68df..a22223d75 100644
+--- a/src/printf.c
++++ b/src/printf.c
+@@ -522,8 +522,12 @@ void sqlite3_str_vappendf(
+           prefix = flag_prefix;
+         }
+         if( xtype==etGENERIC && precision>0 ) precision--;
++#ifdef MAGMA_ENABLE_FIXES
+         testcase( precision>0xfff );
+         idx = precision & 0xfff;
++#else
++        idx = precision;
++#endif
+         rounder = arRound[idx%10];
+         while( idx>=10 ){ rounder *= 1.0e-10; idx -= 10; }
+         if( xtype==etFLOAT ){
+@@ -585,7 +589,14 @@ void sqlite3_str_vappendf(
+         }
+         {
+           i64 szBufNeeded;           /* Size of a temporary buffer needed */
++#ifdef MAGMA_ENABLE_FIXES
++          szBufNeeded = MAX(e2,0)+(i64)precision+(i64)width+15;
++#else
++#ifdef MAGMA_ENABLE_CANARIES
++          MAGMA_LOG("%MAGMA_BUG%", MAX(e2,0) + precision > (((int)-1)&0x7fffffff) - 15 - width);
++#endif
+           szBufNeeded = MAX(e2,0)+(i64)precision+(i64)width+15;
++#endif
+           if( szBufNeeded > etBUFSIZE ){
+             bufpt = zExtra = printfTempBuf(pAccum, szBufNeeded);
+             if( bufpt==0 ) return;

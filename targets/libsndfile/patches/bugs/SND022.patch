@@ -13,7 +13,7 @@ index 744e354..57da681 100644
 +#else
 +	{
 +#ifdef MAGMA_ENABLE_CANARIES
-+		MAGMA_LOG("SND022", !isfinite(ptr[i]));
++		MAGMA_LOG("%MAGMA_BUG%", !isfinite(ptr[i]));
 +#endif
 +		if (ptr [i] >= 0)
 +#endif

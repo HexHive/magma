@@ -1,0 +1,25 @@
+diff --git a/parser.c b/parser.c
+index 3f31329..4aea5b8 100644
+--- a/parser.c
++++ b/parser.c
+@@ -8311,10 +8311,20 @@ xmlParseInternalSubset(xmlParserCtxtPtr ctxt) {
+     /*
+      * We should be at the end of the DOCTYPE declaration.
+      */
++#ifdef MAGMA_ENABLE_FIXES
+     if (RAW != '>') {
+ 	xmlFatalErr(ctxt, XML_ERR_DOCTYPE_NOT_FINISHED, NULL);
+ 	return;
+     }
++#endif
++#ifdef MAGMA_ENABLE_CANARIES
++    // This condition is not sufficient for the bug to actually be triggered
++    // but it is necessary.
++    // However, to avoid the complexity of analyzing the real triggering
++    // condition (bounds checks and others), we'll use the condition relied
++    // on by the devs when fixing the bug.
++    MAGMA_LOG("%MAGMA_BUG%", RAW != '>');
++#endif
+     NEXT;
+ }
+ 

@@ -1,0 +1,74 @@
+--- a/xmlmemory.c
++++ b/xmlmemory.c
+@@ -172,12 +172,17 @@ xmlMallocLoc(size_t size, const char * file, int line)
+ 
+     TEST_POINT
+ 
++#ifdef MAGMA_ENABLE_FIXES
+     if (size > (MAX_SIZE_T - RESERVE_SIZE)) {
+ 	xmlGenericError(xmlGenericErrorContext,
+ 		"xmlMallocLoc : Unsigned overflow\n");
+ 	xmlMemoryDump();
+ 	return(NULL);
+     }
++#endif
++#ifdef MAGMA_ENABLE_CANARIES
++    MAGMA_LOG("%MAGMA_BUG%", size > (MAX_SIZE_T - RESERVE_SIZE));
++#endif
+ 
+     p = (MEMHDR *) malloc(RESERVE_SIZE+size);
+ 
+@@ -248,12 +253,17 @@ xmlMallocAtomicLoc(size_t size, const char * file, int line)
+ 
+     TEST_POINT
+ 
++#ifdef MAGMA_ENABLE_FIXES
+     if (size > (MAX_SIZE_T - RESERVE_SIZE)) {
+ 	xmlGenericError(xmlGenericErrorContext,
+ 		"xmlMallocAtomicLoc : Unsigned overflow\n");
+ 	xmlMemoryDump();
+ 	return(NULL);
+     }
++#endif
++#ifdef MAGMA_ENABLE_CANARIES
++    MAGMA_LOG("%MAGMA_BUG%", size > (MAX_SIZE_T - RESERVE_SIZE));
++#endif
+ 
+     p = (MEMHDR *) malloc(RESERVE_SIZE+size);
+ 
+@@ -359,12 +369,17 @@ xmlReallocLoc(void *ptr,size_t size, const char * file, int line)
+ #endif
+     xmlMutexUnlock(xmlMemMutex);
+ 
++#ifdef MAGMA_ENABLE_FIXES
+     if (size > (MAX_SIZE_T - RESERVE_SIZE)) {
+ 	xmlGenericError(xmlGenericErrorContext,
+ 		"xmlReallocLoc : Unsigned overflow\n");
+ 	xmlMemoryDump();
+ 	return(NULL);
+     }
++#endif
++#ifdef MAGMA_ENABLE_CANARIES
++    MAGMA_LOG("%MAGMA_BUG%", size > (MAX_SIZE_T - RESERVE_SIZE));
++#endif
+ 
+     tmp = (MEMHDR *) realloc(p,RESERVE_SIZE+size);
+     if (!tmp) {
+@@ -513,12 +528,17 @@ xmlMemStrdupLoc(const char *str, const char *file, int line)
+     if (!xmlMemInitialized) xmlInitMemory();
+     TEST_POINT
+ 
++#ifdef MAGMA_ENABLE_FIXES
+     if (size > (MAX_SIZE_T - RESERVE_SIZE)) {
+ 	xmlGenericError(xmlGenericErrorContext,
+ 		"xmlMemStrdupLoc : Unsigned overflow\n");
+ 	xmlMemoryDump();
+ 	return(NULL);
+     }
++#endif
++#ifdef MAGMA_ENABLE_CANARIES
++    MAGMA_LOG("%MAGMA_BUG%", size > (MAX_SIZE_T - RESERVE_SIZE));
++#endif
+ 
+     p = (MEMHDR *) malloc(RESERVE_SIZE+size);
+     if (!p) {

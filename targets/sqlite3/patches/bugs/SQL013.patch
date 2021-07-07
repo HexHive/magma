@@ -1,0 +1,18 @@
+diff --git a/src/where.c b/src/where.c
+index ad309006d..dcdd38d11 100644
+--- a/src/where.c
++++ b/src/where.c
+@@ -2761,8 +2761,13 @@ static int whereLoopAddBtreeIndex(
+    && pProbe->hasStat1!=0
+    && OptimizationEnabled(db, SQLITE_SkipScan)
+    && pProbe->aiRowLogEst[saved_nEq+1]>=42  /* TUNING: Minimum for skip-scan */
++#ifdef MAGMA_ENABLE_FIXES
+    && (rc = whereLoopResize(db, pNew, pNew->nLTerm+1))==SQLITE_OK
++#endif
+   ){
++#ifdef MAGMA_ENABLE_CANARIES
++      MAGMA_LOG("%MAGMA_BUG%", pNew->nLSlot < (pNew->nLTerm+1));
++#endif
+     LogEst nIter;
+     pNew->u.btree.nEq++;
+     pNew->nSkip++;

@@ -1,0 +1,29 @@
+diff --git a/png.c b/png.c
+index e92008d..8d3cecb 100644
+--- a/png.c
++++ b/png.c
+@@ -616,6 +616,9 @@ png_free_data(png_const_structrp png_ptr, png_inforp info_ptr, png_uint_32 mask,
+ #endif
+ 
+ #ifdef PNG_eXIf_SUPPORTED
++#ifdef MAGMA_ENABLE_CANARIES
++   MAGMA_LOG("%MAGMA_BUG%", MAGMA_AND(info_ptr->eXIf_buf != NULL, (mask & info_ptr->free_me & PNG_FREE_EXIF) == 0));
++#endif
+    /* Free any eXIf entry */
+    if (((mask & PNG_FREE_EXIF) & info_ptr->free_me) != 0)
+    {
+diff --git a/pngrutil.c b/pngrutil.c
+index d5fa08c..2a08277 100644
+--- a/pngrutil.c
++++ b/pngrutil.c
+@@ -2059,7 +2059,9 @@ png_handle_eXIf(png_structrp png_ptr, png_inforp info_ptr, png_uint_32 length)
+       return;
+    }
+ 
++#ifdef MAGMA_ENABLE_FIXES
+    info_ptr->free_me |= PNG_FREE_EXIF;
++#endif
+ 
+    info_ptr->eXIf_buf = png_voidcast(png_bytep,
+              png_malloc_warn(png_ptr, length));
+

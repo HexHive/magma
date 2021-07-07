@@ -1,0 +1,23 @@
+diff --git a/parser.c b/parser.c
+index 3f31329..b3e1429 100644
+--- a/parser.c
++++ b/parser.c
+@@ -4978,10 +4978,18 @@ get_more:
+ 		} else
+ 		    xmlFatalErrMsgStr(ctxt, XML_ERR_HYPHEN_IN_COMMENT,
+ 		                      "Double hyphen within comment\n", NULL);
++#ifdef MAGMA_ENABLE_FIXES
+                 if (ctxt->instate == XML_PARSER_EOF) {
+                     xmlFree(buf);
+                     return;
+                 }
++#endif
++#ifdef MAGMA_ENABLE_CANARIES
++                // According to the discussion on issue #58, this bug is due
++                // to the fix applied for Bug 030. So it might be possible
++                // that this bug cannot be triggered unless Bug 030 is disabled.
++                MAGMA_LOG("%MAGMA_BUG%", ctxt->instate == XML_PARSER_EOF);
++#endif
+ 		in++;
+ 		ctxt->input->col++;
+ 	    }

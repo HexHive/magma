@@ -1,0 +1,18 @@
+diff --git a/splash/SplashXPathScanner.cc b/splash/SplashXPathScanner.cc
+index 042a6ef..d1ab6b1 100644
+--- a/splash/SplashXPathScanner.cc
++++ b/splash/SplashXPathScanner.cc
+@@ -455,8 +455,13 @@ void SplashXPathScanner::clipAALine(SplashBitmap *aaBuf,
+         xx = *x0 * splashAASize;
+         if (yy >= yyMin && yy <= yyMax) {
+             const int intersectionIndex = splashAASize * y + yy - yMin;
++#ifdef MAGMA_ENABLE_FIXES
+             if (unlikely(intersectionIndex < 0 || (unsigned)intersectionIndex >= allIntersections.size()))
+                 break;
++#endif
++#ifdef MAGMA_ENABLE_CANARIES
++            MAGMA_LOG("%MAGMA_BUG%", MAGMA_OR(intersectionIndex < 0, (unsigned)intersectionIndex >= allIntersections.size()));
++#endif
+             const auto &line = allIntersections[intersectionIndex];
+             interIdx = 0;
+             interCount = 0;

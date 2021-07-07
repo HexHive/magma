@@ -1,0 +1,20 @@
+diff --git a/poppler/Parser.cc b/poppler/Parser.cc
+index afb54dfb..7346604d 100644
+--- a/poppler/Parser.cc
++++ b/poppler/Parser.cc
+@@ -154,10 +154,14 @@ Object Parser::getObj(bool simpleOnly,
+             shift();
+             shift();
+ 
++#ifdef MAGMA_ENABLE_FIXES
+             if (unlikely(num <= 0 || gen < 0)) {
+                 return Object();
+             }
+-
++#endif
++#ifdef MAGMA_ENABLE_CANARIES
++            MAGMA_LOG("%MAGMA_BUG%", MAGMA_OR(num <=0, gen < 0));
++#endif
+             Ref r;
+             r.num = num;
+             r.gen = gen;

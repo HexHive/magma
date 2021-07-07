@@ -1,0 +1,22 @@
+diff --git a/ext/rtree/rtree.c b/ext/rtree/rtree.c
+index efaef813d..5a2181930 100644
+--- a/ext/rtree/rtree.c
++++ b/ext/rtree/rtree.c
+@@ -3651,12 +3651,17 @@ static int getNodeSize(
+     rc = getIntFromStmt(db, zSql, &pRtree->iNodeSize);
+     if( rc!=SQLITE_OK ){
+       *pzErr = sqlite3_mprintf("%s", sqlite3_errmsg(db));
++#ifdef MAGMA_ENABLE_FIXES
+     }else if( pRtree->iNodeSize<(512-64) ){
+       rc = SQLITE_CORRUPT_VTAB;
+       RTREE_IS_CORRUPT(pRtree);
+       *pzErr = sqlite3_mprintf("undersize RTree blobs in \"%q_node\"",
+                                pRtree->zName);
++#endif
+     }
++#ifdef MAGMA_ENABLE_CANARIES
++    MAGMA_LOG("%MAGMA_BUG%", pRtree->iNodeSize<(512-64));
++#endif
+   }
+ 
+   sqlite3_free(zSql);

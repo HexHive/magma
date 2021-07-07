@@ -1,0 +1,44 @@
+diff --git a/png.c b/png.c
+index e92008d..87290e9 100644
+--- a/png.c
++++ b/png.c
+@@ -2582,8 +2582,10 @@ png_check_IHDR(png_const_structrp png_ptr,
+        * extensive, therefore much more dangerous and much more difficult to
+        * write in a way that avoids compiler warnings.
+        */
++#ifdef MAGMA_ENABLE_FIXES
+       png_warning(png_ptr, "Image width is too large for this architecture");
+       error = 1;
++#endif
+    }
+ 
+ #ifdef PNG_SET_USER_LIMITS_SUPPORTED
+diff --git a/pngrutil.c b/pngrutil.c
+index d5fa08c..9a2e9b3 100644
+--- a/pngrutil.c
++++ b/pngrutil.c
+@@ -4592,6 +4592,23 @@ defined(PNG_USER_TRANSFORM_PTR_SUPPORTED)
+    row_bytes = PNG_ROWBYTES(max_pixel_depth, row_bytes) +
+        1 + ((max_pixel_depth + 7) >> 3U);
+ 
++#if MAGMA_ENABLE_CANARIES
++    /* Since width is initially aligned on the next larger 8 pixels,
++     * the lowest 3 bits of row_bytes are initially all zeroes.
++     * The PNG_ROWBYTES() operation is merely a product, so the lowest
++     * 3 bits remain zeroes.
++     * The second operand of the following addition has a maximum value
++     * of 9, so it doesn't change any bits higher than the lowest 3.
++     * Hence, to recover the product, it is safe to just clear the lowest
++     * 3 bits.
++     */
++   size_t row_bytes_check = row_bytes & ~((size_t)7);
++    /* The input width resulted in an integer overflow, which could
++     * later cause a heap buffer overflow due to a bad allocation size
++     */
++   MAGMA_LOG("%MAGMA_BUG%", row_bytes_check < ((png_ptr->width + 7) & ~((png_uint_32)7)));
++#endif
++
+ #ifdef PNG_MAX_MALLOC_64K
+    if (row_bytes > (png_uint_32)65536L)
+       png_error(png_ptr, "This image requires a row greater than 64KB");
+

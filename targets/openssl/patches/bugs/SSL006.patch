@@ -1,0 +1,21 @@
+--- a/crypto/evp/encode.c
++++ b/crypto/evp/encode.c
+@@ -169,7 +169,18 @@ int EVP_EncodeUpdate(EVP_ENCODE_CTX *ctx, unsigned char *out, int *outl,
+     if (inl <= 0)
+         return 0;
+     OPENSSL_assert(ctx->length <= (int)sizeof(ctx->enc_data));
++#ifdef MAGMA_ENABLE_FIXES
+     if (ctx->length - ctx->num > inl) {
++#else
++#ifdef MAGMA_ENABLE_CANARIES
++    /**
++    * Potential integer overflow if we supply a large amount
++    * of input data
++    */
++    MAGMA_LOG("%MAGMA_BUG%", INT_MAX - inl < ctx->num);
++#endif
++    if ((ctx->num + inl) < ctx->length) {
++#endif
+         memcpy(&(ctx->enc_data[ctx->num]), in, inl);
+         ctx->num += inl;
+         return 1;

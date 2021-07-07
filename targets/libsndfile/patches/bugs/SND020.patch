@@ -13,7 +13,7 @@ index b59c684..5947148 100644
  						} ;
 +#else
 +#ifdef MAGMA_ENABLE_CANARIES
-+                    MAGMA_LOG("SND020", bit < 2);
++                    MAGMA_LOG("%MAGMA_BUG%", bit < 2);
 +#endif
 +                    buffer [--bit] = 0 ;
 +					buffer [--bit] = 0 ;

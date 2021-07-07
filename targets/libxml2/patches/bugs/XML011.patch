@@ -1,0 +1,57 @@
+diff --git a/xmlstring.c b/xmlstring.c
+index 8d2e06f..5715bb0 100644
+--- a/xmlstring.c
++++ b/xmlstring.c
+@@ -457,13 +457,21 @@ xmlStrncat(xmlChar *cur, const xmlChar *add, int len) {
+         return(xmlStrndup(add, len));
+ 
+     size = xmlStrlen(cur);
++#ifdef MAGMA_ENABLE_FIXES
+     if (size < 0)
+         return(NULL);
++#endif
+     ret = (xmlChar *) xmlRealloc(cur, (size + len + 1) * sizeof(xmlChar));
+     if (ret == NULL) {
+         xmlErrMemory(NULL, NULL);
+         return(cur);
+     }
++#ifdef MAGMA_ENABLE_CANARIES
++    // whenever size < 0, the previous reallocation results in allocating a
++    // buffer of size less than `len` + 1 and then copying `len` + 1
++    // elements into it, which will cause a heap buffer overflow.
++    MAGMA_LOG("%MAGMA_BUG%", size < 0);
++#endif
+     memcpy(&ret[size], add, len * sizeof(xmlChar));
+     ret[size + len] = 0;
+     return(ret);
+@@ -488,8 +496,10 @@ xmlStrncatNew(const xmlChar *str1, const xmlChar *str2, int len) {
+ 
+     if (len < 0) {
+         len = xmlStrlen(str2);
++#ifdef MAGMA_ENABLE_FIXES
+         if (len < 0)
+             return(NULL);
++#endif
+     }
+     if ((str2 == NULL) || (len == 0))
+         return(xmlStrdup(str1));
+@@ -497,13 +507,19 @@ xmlStrncatNew(const xmlChar *str1, const xmlChar *str2, int len) {
+         return(xmlStrndup(str2, len));
+ 
+     size = xmlStrlen(str1);
++#ifdef MAGMA_ENABLE_FIXES
+     if (size < 0)
+         return(NULL);
++#endif
+     ret = (xmlChar *) xmlMalloc((size + len + 1) * sizeof(xmlChar));
+     if (ret == NULL) {
+         xmlErrMemory(NULL, NULL);
+         return(xmlStrndup(str1, size));
+     }
++#ifdef MAGMA_ENABLE_CANARIES
++    // ditto ;)
++    MAGMA_LOG("%MAGMA_BUG%", MAGMA_OR(size < 0, len < 0));
++#endif
+     memcpy(ret, str1, size * sizeof(xmlChar));
+     memcpy(&ret[size], str2, len * sizeof(xmlChar));
+     ret[size + len] = 0;

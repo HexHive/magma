@@ -16,7 +16,7 @@ index 64d0172..f3d2edb 100644
  				} ;
 +#endif
 +#ifdef MAGMA_ENABLE_CANARIES
-+            MAGMA_LOG("SND024", MAGMA_AND(psf->sf.channels > 0, psf->sf.channels != (int) metadata->data.stream_info.channels));
++            MAGMA_LOG("%MAGMA_BUG%", MAGMA_AND(psf->sf.channels > 0, psf->sf.channels != (int) metadata->data.stream_info.channels));
 +#endif
  
  			if (psf->sf.channels > 0 && psf->sf.samplerate != (int) metadata->data.stream_info.sample_rate)

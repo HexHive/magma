@@ -1,0 +1,19 @@
+diff --git a/ldebug.c b/ldebug.c
+index 8e3657a9..c53f339a 100644
+--- a/ldebug.c
++++ b/ldebug.c
+@@ -795,8 +795,14 @@ l_noret luaG_runerror (lua_State *L, const char *fmt, ...) {
+ ** so it goes directly to 'luaG_getfuncline'.
+ */
+ static int changedline (const Proto *p, int oldpc, int newpc) {
++#ifdef MAGMA_ENABLE_FIXES
+   if (p->lineinfo == NULL)  /* no debug information? */
+     return 0;
++#else
++#ifdef MAGMA_ENABLE_CANARIES
++  MAGMA_LOG("%MAGMA_BUG%", p->lineinfo == NULL);
++#endif
++#endif
+   if (newpc - oldpc < MAXIWTHABS / 2) {  /* not too far apart? */
+     int delta = 0;  /* line diference */
+     int pc = oldpc;

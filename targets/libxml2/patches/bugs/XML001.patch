@@ -1,0 +1,41 @@
+diff --git a/valid.c b/valid.c
+index b1cfede..9a52cd8 100644
+--- a/valid.c
++++ b/valid.c
+@@ -1267,6 +1267,7 @@ xmlSnprintfElementContent(char *buf, int size, xmlElementContentPtr content, int
+             strcat(buf, "#PCDATA");
+ 	    break;
+ 	case XML_ELEMENT_CONTENT_ELEMENT: {
++#ifdef MAGMA_ENABLE_FIXES
+             int qnameLen = xmlStrlen(content->name);
+ 
+ 	    if (content->prefix != NULL)
+@@ -1275,10 +1276,28 @@ xmlSnprintfElementContent(char *buf, int size, xmlElementContentPtr content, int
+ 		strcat(buf, " ...");
+ 		return;
+ 	    }
++#endif
+ 	    if (content->prefix != NULL) {
++#ifdef MAGMA_ENABLE_FIXES
++#else
++            if (size - len < xmlStrlen(content->prefix) + 10) {
++                strcat(buf, " ...");
++                return;
++            }
++#endif
+ 		strcat(buf, (char *) content->prefix);
+ 		strcat(buf, ":");
+ 	    }
++#ifdef MAGMA_ENABLE_FIXES
++#else
++        if (size - len < xmlStrlen(content->name) + 10) {
++            strcat(buf, " ...");
++            return;
++        }
++#endif
++#ifdef MAGMA_ENABLE_CANARIES
++        MAGMA_LOG("%MAGMA_BUG%", (size - len - xmlStrlen(content->prefix)) < (xmlStrlen(content->name) + 10));
++#endif
+ 	    if (content->name != NULL)
+ 		strcat(buf, (char *) content->name);
+ 	    break;

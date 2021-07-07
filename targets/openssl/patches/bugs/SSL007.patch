@@ -1,0 +1,25 @@
+--- a/crypto/mdc2/mdc2dgst.c
++++ b/crypto/mdc2/mdc2dgst.c
+@@ -12,7 +12,7 @@
+  * internal use.
+  */
+ #include "internal/deprecated.h"
+-
++#include <limits.h>
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
+@@ -49,6 +49,13 @@ int MDC2_Update(MDC2_CTX *c, const unsigned char *in, size_t len)
+     i = c->num;
+     if (i != 0) {
++#ifdef MAGMA_ENABLE_FIXES
+         if (len < MDC2_BLOCK - i) {
++#else
++#ifdef MAGMA_ENABLE_CANARIES
++        MAGMA_LOG("%MAGMA_BUG%", SIZE_MAX - len < i);
++#endif
++        if (i + len < MDC2_BLOCK) {
++#endif
+             /* partial block */
+             memcpy(&(c->data[i]), in, len);
+             c->num += (int)len;

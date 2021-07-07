@@ -1,0 +1,33 @@
+diff --git a/ldebug.c b/ldebug.c
+index 8e3657a9..8b3a61ea 100644
+--- a/ldebug.c
++++ b/ldebug.c
+@@ -181,8 +181,16 @@ static const char *upvalname (const Proto *p, int uv) {
+ static const char *findvararg (CallInfo *ci, int n, StkId *pos) {
+   if (clLvalue(s2v(ci->func))->p->is_vararg) {
+     int nextra = ci->u.l.nextraargs;
++#ifdef MAGMA_ENABLE_FIXES
+     if (n >= -nextra) {  /* 'n' is negative */
+       *pos = ci->func - nextra - (n + 1);
++#else
++    if (n <= nextra) {
++#ifdef MAGMA_ENABLE_CANARIES
++      MAGMA_LOG("%MAGMA_BUG%", INT_MAX - nextra <= (n - 1));
++#endif
++      *pos = ci->func - nextra + (n - 1);
++#endif
+       return "(vararg)";  /* generic name for any vararg */
+     }
+   }
+@@ -195,7 +203,11 @@ const char *luaG_findlocal (lua_State *L, CallInfo *ci, int n, StkId *pos) {
+   const char *name = NULL;
+   if (isLua(ci)) {
+     if (n < 0)  /* access to vararg values? */
++#ifdef MAGMA_ENABLE_FIXES
+       return findvararg(ci, n, pos);
++#else
++      return findvararg(ci, -n, pos);
++#endif
+     else
+       name = luaF_getlocalname(ci_func(ci)->p, n, currentpc(ci));
+   }

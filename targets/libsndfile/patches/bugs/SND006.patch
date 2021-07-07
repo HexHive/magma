@@ -16,7 +16,7 @@ index 64d0172..1c5503f 100644
  		} ;
 +#endif
 +#ifdef MAGMA_ENABLE_CANARIES
-+    MAGMA_LOG("SND006", psf->sf.channels != (int) frame->header.channels);
++    MAGMA_LOG("%MAGMA_BUG%", psf->sf.channels != (int) frame->header.channels);
 +#endif
  
  	/*

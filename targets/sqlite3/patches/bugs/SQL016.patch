@@ -1,0 +1,24 @@
+diff --git a/src/vdbe.c b/src/vdbe.c
+index 7f0532866..a984f17f6 100644
+--- a/src/vdbe.c
++++ b/src/vdbe.c
+@@ -2132,9 +2132,19 @@ compare_op:
+   }
+ 
+   /* Undo any changes made by applyAffinity() to the input registers. */
++#ifdef MAGMA_ENABLE_FIXES
+   assert( (pIn3->flags & MEM_Dyn) == (flags3 & MEM_Dyn) );
++#endif
++#ifdef MAGMA_ENABLE_CANARIES
++  MAGMA_LOG("%MAGMA_BUG%", (pIn3->flags & MEM_Dyn) != (flags3 & MEM_Dyn));
++#endif
+   pIn3->flags = flags3;
++#ifdef MAGMA_ENABLE_FIXES
+   assert( (pIn1->flags & MEM_Dyn) == (flags1 & MEM_Dyn) );
++#endif
++#ifdef MAGMA_ENABLE_CANARIES
++  MAGMA_LOG("%MAGMA_BUG%", (pIn1->flags & MEM_Dyn) != (flags1 & MEM_Dyn));
++#endif
+   pIn1->flags = flags1;
+ 
+   if( pOp->p5 & SQLITE_STOREP2 ){

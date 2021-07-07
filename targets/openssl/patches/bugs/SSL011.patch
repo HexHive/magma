@@ -1,0 +1,30 @@
+--- a/crypto/pkcs7/pk7_doit.c
++++ b/crypto/pkcs7/pk7_doit.c
+@@ -430,10 +430,15 @@ BIO *PKCS7_dataDecode(PKCS7 *p7, EVP_PKEY *pkey, BIO *in_bio, X509 *pcert)
+     }
+ 
+     /* Detached content must be supplied via in_bio instead. */
++#ifdef MAGMA_ENABLE_FIXES
+     if (data_body == NULL && in_bio == NULL) {
+         ERR_raise(ERR_LIB_PKCS7, PKCS7_R_NO_CONTENT);
+         goto err;
+     }
++#endif
++#ifdef MAGMA_ENABLE_CANARIES
++        MAGMA_LOG("%MAGMA_BUG%", MAGMA_AND(data_body == NULL, in_bio == NULL));
++#endif
+ 
+     /* We will be checking the signature */
+     if (md_sk != NULL) {
+@@ -561,7 +566,11 @@ BIO *PKCS7_dataDecode(PKCS7 *p7, EVP_PKEY *pkey, BIO *in_bio, X509 *pcert)
+             BIO_push(out, etmp);
+         etmp = NULL;
+     }
++#ifdef MAGMA_ENABLE_FIXES
+     if (in_bio != NULL) {
++#else
++    if (PKCS7_is_detached(p7) || (in_bio != NULL)) {
++#endif
+         bio = in_bio;
+     } else {
+         if (data_body->length > 0)

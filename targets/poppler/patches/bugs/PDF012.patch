@@ -1,0 +1,20 @@
+diff --git a/poppler/Parser.cc b/poppler/Parser.cc
+index afb54dfb..51824f17 100644
+--- a/poppler/Parser.cc
++++ b/poppler/Parser.cc
+@@ -260,9 +260,15 @@ Stream *Parser::makeStream(Object &&dict, unsigned char *fileKey,
+     if (unlikely(length < 0)) {
+         return nullptr;
+     }
++
++#ifdef MAGMA_ENABLE_FIXES
+     if (unlikely(pos > LLONG_MAX - length)) {
+         return nullptr;
+     }
++#endif
++#ifdef MAGMA_ENABLE_CANARIES
++    MAGMA_LOG("%MAGMA_BUG%", pos > LLONG_MAX - length);
++#endif
+     lexer.setPos(pos + length);
+ 
+     // refill token buffers and check for 'endstream'

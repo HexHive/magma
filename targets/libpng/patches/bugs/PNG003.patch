@@ -1,0 +1,36 @@
+diff --git a/pngrutil.c b/pngrutil.c
+index d5fa08c..b98d69b 100644
+--- a/pngrutil.c
++++ b/pngrutil.c
+@@ -984,8 +984,14 @@ png_handle_PLTE(png_structrp png_ptr, png_inforp info_ptr, png_uint_32 length)
+    else
+       max_palette_length = PNG_MAX_PALETTE_LENGTH;
+ 
++#ifdef MAGMA_ENABLE_FIXES
+    if (num > max_palette_length)
+       num = max_palette_length;
++#endif
++
++#ifdef MAGMA_ENABLE_CANARIES
++   MAGMA_LOG("%MAGMA_BUG%", num > max_palette_length);
++#endif
+ 
+ #ifdef PNG_POINTER_INDEXING_SUPPORTED
+    for (i = 0, pal_ptr = palette; i < num; i++, pal_ptr++)
+diff --git a/pngset.c b/pngset.c
+index ec75dbe..baf54e6 100644
+--- a/pngset.c
++++ b/pngset.c
+@@ -583,7 +583,11 @@ png_set_PLTE(png_structrp png_ptr, png_inforp info_ptr,
+    max_palette_length = (info_ptr->color_type == PNG_COLOR_TYPE_PALETTE) ?
+       (1 << info_ptr->bit_depth) : PNG_MAX_PALETTE_LENGTH;
+ 
++#ifdef MAGMA_ENABLE_FIXES
+    if (num_palette < 0 || num_palette > (int) max_palette_length)
++#else
++   if (num_palette < 0 || num_palette > PNG_MAX_PALETTE_LENGTH)
++#endif
+    {
+       if (info_ptr->color_type == PNG_COLOR_TYPE_PALETTE)
+          png_error(png_ptr, "Invalid palette length");
+

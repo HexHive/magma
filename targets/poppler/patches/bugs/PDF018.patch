@@ -1,0 +1,19 @@
+diff --git a/poppler/Annot.cc b/poppler/Annot.cc
+index 37165e38..095a9d09 100644
+--- a/poppler/Annot.cc
++++ b/poppler/Annot.cc
+@@ -5897,7 +5897,14 @@ void AnnotInk::draw(Gfx *gfx, bool printing) {
+ 
+         for (int i = 0; i < inkListLength; ++i) {
+             const AnnotPath *path = inkList[i];
++#ifdef MAGMA_ENABLE_FIXES
+             if (path && path->getCoordsLength() != 0) {
++#else
++#ifdef MAGMA_ENABLE_CANARIES
++            MAGMA_LOG("%MAGMA_BUG%", !path);
++#endif
++            if (path->getCoordsLength() != 0) {
++#endif
+                 appearBuilder.appendf("{0:.2f} {1:.2f} m\n", path->getX(0) - rect->x1, path->getY(0) - rect->y1);
+                 appearBBox->extendTo(path->getX(0) - rect->x1, path->getY(0) - rect->y1);
+ 

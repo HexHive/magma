@@ -1,0 +1,24 @@
+diff --git a/ext/exif/exif.c b/ext/exif/exif.c
+index 8606bdd926..71981ae2e8 100644
+--- a/ext/exif/exif.c
++++ b/ext/exif/exif.c
+@@ -3909,10 +3909,18 @@ static int exif_scan_thumbnail(image_info_type *ImageInfo)
+ 	int             n, marker;
+ 	size_t          length=2, pos=0;
+ 	jpeg_sof_info   sof_info;
+-
++#ifdef MAGMA_ENABLE_FIXES
+ 	if (!data || ImageInfo->Thumbnail.size < 4) {
+ 		return false; /* nothing to do here */
+ 	}
++#else
++	#ifdef MAGMA_ENABLE_CANARIES
++	MAGMA_LOG("%MAGMA_BUG%", MAGMA_AND((bool)data, ImageInfo->Thumbnail.size < 4));
++	#endif
++	if (!data) {
++		return false; /* nothing to do here */
++	}
++#endif
+ 	if (memcmp(data, "\xFF\xD8\xFF", 3)) {
+ 		if (!ImageInfo->Thumbnail.width && !ImageInfo->Thumbnail.height) {
+ 			exif_error_docref(NULL EXIFERR_CC, ImageInfo, E_WARNING, "Thumbnail is not a JPEG image");

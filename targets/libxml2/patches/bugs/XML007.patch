@@ -1,0 +1,31 @@
+--- a/HTMLparser.c
++++ b/HTMLparser.c
+@@ -5392,6 +5392,9 @@ htmlParseTryOrFinish(htmlParserCtxtPtr ctxt, int terminate) {
+ 	    avail = in->length - (in->cur - in->base);
+ 	else
+ 	    avail = (ptrdiff_t)xmlBufUse(in->buf->buffer) -
+                     (in->cur - in->base);
++#ifdef MAGMA_ENABLE_CANARIES
++    MAGMA_LOG("%MAGMA_BUG%", avail != (in->end - in->cur));
++#endif
+ 	if ((avail == 0) && (terminate)) {
+ 	    htmlAutoCloseOnEnd(ctxt);
+ 	    if ((ctxt->nameNr == 0) && (ctxt->instate != XML_PARSER_EOF)) {
+--- a/parser.c
++++ b/parser.c
+@@ -12491,12 +12491,14 @@ xmlHaltParser(xmlParserCtxtPtr ctxt) {
+ 	    ctxt->input->free((xmlChar *) ctxt->input->base);
+ 	    ctxt->input->free = NULL;
+ 	}
++#ifdef MAGMA_ENABLE_FIXES
+         if (ctxt->input->buf != NULL) {
+             xmlFreeParserInputBuffer(ctxt->input->buf);
+             ctxt->input->buf = NULL;
+         }
+-	ctxt->input->cur = BAD_CAST"";
+         ctxt->input->length = 0;
++#endif
++	ctxt->input->cur = BAD_CAST"";
+ 	ctxt->input->base = ctxt->input->cur;
+         ctxt->input->end = ctxt->input->cur;
+     }

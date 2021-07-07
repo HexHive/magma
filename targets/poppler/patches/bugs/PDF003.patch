@@ -1,0 +1,58 @@
+diff --git a/utils/HtmlOutputDev.cc b/utils/HtmlOutputDev.cc
+index 954a477..1720084 100644
+--- a/utils/HtmlOutputDev.cc
++++ b/utils/HtmlOutputDev.cc
+@@ -1434,8 +1434,15 @@ void HtmlOutputDev::drawPngImage(GfxState *state, Stream *str, int width, int he
+         int invert_bits = 0xff;
+         if (colorMap) {
+             GfxGray gray;
++#ifdef MAGMA_ENABLE_FIXES
+             unsigned char zero[gfxColorMaxComps];
++#else
++            unsigned char zero[1];
++#endif
+             memset(zero, 0, sizeof(zero));
++#ifdef MAGMA_ENABLE_CANARIES
++            MAGMA_LOG("%MAGMA_BUG%", MAGMA_AND(colorMap->getColorSpace2() == nullptr, (size_t)colorMap->getNumPixelComps() > sizeof(zero)));
++#endif
+             colorMap->getGray(zero, &gray);
+             if (colToByte(gray) == 0)
+                 invert_bits = 0x00;
+diff --git a/utils/ImageOutputDev.cc b/utils/ImageOutputDev.cc
+index 850eb10..7a89884 100644
+--- a/utils/ImageOutputDev.cc
++++ b/utils/ImageOutputDev.cc
+@@ -358,7 +358,11 @@ void ImageOutputDev::writeImageFile(ImgWriter *writer, ImageFormat format, const
+     GfxRGB rgb;
+     GfxCMYK cmyk;
+     GfxGray gray;
++#ifdef MAGMA_ENABLE_FIXES
+     unsigned char zero[gfxColorMaxComps];
++#else
++    unsigned char zero[1];
++#endif
+     int invert_bits;
+ 
+     if (writer) {
+@@ -398,6 +402,9 @@ void ImageOutputDev::writeImageFile(ImgWriter *writer, ImageFormat format, const
+     invert_bits = 0xff;
+     if (colorMap) {
+         memset(zero, 0, sizeof(zero));
++#ifdef MAGMA_ENABLE_CANARIES
++        MAGMA_LOG("%MAGMA_BUG%", MAGMA_AND(colorMap->getColorSpace2() == nullptr, (size_t)colorMap->getNumPixelComps() > sizeof(zero)));
++#endif
+         colorMap->getGray(zero, &gray);
+         if (colToByte(gray) == 0)
+             invert_bits = 0x00;
+diff --git a/poppler/GfxState.h b/poppler/GfxState.h
+index 7a6e4031..caa5c164 100644
+--- a/poppler/GfxState.h
++++ b/poppler/GfxState.h
+@@ -1192,6 +1192,7 @@ public:
+ 
+     // Get the color space.
+     GfxColorSpace *getColorSpace() { return colorSpace; }
++    GfxColorSpace *getColorSpace2() { return colorSpace2; }
+ 
+     // Get stream decoding info.
+     int getNumPixelComps() const { return nComps; }

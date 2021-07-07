@@ -1,0 +1,37 @@
+diff --git a/ext/standard/dns.c b/ext/standard/dns.c
+index c566f4e6ae..0d3be92204 100644
+--- a/ext/standard/dns.c
++++ b/ext/standard/dns.c
+@@ -463,10 +463,16 @@ static u_char *php_parserr(u_char *cp, u_char *end, querybuf *answer, int type_t
+ 	GETLONG(ttl, cp);
+ 	GETSHORT(dlen, cp);
+ 	CHECKCP(dlen);
++	#ifdef MAGMA_ENABLE_FIXES
+	if (dlen == 0) {
+ 		/* No data in the response - nothing to do */
+ 		return NULL;
+ 	}
++	#else
++		#ifdef MAGMA_ENABLE_CANARIES
++			MAGMA_LOG("%MAGMA_BUG%", dlen == 0);
++		#endif
++	#endif
+ 	if (type_to_fetch != DNS_T_ANY && type != type_to_fetch) {
+ 		cp += dlen;
+ 		return cp;
+@@ -557,9 +563,15 @@ static u_char *php_parserr(u_char *cp, u_char *end, querybuf *answer, int type_t
+ 			CHECKCP(n);
+ 			add_assoc_stringl(subarray, "tag", (char*)cp, n);
+ 			cp += n;
++			#ifdef MAGMA_ENABLE_FIXES
+ 			if ( (size_t) dlen < ((size_t)n) + 2 ) {
+ 				return NULL;
+ 			}
++			#else
++				#ifdef MAGMA_ENABLE_CANARIES
++					MAGMA_LOG("%MAGMA_BUG%",(size_t) dlen < ((size_t)n) + 2);
++				#endif
++			#endif
+ 			n = dlen - n - 2;
+ 			CHECKCP(n);
+ 			add_assoc_stringl(subarray, "value", (char*)cp, n);

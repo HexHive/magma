@@ -1,0 +1,30 @@
+diff --git a/ext/standard/http_fopen_wrapper.c b/ext/standard/http_fopen_wrapper.c
+index ae9b915101..c3d64424f3 100644
+--- a/ext/standard/http_fopen_wrapper.c
++++ b/ext/standard/http_fopen_wrapper.c
+@@ -712,12 +712,25 @@ finish:
+								tmp_line, response_code);
+				}
+			}
++		#ifdef MAGMA_ENABLE_FIXES
+			if (tmp_line_len >= 1 && tmp_line[tmp_line_len - 1] == '\n') {
+				--tmp_line_len;
+				if (tmp_line_len >= 1 &&tmp_line[tmp_line_len - 1] == '\r') {
+					--tmp_line_len;
+				}
+			}
++		#else
++			#ifdef MAGMA_ENABLE_CANARIES
++				MAGMA_LOG("%MAGMA_BUG%", tmp_line_len < 1);
++				MAGMA_LOG("%MAGMA_BUG%", MAGMA_AND(tmp_line_len == 1, tmp_line[tmp_line_len - 1] == '\n'));
++			#endif
++			if (tmp_line[tmp_line_len - 1] == '\n') {
++				--tmp_line_len;
++				if (tmp_line[tmp_line_len - 1] == '\r') {
++					--tmp_line_len;
++				}
++			}
++		#endif
+			ZVAL_STRINGL(&http_response, tmp_line, tmp_line_len);
+			zend_hash_next_index_insert(Z_ARRVAL_P(response_header), &http_response);
+		} else {

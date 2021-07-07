@@ -1,0 +1,63 @@
+diff --git a/png.c b/png.c
+index e92008d..22756e0 100644
+--- a/png.c
++++ b/png.c
+@@ -4574,6 +4574,11 @@ png_image_free_function(png_voidp argument)
+ #     endif
+    }
+ 
++#ifdef MAGMA_ENABLE_FIXES
++#else
++   image->flags |= PNG_IMAGE_FLAG_INVALID;
++#endif
++
+    /* Success. */
+    return 1;
+ }
+@@ -4588,7 +4588,11 @@ png_image_free(png_imagep image)
+    if (image != NULL && image->opaque != NULL &&
+       image->opaque->error_buf == NULL)
+    {
++#ifdef MAGMA_ENABLE_FIXES
+       png_image_free_function(image);
++#else
++      (void)png_safe_execute(image, png_image_free_function, image);
++#endif
+       image->opaque = NULL;
+    }
+ }
+diff --git a/png.h b/png.h
+index 57b9399..2aba9d7 100644
+--- a/png.h
++++ b/png.h
+@@ -2969,6 +2969,14 @@ typedef struct
+     * because that call initializes the 'flags' field.
+     */
+ 
++#ifdef MAGMA_ENABLE_FIXES
++#else
++#define PNG_IMAGE_FLAG_INVALID 0x08
++   /* This indicates that the image and all its allocated resources have been
++       * freed or released and are not available for consumption.
++    */
++#endif
++
+ #ifdef PNG_SIMPLIFIED_READ_SUPPORTED
+ /* READ APIs
+  * ---------
+diff --git a/pngerror.c b/pngerror.c
+index ec3a709..fed5cdc 100644
+--- a/pngerror.c
++++ b/pngerror.c
+@@ -951,6 +951,10 @@ png_safe_execute(png_imagep image_in, int (*function)(png_voidp), png_voidp arg)
+       result = function(arg);
+    }
+ 
++#ifdef MAGMA_ENABLE_CANARIES
++   MAGMA_LOG("%MAGMA_BUG%", (image->flags & PNG_IMAGE_FLAG_INVALID) != 0);
++#endif
++
+    image->opaque->error_buf = saved_error_buf;
+ 
+    /* And do the cleanup prior to any failure return. */
+

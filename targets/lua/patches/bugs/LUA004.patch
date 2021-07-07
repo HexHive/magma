@@ -1,0 +1,142 @@
+diff --git a/ldebug.c b/ldebug.c
+index 8e3657a9..a4b64532 100644
+--- a/ldebug.c
++++ b/ldebug.c
+@@ -130,6 +130,10 @@ LUA_API void lua_sethook (lua_State *L, lua_Hook func, int mask, int count) {
+     mask = 0;
+     func = NULL;
+   }
++#ifndef MAGMA_ENABLE_FIXES
++  if (isLua(L->ci))
++    L->oldpc = L->ci->u.l.savedpc;
++#endif
+   L->hook = func;
+   L->basehookcount = count;
+   resethookcount(L);
+@@ -830,7 +834,9 @@ static int changedline (const Proto *p, int oldpc, int newpc) {
+ int luaG_traceexec (lua_State *L, const Instruction *pc) {
+   CallInfo *ci = L->ci;
+   lu_byte mask = L->hookmask;
++#ifdef MAGMA_ENABLE_FIXES
+   const Proto *p = ci_func(ci)->p;
++#endif
+   int counthook;
+   if (!(mask & (LUA_MASKLINE | LUA_MASKCOUNT))) {  /* no hooks? */
+     ci->u.l.trap = 0;  /* don't need to stop again */
+@@ -852,15 +858,32 @@ int luaG_traceexec (lua_State *L, const Instruction *pc) {
+   if (counthook)
+     luaD_hook(L, LUA_HOOKCOUNT, -1, 0, 0);  /* call count hook */
+   if (mask & LUA_MASKLINE) {
++#ifdef MAGMA_ENABLE_FIXES
+     /* 'L->oldpc' may be invalid; use zero in this case */
+     int oldpc = (L->oldpc < p->sizecode) ? L->oldpc : 0;
++#else
++    const Proto *p = ci_func(ci)->p;
++#endif
+     int npci = pcRel(pc, p);
++#ifdef MAGMA_ENABLE_FIXES
+     if (npci <= oldpc ||  /* call hook when jump back (loop), */
+         changedline(p, oldpc, npci)) {  /* or when enter new line */
++#else
++#ifdef MAGMA_ENABLE_CANARIES
++    MAGMA_LOG("%MAGMA_BUG%", pcRel(L->oldpc, p) < 0);
++#endif
++    if (npci == 0 ||
++        pc <= L->oldpc ||
++        changedline(p, pcRel(L->oldpc, p), npci)) {
++#endif
+       int newline = luaG_getfuncline(p, npci);
+       luaD_hook(L, LUA_HOOKLINE, newline, 0, 0);  /* call line hook */
+     }
++#ifdef MAGMA_ENABLE_FIXES
+     L->oldpc = npci;  /* 'pc' of last call to line hook */
++#else
++    L->oldpc = pc;
++#endif
+   }
+   if (L->status == LUA_YIELD) {  /* did hook yield? */
+     if (counthook)
+diff --git a/ldo.c b/ldo.c
+index 7135079b..2589be9b 100644
+--- a/ldo.c
++++ b/ldo.c
+@@ -368,7 +368,11 @@ static void rethook (lua_State *L, CallInfo *ci, int nres) {
+     int delta = 0;  /* correction for vararg functions */
+     int ftransfer;
+     if (isLua(ci)) {
++#ifdef MAGMA_ENABLE_FIXES
+       Proto *p = ci_func(ci)->p;
++#else
++      Proto *p = clLvalue(s2v(ci->func))->p;
++#endif
+       if (p->is_vararg)
+         delta = ci->u.l.nextraargs + p->numparams + 1;
+     }
+@@ -377,8 +381,13 @@ static void rethook (lua_State *L, CallInfo *ci, int nres) {
+     luaD_hook(L, LUA_HOOKRET, -1, ftransfer, nres);  /* call it */
+     ci->func -= delta;
+   }
++#ifdef MAGMA_ENABLE_FIXES
+   if (isLua(ci = ci->previous))
+     L->oldpc = pcRel(ci->u.l.savedpc, ci_func(ci)->p);  /* set 'oldpc' */
++#else
++  if (isLua(ci->previous))
++    L->oldpc = ci->previous->u.l.savedpc;
++#endif
+ }
+ 
+ 
+diff --git a/lstate.c b/lstate.c
+index c5e3b437..07524a8e 100644
+--- a/lstate.c
++++ b/lstate.c
+@@ -262,7 +262,9 @@ static void preinit_thread (lua_State *L, global_State *g) {
+   L->openupval = NULL;
+   L->status = LUA_OK;
+   L->errfunc = 0;
++#ifdef ENABLE_MAGMA_FIXES
+   L->oldpc = 0;
++#endif
+ }
+ 
+ 
+diff --git a/lstate.h b/lstate.h
+index c1283bb6..bc0eadc4 100644
+--- a/lstate.h
++++ b/lstate.h
+@@ -309,6 +309,9 @@ struct lua_State {
+   StkId top;  /* first free slot in the stack */
+   global_State *l_G;
+   CallInfo *ci;  /* call info for current function */
++#ifndef MAGMA_ENABLE_FIXES
++  const Instruction *oldpc;
++#endif
+   StkId stack_last;  /* end of stack (last element + 1) */
+   StkId stack;  /* stack base */
+   UpVal *openupval;  /* list of open upvalues in this stack */
+@@ -320,7 +323,9 @@ struct lua_State {
+   volatile lua_Hook hook;
+   ptrdiff_t errfunc;  /* current error handling function (stack index) */
+   l_uint32 nCcalls;  /* number of nested (non-yieldable | C)  calls */
++#ifdef MAGMA_ENABLE_FIXES
+   int oldpc;  /* last pc traced */
++#endif
+   int basehookcount;
+   int hookcount;
+   volatile l_signalT hookmask;
+diff --git a/lvm.c b/lvm.c
+index c9729bcc..572b6a23 100644
+--- a/lvm.c
++++ b/lvm.c
+@@ -1820,7 +1820,11 @@ void luaV_execute (lua_State *L, CallInfo *ci) {
+         ProtectNT(luaT_adjustvarargs(L, GETARG_A(i), ci, cl->p));
+         if (l_unlikely(trap)) {  /* previous "Protect" updated trap */
+           luaD_hookcall(L, ci);
++#ifdef MAGMA_ENABLE_FIXES
+           L->oldpc = 1;  /* next opcode will be seen as a "new" line */
++#else
++          L->oldpc = pc + 1;
++#endif
+         }
+         updatebase(ci);  /* function has new base after adjustment */
+         vmbreak;

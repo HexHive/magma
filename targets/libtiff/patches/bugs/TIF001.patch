@@ -1,0 +1,189 @@
+diff --git a/libtiff/tif_predict.c b/libtiff/tif_predict.c
+index b775663..98d7c6b 100644
+--- a/libtiff/tif_predict.c
++++ b/libtiff/tif_predict.c
+@@ -282,12 +282,17 @@ horAcc8(TIFF* tif, uint8* cp0, tmsize_t cc)
+ 	tmsize_t stride = PredictorState(tif)->stride;
+ 
+ 	unsigned char* cp = (unsigned char*) cp0;
++#ifdef MAGMA_ENABLE_FIXES
+     if((cc%stride)!=0)
+     {
+         TIFFErrorExt(tif->tif_clientdata, "horAcc8",
+                      "%s", "(cc%stride)!=0");
+         return 0;
+     }
++#endif
++#ifdef MAGMA_ENABLE_CANARIES
++    MAGMA_LOG("%MAGMA_BUG%", (cc%stride)!=0);
++#endif
+ 
+ 	if (cc > stride) {
+ 		/*
+@@ -351,12 +356,17 @@ horAcc16(TIFF* tif, uint8* cp0, tmsize_t cc)
+ 	uint16* wp = (uint16*) cp0;
+ 	tmsize_t wc = cc / 2;
+ 
++#ifdef MAGMA_ENABLE_FIXES
+     if((cc%(2*stride))!=0)
+     {
+         TIFFErrorExt(tif->tif_clientdata, "horAcc16",
+                      "%s", "cc%(2*stride))!=0");
+         return 0;
+     }
++#endif
++#ifdef MAGMA_ENABLE_CANARIES
++    MAGMA_LOG("%MAGMA_BUG%", (cc%(2*stride))!=0);
++#endif
+ 
+ 	if (wc > stride) {
+ 		wc -= stride;
+@@ -386,12 +396,17 @@ horAcc32(TIFF* tif, uint8* cp0, tmsize_t cc)
+ 	uint32* wp = (uint32*) cp0;
+ 	tmsize_t wc = cc / 4;
+ 
++#ifdef MAGMA_ENABLE_FIXES
+     if((cc%(4*stride))!=0)
+     {
+         TIFFErrorExt(tif->tif_clientdata, "horAcc32",
+                      "%s", "cc%(4*stride))!=0");
+         return 0;
+     }
++#endif
++#ifdef MAGMA_ENABLE_CANARIES
++    MAGMA_LOG("%MAGMA_BUG%", (cc%(4*stride))!=0);
++#endif
+ 
+ 	if (wc > stride) {
+ 		wc -= stride;
+@@ -416,12 +431,17 @@ fpAcc(TIFF* tif, uint8* cp0, tmsize_t cc)
+ 	uint8 *cp = (uint8 *) cp0;
+ 	uint8 *tmp;
+ 
++#ifdef MAGMA_ENABLE_FIXES
+     if(cc%(bps*stride)!=0)
+     {
+         TIFFErrorExt(tif->tif_clientdata, "fpAcc",
+                      "%s", "cc%(bps*stride))!=0");
+         return 0;
+     }
++#endif
++#ifdef MAGMA_ENABLE_CANARIES
++    MAGMA_LOG("%MAGMA_BUG%", (cc%(bps*stride))!=0);
++#endif
+ 
+     tmp = (uint8 *)_TIFFmalloc(cc);
+ 	if (!tmp)
+@@ -486,12 +506,19 @@ PredictorDecodeTile(TIFF* tif, uint8* op0, tmsize_t occ0, uint16 s)
+ 	if ((*sp->decodetile)(tif, op0, occ0, s)) {
+ 		tmsize_t rowsize = sp->rowsize;
+ 		assert(rowsize > 0);
++
++#ifdef MAGMA_ENABLE_FIXES
+ 		if((occ0%rowsize) !=0)
+         {
+             TIFFErrorExt(tif->tif_clientdata, "PredictorDecodeTile",
+                          "%s", "occ0%rowsize != 0");
+             return 0;
+         }
++#endif
++#ifdef MAGMA_ENABLE_CANARIES
++        MAGMA_LOG("%MAGMA_BUG%", (occ0%rowsize)!=0);
++#endif
++
+ 		assert(sp->decodepfunc != NULL);
+ 		while (occ0 > 0) {
+ 			if( !(*sp->decodepfunc)(tif, op0, rowsize) )
+@@ -512,12 +539,17 @@ horDiff8(TIFF* tif, uint8* cp0, tmsize_t cc)
+ 	tmsize_t stride = sp->stride;
+ 	unsigned char* cp = (unsigned char*) cp0;
+ 
++#ifdef MAGMA_ENABLE_FIXES
+     if((cc%stride)!=0)
+     {
+         TIFFErrorExt(tif->tif_clientdata, "horDiff8",
+                      "%s", "(cc%stride)!=0");
+         return 0;
+     }
++#endif
++#ifdef MAGMA_ENABLE_CANARIES
++    MAGMA_LOG("%MAGMA_BUG%", (cc%stride)!=0);
++#endif
+ 
+ 	if (cc > stride) {
+ 		cc -= stride;
+@@ -567,12 +599,17 @@ horDiff16(TIFF* tif, uint8* cp0, tmsize_t cc)
+ 	uint16 *wp = (uint16*) cp0;
+ 	tmsize_t wc = cc/2;
+ 
++#ifdef MAGMA_ENABLE_FIXES
+     if((cc%(2*stride))!=0)
+     {
+         TIFFErrorExt(tif->tif_clientdata, "horDiff8",
+                      "%s", "(cc%(2*stride))!=0");
+         return 0;
+     }
++#endif
++#ifdef MAGMA_ENABLE_CANARIES
++    MAGMA_LOG("%MAGMA_BUG%", (cc%(2*stride))!=0);
++#endif
+ 
+ 	if (wc > stride) {
+ 		wc -= stride;
+@@ -607,12 +644,17 @@ horDiff32(TIFF* tif, uint8* cp0, tmsize_t cc)
+ 	uint32 *wp = (uint32*) cp0;
+ 	tmsize_t wc = cc/4;
+ 
++#ifdef MAGMA_ENABLE_FIXES
+     if((cc%(4*stride))!=0)
+     {
+         TIFFErrorExt(tif->tif_clientdata, "horDiff32",
+                      "%s", "(cc%(4*stride))!=0");
+         return 0;
+     }
++#endif
++#ifdef MAGMA_ENABLE_CANARIES
++    MAGMA_LOG("%MAGMA_BUG%", (cc%(4*stride))!=0);
++#endif
+ 
+ 	if (wc > stride) {
+ 		wc -= stride;
+@@ -652,12 +694,17 @@ fpDiff(TIFF* tif, uint8* cp0, tmsize_t cc)
+ 	uint8 *cp = (uint8 *) cp0;
+ 	uint8 *tmp;
+ 
++#ifdef MAGMA_ENABLE_FIXES
+     if((cc%(bps*stride))!=0)
+     {
+         TIFFErrorExt(tif->tif_clientdata, "fpDiff",
+                      "%s", "(cc%(bps*stride))!=0");
+         return 0;
+     }
++#endif
++#ifdef MAGMA_ENABLE_CANARIES
++    MAGMA_LOG("%MAGMA_BUG%", (cc%(bps*stride))!=0);
++#endif
+ 
+     tmp = (uint8 *)_TIFFmalloc(cc);
+ 	if (!tmp)
+@@ -730,6 +777,8 @@ PredictorEncodeTile(TIFF* tif, uint8* bp0, tmsize_t cc0, uint16 s)
+ 
+ 	rowsize = sp->rowsize;
+ 	assert(rowsize > 0);
++
++#ifdef MAGMA_ENABLE_FIXES
+ 	if((cc0%rowsize)!=0)
+     {
+         TIFFErrorExt(tif->tif_clientdata, "PredictorEncodeTile",
+@@ -737,6 +786,11 @@ PredictorEncodeTile(TIFF* tif, uint8* bp0, tmsize_t cc0, uint16 s)
+         _TIFFfree( working_copy );
+         return 0;
+     }
++#endif
++#ifdef MAGMA_ENABLE_CANARIES
++    MAGMA_LOG("%MAGMA_BUG%", (cc0%rowsize)!=0);
++#endif
++
+ 	while (cc > 0) {
+ 		(*sp->encodepfunc)(tif, bp, rowsize);
+ 		cc -= rowsize;

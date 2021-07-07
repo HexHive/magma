@@ -1,0 +1,88 @@
+diff --git a/crypto/pkcs7/pk7_doit.c b/crypto/pkcs7/pk7_doit.c
+index 2cf62b62cd..f53a5e0082 100644
+--- a/crypto/pkcs7/pk7_doit.c
++++ b/crypto/pkcs7/pk7_doit.c
+@@ -203,6 +203,7 @@ BIO *PKCS7_dataInit(PKCS7 *p7, BIO *bio)
+     PKCS7_RECIP_INFO *ri = NULL;
+     ASN1_OCTET_STRING *os = NULL;
+ 
++#ifdef MAGMA_ENABLE_FIXES
+     if (p7 == NULL) {
+         PKCS7err(PKCS7_F_PKCS7_DATAINIT, PKCS7_R_INVALID_NULL_POINTER);
+         return NULL;
+@@ -221,6 +223,11 @@ BIO *PKCS7_dataInit(PKCS7 *p7, BIO *bio)
+         PKCS7err(PKCS7_F_PKCS7_DATAINIT, PKCS7_R_NO_CONTENT);
+         return NULL;
+     }
++#else
++#ifdef MAGMA_ENABLE_CANARIES
++    MAGMA_LOG("%MAGMA_BUG%", MAGMA_OR(p7 == NULL, p7->d.ptr));
++#endif
++#endif
+ 
+     i = OBJ_obj2nid(p7->type);
+     p7->state = PKCS7_S_HEADER;
+@@ -369,6 +376,7 @@ BIO *PKCS7_dataDecode(PKCS7 *p7, EVP_PKEY *pkey, BIO *in_bio, X509 *pcert)
+     const char *name;
+     const PKCS7_CTX *p7_ctx;
+ 
++#ifdef MAGMA_ENABLE_FIXES
+     if (p7 == NULL) {
+         PKCS7err(PKCS7_F_PKCS7_DATADECODE, PKCS7_R_INVALID_NULL_POINTER);
+         return NULL;
+@@ -379,7 +386,12 @@ BIO *PKCS7_dataDecode(PKCS7 *p7, EVP_PKEY *pkey, BIO *in_bio, X509 *pcert)
+         PKCS7err(PKCS7_F_PKCS7_DATADECODE, PKCS7_R_NO_CONTENT);
+         return NULL;
+     }
+ 
++#else
++#ifdef MAGMA_ENABLE_CANARIES
++    MAGMA_LOG("%MAGMA_BUG%", MAGMA_OR(p7 == NULL, p7->d.ptr == NULL));
++#endif
++#endif
+     i = OBJ_obj2nid(p7->type);
+     p7->state = PKCS7_S_HEADER;
+ 
+@@ -650,6 +661,7 @@ int PKCS7_dataFinal(PKCS7 *p7, BIO *bio)
+     ASN1_OCTET_STRING *os = NULL;
+     const PKCS7_CTX *p7_ctx;
+ 
++#ifdef MAGMA_ENABLE_FIXES
+     if (p7 == NULL) {
+         PKCS7err(PKCS7_F_PKCS7_DATAFINAL, PKCS7_R_INVALID_NULL_POINTER);
+         return 0;
+@@ -660,7 +671,12 @@ int PKCS7_dataFinal(PKCS7 *p7, BIO *bio)
+         PKCS7err(PKCS7_F_PKCS7_DATAFINAL, PKCS7_R_NO_CONTENT);
+         return 0;
+     }
+ 
++#else
++#ifdef MAGMA_ENABLE_CANARIES
++    MAGMA_LOG("%MAGMA_BUG%", MAGMA_OR(p7 == NULL, p7->d.ptr == NULL));
++#endif
++#endif
+     ctx_tmp = EVP_MD_CTX_new();
+     if (ctx_tmp == NULL) {
+         PKCS7err(PKCS7_F_PKCS7_DATAFINAL, ERR_R_MALLOC_FAILURE);
+@@ -920,7 +960,8 @@ int PKCS7_dataVerify(X509_STORE *cert_store, X509_STORE_CTX *ctx, BIO *bio,
+     int ret = 0, i;
+     STACK_OF(X509) *cert;
+     X509 *x509;
+ 
++#ifdef MAGMA_ENABLE_FIXES
+     if (p7 == NULL) {
+         ERR_raise(ERR_LIB_PKCS7, PKCS7_R_INVALID_NULL_POINTER);
+         return 0;
+@@ -930,7 +970,12 @@ int PKCS7_dataVerify(X509_STORE *cert_store, X509_STORE_CTX *ctx, BIO *bio,
+         ERR_raise(ERR_LIB_PKCS7, PKCS7_R_NO_CONTENT);
+         return 0;
+     }
+ 
++#else
++#ifdef MAGMA_ENABLE_CANARIES
++    MAGMA_LOG("%MAGMA_BUG%", MAGMA_OR(p7 == NULL, p7->d.ptr));
++#endif
++#endif
+     if (PKCS7_type_is_signed(p7)) {
+         cert = p7->d.sign->cert;
+     } else if (PKCS7_type_is_signedAndEnveloped(p7)) {

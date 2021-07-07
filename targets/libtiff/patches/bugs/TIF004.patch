@@ -1,0 +1,25 @@
+diff --git a/libtiff/tif_ojpeg.c b/libtiff/tif_ojpeg.c
+index ad3e1e7..5abc4a9 100644
+--- a/libtiff/tif_ojpeg.c
++++ b/libtiff/tif_ojpeg.c
+@@ -789,15 +789,20 @@ OJPEGDecode(TIFF* tif, uint8* buf, tmsize_t cc, uint16 s)
+         static const char module[]="OJPEGDecode";
+ 	OJPEGState* sp=(OJPEGState*)tif->tif_data;
+ 	(void)s;
++#ifdef MAGMA_ENABLE_FIXES
+         if( !sp->decoder_ok )
+         {
+             TIFFErrorExt(tif->tif_clientdata,module,"Cannot decode: decoder not correctly initialized");
+             return 0;
+         }
+         if( sp->error_in_raw_data_decoding )
+         {
+             return 0;
+         }
++#endif
++#ifdef MAGMA_ENABLE_CANARIES
++    MAGMA_LOG("%MAGMA_BUG%", sp->decoder_ok == 0);
++#endif
+ 	if (sp->libjpeg_jpeg_query_style==0)
+ 	{
+ 		if (OJPEGDecodeRaw(tif,buf,cc)==0)

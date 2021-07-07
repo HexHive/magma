@@ -1,0 +1,32 @@
+diff --git a/pngrutil.c b/pngrutil.c
+index 4db3de990..01c97dc37 100644
+--- a/pngrutil.c
++++ b/pngrutil.c
+@@ -3163,12 +3163,27 @@ png_check_chunk_length(png_const_structrp png_ptr, png_uint_32 length)
+    if (png_ptr->chunk_name == png_IDAT)
+    {
+       png_alloc_size_t idat_limit = PNG_UINT_31_MAX;
++#ifdef MAGMA_ENABLE_FIXES
+       size_t row_factor =
+          (size_t)png_ptr->width
+          * (size_t)png_ptr->channels
+          * (png_ptr->bit_depth > 8? 2: 1)
+          + 1
+          + (png_ptr->interlaced? 6: 0);
++#else
++      size_t row_factor_l =
++         (size_t)png_ptr->width
++         * (size_t)png_ptr->channels
++         * (png_ptr->bit_depth > 8? 2: 1)
++         + 1
++         + (png_ptr->interlaced? 6: 0);
++
++#ifdef MAGMA_ENABLE_CANARIES
++      MAGMA_LOG("%MAGMA_BUG%", row_factor_l == ((size_t)1 << (sizeof(png_uint_32) * 8)));
++#endif
++
++      size_t row_factor = (png_uint_32)row_factor_l;
++#endif
+       if (png_ptr->height > PNG_UINT_32_MAX/row_factor)
+          idat_limit = PNG_UINT_31_MAX;
+       else

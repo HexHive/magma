@@ -10,7 +10,7 @@ index c9737a9..08dff8d 100644
  					if (psf->header.indx + 4 + (sf_count_t) size + (sf_count_t) (size & 1) > psf->header.len && psf_bump_header_allocation (psf, 4 + size + (size & 1)))
 +#else
 +#ifdef MAGMA_ENABLE_CANARIES
-+					MAGMA_LOG("SND011", psf->header.indx + 4 + (sf_count_t) size + (sf_count_t) (size & 1) > psf->header.len);
++					MAGMA_LOG("%MAGMA_BUG%", psf->header.indx + 4 + (sf_count_t) size + (sf_count_t) (size & 1) > psf->header.len);
 +#endif
 +					if (psf->header.indx + (sf_count_t) size > psf->header.len && psf_bump_header_allocation (psf, size))
 +#endif

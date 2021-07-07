@@ -1,0 +1,55 @@
+diff --git a/ext/exif/exif.c b/ext/exif/exif.c
+index 8606bdd926..7c4e35d12a 100644
+--- a/ext/exif/exif.c
++++ b/ext/exif/exif.c
+@@ -3941,9 +3941,18 @@ static int exif_scan_thumbnail(image_info_type *ImageInfo)
+ 		if (pos>=ImageInfo->Thumbnail.size)
+ 			return false;
+ 		length = php_jpg_get16(data+pos);
++	#ifdef MAGMA_ENABLE_FIXES
+ 		if (length > ImageInfo->Thumbnail.size || pos >= ImageInfo->Thumbnail.size - length) {
+ 			return false;
+ 		}
++	#else
++		#ifdef MAGMA_ENABLE_CANARIES
++			MAGMA_LOG("%MAGMA_BUG%",MAGMA_AND(MAGMA_OR(pos > SIZE_MAX - length, length > ImageInfo->Thumbnail.size), pos < ImageInfo->Thumbnail.size - length));
++		#endif
++		if (pos+length>=ImageInfo->Thumbnail.size) {
++			return false;
++		}
++	#endif
+ #ifdef EXIF_DEBUG
+ 		exif_error_docref(NULL EXIFERR_CC, ImageInfo, E_NOTICE, "Thumbnail: process section(x%02X=%s) @ x%04X + x%04X", marker, exif_get_markername(marker), pos, length);
+ #endif
+@@ -3962,10 +3972,16 @@ static int exif_scan_thumbnail(image_info_type *ImageInfo)
+ 			case M_SOF14:
+ 			case M_SOF15:
+ 				/* handle SOFn block */
++			#ifdef MAGMA_ENABLE_FIXES
+ 				if (length < 8 || ImageInfo->Thumbnail.size - 8 < pos) {
+ 					/* exif_process_SOFn needs 8 bytes */
+ 					return false;
+ 				}
++			#else
++				#ifdef MAGMA_ENABLE_CANARIES
++					MAGMA_LOG("%MAGMA_BUG%",MAGMA_OR(length < 8, ImageInfo->Thumbnail.size - 8 < pos));
++				#endif
++			#endif
+ 				exif_process_SOFn(data+pos, marker, &sof_info);
+ 				ImageInfo->Thumbnail.height   = sof_info.height;
+ 				ImageInfo->Thumbnail.width    = sof_info.width;
+@@ -4703,9 +4719,14 @@ PHP_FUNCTION(exif_thumbnail)
+ 	ZVAL_STRINGL(return_value, ImageInfo.Thumbnail.data, ImageInfo.Thumbnail.size);
+ 	if (arg_c >= 3) {
+ 		if (!ImageInfo.Thumbnail.width || !ImageInfo.Thumbnail.height) {
++
++		#ifdef MAGMA_ENABLE_FIXES
+ 			if (!exif_scan_thumbnail(&ImageInfo)) {
+ 				ImageInfo.Thumbnail.width = ImageInfo.Thumbnail.height = 0;
+ 			}
++		#else
++			exif_scan_thumbnail(&ImageInfo);
++		#endif
+ 		}
+ 		ZEND_TRY_ASSIGN_REF_LONG(z_width,  ImageInfo.Thumbnail.width);
+ 		ZEND_TRY_ASSIGN_REF_LONG(z_height, ImageInfo.Thumbnail.height);

@@ -13,7 +13,7 @@ index dd3dbef..1e6fbc4 100644
  		} ;
 +#endif
 +#ifdef MAGMA_ENABLE_CANARIES
-+    MAGMA_LOG("SND002", rsrc.map_offset + 28 > rsrc.rsrc_len);
++    MAGMA_LOG("%MAGMA_BUG%", rsrc.map_offset + 28 > rsrc.rsrc_len);
 +#endif
  
  	rsrc.type_count = read_rsrc_short (&rsrc, rsrc.map_offset + 28) + 1 ;

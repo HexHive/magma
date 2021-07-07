@@ -1,0 +1,22 @@
+diff --git a/src/pragma.c b/src/pragma.c
+index c5b5bb667..a882e2307 100644
+--- a/src/pragma.c
++++ b/src/pragma.c
+@@ -1645,9 +1645,17 @@ void sqlite3Pragma(
+           if( j==pTab->iPKey ) continue;
+           if( pTab->aCol[j].notNull==0 ) continue;
+           sqlite3ExprCodeGetColumnOfTable(v, pTab, iDataCur, j, 3);
++#ifndef MAGMA_ENABLE_FIXES
++#ifdef MAGMA_ENABLE_CANARIES
++          MAGMA_LOG("%MAGMA_BUG%", sqlite3VdbeGetOp(v,-1)->opcode!=OP_Column);
++#endif
++#else
+           if( sqlite3VdbeGetOp(v,-1)->opcode==OP_Column ){
++#endif
+             sqlite3VdbeChangeP5(v, OPFLAG_TYPEOFARG);
++#ifdef MAGMA_ENABLE_FIXES
+           }
++#endif
+           jmp2 = sqlite3VdbeAddOp1(v, OP_NotNull, 3); VdbeCoverage(v);
+           zErr = sqlite3MPrintf(db, "NULL value in %s.%s", pTab->zName,
+                               pTab->aCol[j].zName);

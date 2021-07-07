@@ -1,0 +1,20 @@
+diff --git a/poppler/XRef.cc b/poppler/XRef.cc
+index 8f9dd7fe..10255f9d 100644
+--- a/poppler/XRef.cc
++++ b/poppler/XRef.cc
+@@ -1605,10 +1605,15 @@ XRefEntry *XRef::getEntry(int i, bool complainIfMissing)
+     if (i >= size || entries[i].type == xrefEntryNone) {
+ 
+         if ((!xRefStream) && mainXRefEntriesOffset) {
++#ifdef MAGMA_ENABLE_FIXES
+             if (unlikely(i >= capacity)) {
+                 error(errInternal, -1, "Request for out-of-bounds XRef entry [{0:d}]", i);
+                 return &dummyXRefEntry;
+             }
++#endif
++#ifdef MAGMA_ENABLE_CANARIES
++            MAGMA_LOG("%MAGMA_BUG%", i >= capacity);
++#endif
+ 
+             if (!parseEntry(mainXRefEntriesOffset + 20*i, &entries[i])) {
+                 error(errSyntaxError, -1, "Failed to parse XRef entry [{0:d}].", i);

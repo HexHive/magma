@@ -10,7 +10,7 @@ index fb6d468..bdbbda4 100644
  	if (psf->sf.channels < 1 || psf->sf.channels > SF_MAX_CHANNELS)
 +#else
 +#ifdef MAGMA_ENABLE_CANARIES
-+    MAGMA_LOG("SND016", psf->sf.channels > SF_MAX_CHANNELS);
++    MAGMA_LOG("%MAGMA_BUG%", psf->sf.channels > SF_MAX_CHANNELS);
 +#endif
 +	if (psf->sf.channels < 1)
 +#endif

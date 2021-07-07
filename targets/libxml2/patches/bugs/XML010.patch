@@ -1,0 +1,34 @@
+diff --git a/parser.c b/parser.c
+index 3f31329..db7f7d1 100644
+--- a/parser.c
++++ b/parser.c
+@@ -2705,6 +2705,8 @@ xmlStringLenDecodeEntities(xmlParserCtxtPtr ctxt, const xmlChar *str, int len,
+ 	        ctxt->nbentities += ent->checked / 2;
+ 	    if (ent != NULL) {
+                 if (ent->content == NULL) {
++		    int m_tmp = 1;
++#ifdef MAGMA_ENABLE_FIXES
+ 		    /*
+ 		     * Note: external parsed entities will not be loaded,
+ 		     * it is not required for a non-validating parser to
+@@ -2716,10 +2718,20 @@ xmlStringLenDecodeEntities(xmlParserCtxtPtr ctxt, const xmlChar *str, int len,
+ 			(ctxt->validate != 0)) {
+ 			xmlLoadEntityContent(ctxt, ent);
+ 		    } else {
++			m_tmp = 0;
+ 			xmlWarningMsg(ctxt, XML_ERR_ENTITY_PROCESSING,
+ 		  "not validating will not read content for PE entity %s\n",
+ 		                      ent->name, NULL);
+ 		    }
++#else
++		    xmlLoadEntityContent(ctxt, ent);
++#endif
++#ifdef MAGMA_ENABLE_CANARIES
++		    MAGMA_LOG("%MAGMA_BUG%", MAGMA_AND(m_tmp == 1, \
++			MAGMA_AND((ctxt->options & XML_PARSE_NOENT) == 0, \
++			MAGMA_AND((ctxt->options & XML_PARSE_DTDVALID) == 0, \
++			ctxt->validate == 0))));
++#endif
+ 		}
+ 		ctxt->depth++;
+ 		rep = xmlStringDecodeEntities(ctxt, ent->content, what,

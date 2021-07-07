@@ -1,0 +1,18 @@
+diff --git a/src/select.c b/src/select.c
+index b2dd5f149..61c4cb9f9 100644
+--- a/src/select.c
++++ b/src/select.c
+@@ -2833,8 +2833,12 @@ static int multiSelect(
+     }
+   #endif
+   }
++#ifdef MAGMA_ENABLE_FIXES
+   if( pParse->nErr ) goto multi_select_end;
+-  
++#endif
++#ifdef MAGMA_ENABLE_CANARIES
++  MAGMA_LOG("%MAGMA_BUG%", pParse->nErr != 0);
++#endif
+   /* Compute collating sequences used by 
+   ** temporary tables needed to implement the compound select.
+   ** Attach the KeyInfo structure to all temporary tables.

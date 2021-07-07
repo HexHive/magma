@@ -1,0 +1,34 @@
+diff --git a/fofi/FoFiType1C.cc b/fofi/FoFiType1C.cc
+index 7a4ed86f..9bbe4216 100644
+--- a/fofi/FoFiType1C.cc
++++ b/fofi/FoFiType1C.cc
+@@ -1361,7 +1361,14 @@ void FoFiType1C::cvtGlyph(int offset, int nBytes, GooString *charBuf,
+                     --nOps;
+                     ok = true;
+                     getIndexVal(subrIdx, k, &val, &ok);
++#ifdef MAGMA_ENABLE_FIXES
+                     if (likely(ok && val.pos != offset)) {
++#else
++#ifdef MAGMA_ENABLE_CANARIES
++                    MAGMA_LOG("%MAGMA_BUG%", val.pos == offset);
++#endif
++                    if(ok) {
++#endif
+                         cvtGlyph(val.pos, val.len, charBuf, subrIdx, pDict, false, offsetBeingParsed);
+                     }
+                 } else {
+@@ -1596,7 +1603,14 @@ void FoFiType1C::cvtGlyph(int offset, int nBytes, GooString *charBuf,
+                     --nOps;
+                     ok = true;
+                     getIndexVal(&gsubrIdx, k, &val, &ok);
++#ifdef MAGMA_ENABLE_FIXES
+                     if (likely(ok && val.pos != offset)) {
++#else
++#ifdef MAGMA_ENABLE_CANARIES
++                    MAGMA_LOG("%MAGMA_BUG%", val.pos == offset);
++#endif
++                    if(ok) {
++#endif
+                         cvtGlyph(val.pos, val.len, charBuf, subrIdx, pDict, false, offsetBeingParsed);
+                     }
+                 } else {

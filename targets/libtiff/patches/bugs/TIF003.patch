@@ -1,0 +1,19 @@
+diff --git a/libtiff/tif_read.c b/libtiff/tif_read.c
+index 1f5362a..0e8a1c6 100644
+--- a/libtiff/tif_read.c
++++ b/libtiff/tif_read.c
+@@ -492,7 +492,14 @@ static tmsize_t TIFFReadEncodedStripGetStripSize(TIFF* tif, uint32 strip, uint16
+ 	rowsperstrip=td->td_rowsperstrip;
+ 	if (rowsperstrip>td->td_imagelength)
+ 		rowsperstrip=td->td_imagelength;
++#ifdef MAGMA_ENABLE_FIXES
+ 	stripsperplane= TIFFhowmany_32_maxuint_compat(td->td_imagelength, rowsperstrip);
++#else
++    stripsperplane=((td->td_imagelength+rowsperstrip-1)/rowsperstrip);
++#endif
++#ifdef MAGMA_ENABLE_CANARIES
++    MAGMA_LOG("%MAGMA_BUG%", stripsperplane == 0);
++#endif
+ 	stripinplane=(strip%stripsperplane);
+ 	if( pplane ) *pplane=(uint16)(strip/stripsperplane);
+ 	rows=td->td_imagelength-stripinplane*rowsperstrip;

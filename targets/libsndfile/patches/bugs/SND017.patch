@@ -13,7 +13,7 @@ index b59c684..bbfab02 100644
 +#endif
  					{
 +#ifdef MAGMA_ENABLE_CANARIES
-+                        MAGMA_LOG("SND017", k >= psf->sf.channels);
++                        MAGMA_LOG("%MAGMA_BUG%", k >= psf->sf.channels);
 +#endif
  						if (wav_fmt->ext.channelmask & (1 << bit))
  						{	if (k > psf->sf.channels)

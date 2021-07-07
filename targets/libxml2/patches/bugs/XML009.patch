@@ -1,0 +1,28 @@
+diff --git a/parser.c b/parser.c
+index 3f31329..ff89bb7 100644
+--- a/parser.c
++++ b/parser.c
+@@ -10330,11 +10330,22 @@ xmlParseEncodingDecl(xmlParserCtxtPtr ctxt) {
+ 
+             handler = xmlFindCharEncodingHandler((const char *) encoding);
+ 	    if (handler != NULL) {
+-		if (xmlSwitchToEncoding(ctxt, handler) < 0) {
++                int m_tmp = xmlSwitchToEncoding(ctxt, handler);
++#ifdef MAGMA_ENABLE_FIXES
++		if (m_tmp < 0) {
+ 		    /* failed to convert */
+ 		    ctxt->errNo = XML_ERR_UNSUPPORTED_ENCODING;
+ 		    return(NULL);
+ 		}
++#endif
++#ifdef MAGMA_ENABLE_CANARIES
++                // This condition is not sufficient to indicate the original
++                // bug was triggered, but it is necessary.
++                // As such, it is inaccurate, but investigating further
++                // would require more time and deeper knowledge.
++                // This should be enough for a "simple" bug.
++                MAGMA_LOG("%MAGMA_BUG%", m_tmp < 0);
++#endif
+ 	    } else {
+ 		xmlFatalErrMsgStr(ctxt, XML_ERR_UNSUPPORTED_ENCODING,
+ 			"Unsupported encoding %s\n", encoding);

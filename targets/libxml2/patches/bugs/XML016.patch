@@ -1,0 +1,25 @@
+diff --git a/xmlregexp.c b/xmlregexp.c
+index d255fbf..28d53ae 100644
+--- a/xmlregexp.c
++++ b/xmlregexp.c
+@@ -5065,11 +5065,20 @@ xmlFAParseCharRange(xmlRegParserCtxtPtr ctxt) {
+ 	return;
+     }
+ 
++#ifdef MAGMA_ENABLE_FIXES
++#else
++#ifdef MAGMA_ENABLE_CANARIES
++    MAGMA_LOG("%MAGMA_BUG%", end < start);
++#endif
++    NEXTL(len);
++#endif
+     /* TODO check that the values are acceptable character ranges for XML */
+     if (end < start) {
+ 	ERROR("End of range is before start of range");
+     } else {
++#ifdef MAGMA_ENABLE_FIXES
+         NEXTL(len);
++#endif
+         xmlRegAtomAddRange(ctxt, ctxt->atom, ctxt->neg,
+ 		           XML_REGEXP_CHARVAL, start, end, NULL);
+     }

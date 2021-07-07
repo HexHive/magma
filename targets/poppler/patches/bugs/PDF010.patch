@@ -1,0 +1,19 @@
+diff --git a/poppler/SplashOutputDev.cc b/poppler/SplashOutputDev.cc
+index 3d2befc..fd731f9 100644
+--- a/poppler/SplashOutputDev.cc
++++ b/poppler/SplashOutputDev.cc
+@@ -2627,7 +2627,14 @@ void SplashOutputDev::type3D1(GfxState *state, double wx, double wy,
+     int i, j;
+ 
+     // ignore multiple d0/d1 operators
++#ifdef MAGMA_ENABLE_FIXES
+     if (!t3GlyphStack || t3GlyphStack->haveDx) {
++#else
++#ifdef MAGMA_ENABLE_CANARIES
++    MAGMA_LOG("%MAGMA_BUG%", t3GlyphStack == nullptr);
++#endif
++    if (t3GlyphStack->haveDx) {
++#endif
+         return;
+     }
+     t3GlyphStack->haveDx = true;

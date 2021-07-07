@@ -1,0 +1,15 @@
+--- a/ssl/statem/statem.c
++++ b/ssl/statem/statem.c
+@@ -505,7 +505,12 @@ static int grow_init_buf(SSL *s, size_t size) {
+     if (size < msg_offset)
+         return 0;
+ 
++#ifdef MAGMA_ENABLE_FIXES
+     s->init_msg = s->init_buf->data + msg_offset;
++#endif
++#ifdef MAGMA_ENABLE_CANARIES
++    MAGMA_LOG("%MAGMA_BUG%", s->init_msg != (s->init_buf->data + msg_offset));
++#endif
+ 
+     return 1;
+ }

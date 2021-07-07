@@ -1,0 +1,20 @@
+diff --git a/src/build.c b/src/build.c
+index 73e4cea7c..593b31617 100644
+--- a/src/build.c
++++ b/src/build.c
+@@ -2236,10 +2236,15 @@ void sqlite3EndTable(
+   ** table itself.  So mark it read-only.
+   */
+   if( db->init.busy ){
++#ifdef MAGMA_ENABLE_FIXES
+     if( pSelect ){
+       sqlite3ErrorMsg(pParse, "");
+       return;
+     }
++#endif
++#ifdef MAGMA_ENABLE_CANARIES
++    MAGMA_LOG("%MAGMA_BUG%", pSelect != 0);
++#endif
+     p->tnum = db->init.newTnum;
+     if( p->tnum==1 ) p->tabFlags |= TF_Readonly;
+   }

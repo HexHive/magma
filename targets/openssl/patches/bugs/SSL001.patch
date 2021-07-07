@@ -1,0 +1,98 @@
+--- a/crypto/asn1/a_int.c
++++ b/crypto/asn1/a_int.c
+@@ -133,7 +133,50 @@ static size_t i2c_ibuf(const unsigned char *b, size_t blen, int neg,
+     *p = pb;
+     p += pad;       /* yes, p[0] can be written twice, but it's little
+                      * price to pay for eliminated branches */
++#ifdef MAGMA_ENABLE_FIXES
+     twos_complement(p, b, blen, pb);
++#else
++    if (blen == 0)
++        *(p++) = 0;
++    else if (!neg)
++        memcpy(p, b, (unsigned int)blen);
++    else {
++        /* Begin at the end of the encoding */
++        const unsigned char *n = b + blen - 1;
++        p += blen - 1;
++        i = blen;
++
++        /**
++         * The representation of a negative zero is just all zeros. This routine
++         * tries to optimize 2's complement by skipping all trailing zeros,
++         * since trailing zeros are convserved by 2's complement. However, a
++         * negative zero number is all trailing zeros. Thus, the routine will
++         * underflow trying to skip them.
++         */
++
++        /* Copy zeros to destination as long as source is zero */
++        while (!*n) {
++            *(p--) = 0;
++            n--;
++            i--;
++#ifdef MAGMA_ENABLE_CANARIES
++            /**
++             * The value of `i` determines how many more iterations this loop
++             * can perform before underflowing. Once `i` reaches zero, the next
++             * iteration will result in dereferencing `n` outside the bounds of
++             * `b`.
++             */
++            MAGMA_LOG("%MAGMA_BUG%", i == 0);
++#endif
++        }
++        /* Complement and increment next octet */
++        *(p--) = ((*(n--)) ^ 0xff) + 1;
++        i--;
++        /* Complement any octets left */
++        for (; i > 0; i--)
++            *(p--) = *(n--) ^ 0xff;
++    }
++#endif
+ 
+     *pp += ret;
+     return ret;
+diff --git a/crypto/asn1/a_type.c b/crypto/asn1/a_type.c
+index 3a75385a25..2eb3facac0 100644
+--- a/crypto/asn1/a_type.c
++++ b/crypto/asn1/a_type.c
+@@ -77,6 +77,10 @@ int ASN1_TYPE_cmp(const ASN1_TYPE *a, const ASN1_TYPE *b)
+     case V_ASN1_NULL:
+         result = 0;             /* They do not have content. */
+         break;
++#ifndef MAGMA_ENABLE_FIXES
++    case V_ASN1_NEG_INTEGER:
++    case V_ASN1_NEG_ENUMERATED:
++#endif
+     case V_ASN1_INTEGER:
+     case V_ASN1_ENUMERATED:
+     case V_ASN1_BIT_STRING:
+diff --git a/crypto/asn1/tasn_dec.c b/crypto/asn1/tasn_dec.c
+index f720c6020a..99cf128130 100644
+--- a/crypto/asn1/tasn_dec.c
++++ b/crypto/asn1/tasn_dec.c
+@@ -832,6 +832,10 @@ static int asn1_ex_c2i(ASN1_VALUE **pval, const unsigned char *cont, int len,
+             goto err;
+         break;
+ 
++#ifndef MAGMA_ENABLE_FIXES
++    case V_ASN1_NEG_INTEGER:
++    case V_ASN1_NEG_ENUMERATED:
++#endif
+     case V_ASN1_INTEGER:
+     case V_ASN1_ENUMERATED:
+         tint = (ASN1_INTEGER **)pval;
+diff --git a/crypto/asn1/tasn_enc.c b/crypto/asn1/tasn_enc.c
+index d8abd81698..fa0392baa9 100644
+--- a/crypto/asn1/tasn_enc.c
++++ b/crypto/asn1/tasn_enc.c
+@@ -565,6 +565,10 @@ static int asn1_ex_i2c(const ASN1_VALUE **pval, unsigned char *cout, int *putype
+         return i2c_ASN1_BIT_STRING((ASN1_BIT_STRING *)*pval,
+                                    cout ? &cout : NULL);
+ 
++#ifndef MAGMA_ENABLE_FIXES
++    case V_ASN1_NEG_INTEGER:
++    case V_ASN1_NEG_ENUMERATED:
++#endif
+     case V_ASN1_INTEGER:
+     case V_ASN1_ENUMERATED:
+         /*

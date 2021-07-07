@@ -1,0 +1,19 @@
+diff --git a/poppler/JBIG2Stream.cc b/poppler/JBIG2Stream.cc
+index a861da21..fd38c198 100644
+--- a/poppler/JBIG2Stream.cc
++++ b/poppler/JBIG2Stream.cc
+@@ -902,9 +902,14 @@ void JBIG2Bitmap::combine(JBIG2Bitmap *bitmap, int x, int y,
+     oneByte = x0 == ((x1 - 1) & ~7);
+ 
+     for (yy = y0; yy < y1; ++yy) {
++#ifdef MAGMA_ENABLE_FIXES
+         if (unlikely((y + yy >= h) || (y + yy < 0)))
+             continue;
++#endif
++#ifdef MAGMA_ENABLE_CANARIES
++        MAGMA_LOG("%MAGMA_BUG%", MAGMA_OR(y + yy >= h, y + yy < 0));
++#endif
+ 
+         // one byte per line -- need to mask both left and right side
+         if (oneByte) {
+             if (x >= 0) {

@@ -1,0 +1,26 @@
+diff --git a/crypto/asn1/a_type.c b/crypto/asn1/a_type.c
+index 3a75385a25..cc82c4ed9c 100644
+--- a/crypto/asn1/a_type.c
++++ b/crypto/asn1/a_type.c
+@@ -71,9 +71,11 @@ int ASN1_TYPE_cmp(const ASN1_TYPE *a, const ASN1_TYPE *b)
+     case V_ASN1_OBJECT:
+         result = OBJ_cmp(a->value.object, b->value.object);
+         break;
++#ifdef MAGMA_ENABLE_FIXES
+     case V_ASN1_BOOLEAN:
+         result = a->value.boolean - b->value.boolean;
+         break;
++#endif
+     case V_ASN1_NULL:
+         result = 0;             /* They do not have content. */
+         break;
+@@ -98,6 +100,9 @@ int ASN1_TYPE_cmp(const ASN1_TYPE *a, const ASN1_TYPE *b)
+     case V_ASN1_UTF8STRING:
+     case V_ASN1_OTHER:
+     default:
++#ifdef MAGMA_ENABLE_CANARIES
++    MAGMA_LOG("%MAGMA_BUG%", a->type == V_ASN1_BOOLEAN);
++#endif
+         result = ASN1_STRING_cmp((ASN1_STRING *)a->value.ptr,
+                                  (ASN1_STRING *)b->value.ptr);
+         break;

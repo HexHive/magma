@@ -1,0 +1,34 @@
+--- a/ssl/statem/extensions_srvr.c
++++ b/ssl/statem/extensions_srvr.c
+@@ -357,6 +357,7 @@ int tls_parse_ctos_status_request(SSL *s, PACKET *pkt, unsigned int context,
+         return 0;
+     }
+ 
++#ifdef MAGMA_ENABLE_FIXES
+     /*
+      * We remove any OCSP_RESPIDs from a previous handshake
+      * to prevent unbounded memory growth - CVE-2016-6304
+@@ -372,6 +373,23 @@ int tls_parse_ctos_status_request(SSL *s, PACKET *pkt, unsigned int context,
+     } else {
+         s->ext.ocsp.ids = NULL;
+     }
++#else
++    if (PACKET_remaining(&responder_id_list) > 0 && s->ext.ocsp.ids == NULL) {
++        s->ext.ocsp.ids = sk_OCSP_RESPID_new_null();
++        if (s->ext.ocsp.ids == NULL) {
++            SSLfatal(s, SSL_AD_INTERNAL_ERROR, ERR_R_MALLOC_FAILURE);
++            return 0;
++        }
++    }
++#ifdef MAGMA_ENABLE_CANARIES
++    /**
++     * If there is a pending request packet and there exists at least one
++     * previous request in the stack, then unbounded memory growth is possible.
++     */
++    MAGMA_LOG("%MAGMA_BUG%", MAGMA_AND(PACKET_remaining(&responder_id_list) > 0, \
++        sk_OCSP_RESPID_num(s->ext.ocsp.ids) > 0));
++#endif
++#endif
+ 
+     while (PACKET_remaining(&responder_id_list) > 0) {
+         OCSP_RESPID *id;

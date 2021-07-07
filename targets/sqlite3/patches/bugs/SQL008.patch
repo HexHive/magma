@@ -1,0 +1,17 @@
+diff --git a/src/shell.c.in b/src/shell.c.in
+index 728a4d051..31c2c4f5d 100644
+--- a/src/shell.c.in
++++ b/src/shell.c.in
+@@ -3287,7 +3287,12 @@ static char **tableColumnList(ShellState *p, const char *zTab){
+     }
+   }
+   sqlite3_finalize(pStmt);
++#ifdef MAGMA_ENABLE_FIXES
+   if( azCol==0 ) return 0;
++#endif
++#ifdef MAGMA_ENABLE_CANARIES
++  MAGMA_LOG("%MAGMA_BUG%", azCol==0);
++#endif
+   azCol[0] = 0;
+   azCol[nCol+1] = 0;
+ 

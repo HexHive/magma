@@ -1,0 +1,51 @@
+diff --git a/pngrutil.c b/pngrutil.c
+index d5fa08c..48e521a 100644
+--- a/pngrutil.c
++++ b/pngrutil.c
+@@ -3201,7 +3201,11 @@ png_combine_row(png_const_structrp png_ptr, png_bytep dp, int display)
+ {
+    unsigned int pixel_depth = png_ptr->transformed_pixel_depth;
+    png_const_bytep sp = png_ptr->row_buf + 1;
++#ifdef MAGMA_ENABLE_FIXES
+    png_alloc_size_t row_width = png_ptr->width;
++#else
++   png_uint_32 row_width = png_ptr->width;
++#endif
+    unsigned int pass = png_ptr->pass;
+    png_bytep end_ptr = 0;
+    png_byte end_byte = 0;
+@@ -3451,6 +3455,10 @@ png_combine_row(png_const_structrp png_ptr, png_bytep dp, int display)
+             png_error(png_ptr, "invalid user transform pixel depth");
+ 
+          pixel_depth >>= 3; /* now in bytes */
++
++#ifdef MAGMA_ENABLE_CANARIES
++         MAGMA_LOG("%MAGMA_BUG%", (row_width * pixel_depth) != (u_int64_t)row_width * pixel_depth);
++#endif
+          row_width *= pixel_depth;
+ 
+          /* Regardless of pass number the Adam 7 interlace always results in a
+@@ -3476,7 +3484,11 @@ png_combine_row(png_const_structrp png_ptr, png_bytep dp, int display)
+ 
+             /* But don't allow this number to exceed the actual row width. */
+             if (bytes_to_copy > row_width)
++#ifdef MAGMA_ENABLE_FIXES
+                bytes_to_copy = (unsigned int)/*SAFE*/row_width;
++#else
++               bytes_to_copy = row_width;
++#endif
+          }
+ 
+          else /* normal row; Adam7 only ever gives us one pixel to copy. */
+@@ -3656,7 +3668,11 @@ png_combine_row(png_const_structrp png_ptr, png_bytep dp, int display)
+                   dp += bytes_to_jump;
+                   row_width -= bytes_to_jump;
+                   if (bytes_to_copy > row_width)
++#ifdef MAGMA_ENABLE_FIXES
+                      bytes_to_copy = (unsigned int)/*SAFE*/row_width;
++#else
++                     bytes_to_copy = row_width;
++#endif
+                }
+          }
+

@@ -1,0 +1,34 @@
+--- a/ssl/statem/statem_clnt.c
++++ b/ssl/statem/statem_clnt.c
+@@ -3051,10 +3051,15 @@ static int tls_construct_cke_dhe(SSL *s, WPACKET *pkt)
+     }
+ 
+     ckey = ssl_generate_pkey(s, skey);
++#ifdef MAGMA_ENABLE_FIXES
+     if (ckey == NULL) {
+         SSLfatal(s, SSL_AD_INTERNAL_ERROR, ERR_R_INTERNAL_ERROR);
+         goto err;
+     }
++#endif
++#ifdef MAGMA_ENABLE_CANARIES
++    MAGMA_LOG("%MAGMA_BUG%",ckey == NULL);
++#endif
+ 
+     if (ssl_derive(s, ckey, skey, 0) == 0) {
+         /* SSLfatal() already called */
+@@ -3109,10 +3113,15 @@ static int tls_construct_cke_ecdhe(SSL *s, WPACKET *pkt)
+     }
+ 
+     ckey = ssl_generate_pkey(s, skey);
++#ifdef MAGMA_ENABLE_FIXES
+     if (ckey == NULL) {
+         SSLfatal(s, SSL_AD_INTERNAL_ERROR, ERR_R_MALLOC_FAILURE);
+         goto err;
+     }
++#endif
++#ifdef MAGMA_ENABLE_CANARIES
++    MAGMA_LOG("%MAGMA_BUG%",ckey == NULL);
++#endif
+ 
+     if (ssl_derive(s, ckey, skey, 0) == 0) {
+         /* SSLfatal() already called */

@@ -1,0 +1,20 @@
+diff --git a/poppler/JPEG2000Stream.cc b/poppler/JPEG2000Stream.cc
+index 8e6902f..0fe7a62 100644
+--- a/poppler/JPEG2000Stream.cc
++++ b/poppler/JPEG2000Stream.cc
+@@ -219,8 +219,15 @@ void JPXStream::init()
+     }
+ 
+     int bufSize = BUFFER_INITIAL_SIZE;
++#ifdef MAGMA_ENABLE_FIXES
+     if (oLen.isInt() && oLen.getInt() > 0)
+         bufSize = oLen.getInt();
++#else
++#ifdef MAGMA_ENABLE_CANARIES
++    MAGMA_LOG("%MAGMA_BUG%", oLen.getInt() < 0);
++#endif
++    if (oLen.isInt()) bufSize = oLen.getInt();
++#endif
+
+     bool indexed = false;
+     if (cspace.isArray() && cspace.arrayGetLength() > 0) {
