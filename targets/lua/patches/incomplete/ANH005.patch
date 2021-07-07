@@ -1,0 +1,48 @@
+diff --git a/lapi.c b/lapi.c
+index a9cf2fdb..5e309519 100644
+--- a/lapi.c
++++ b/lapi.c
+@@ -585,7 +585,9 @@ LUA_API void lua_pushcclosure (lua_State *L, lua_CFunction fn, int n) {
+     while (n--) {
+       setobj2n(L, &cl->upvalue[n], s2v(L->top + n));
+       /* does not need barrier because closure is white */
++#ifdef MAGMA_ENABLE_FIXES
+       lua_assert(iswhite(cl));
++#endif
+     }
+     setclCvalue(L, s2v(L->top), cl);
+     api_incr_top(L);
+diff --git a/lgc.c b/lgc.c
+index b360eed0..84d99aa8 100644
+--- a/lgc.c
++++ b/lgc.c
+@@ -575,6 +575,9 @@ static int traverseproto (global_State *g, Proto *f) {
+   for (i = 0; i < f->sizek; i++)  /* mark literals */
+     markvalue(g, &f->k[i]);
+   for (i = 0; i < f->sizeupvalues; i++)  /* mark upvalue names */
++#ifdef MAGMA_ENABLE_CANARIES
++    // TODO: Not sure how to express the trigger condition
++#endif
+     markobjectN(g, f->upvalues[i].name);
+   for (i = 0; i < f->sizep; i++)  /* mark nested protos */
+     markobjectN(g, f->p[i]);
+diff --git a/lundump.c b/lundump.c
+index 5aa55c44..a6a5d5f4 100644
+--- a/lundump.c
++++ b/lundump.c
+@@ -214,9 +214,15 @@ static void loadUpvalues (LoadState *S, Proto *f) {
+   n = loadInt(S);
+   f->upvalues = luaM_newvectorchecked(S->L, n, Upvaldesc);
+   f->sizeupvalues = n;
++#ifdef MAGMA_ENABLE_FIXES
+   for (i = 0; i < n; i++)  /* make array valid for GC */
++#else
++  for (i = 0; i < n; i++) {
++#endif
+     f->upvalues[i].name = NULL;
++#ifdef MAGMA_ENABLE_FIXES
+   for (i = 0; i < n; i++) {  /* following calls can raise errors */
++#endif
+     f->upvalues[i].instack = loadByte(S);
+     f->upvalues[i].idx = loadByte(S);
+     f->upvalues[i].kind = loadByte(S);
