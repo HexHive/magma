@@ -1,0 +1,1 @@
+PROGRAMS=(sndfile_fuzzer)

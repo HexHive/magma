@@ -1,0 +1,13 @@
+diff --git a/Makefile.am b/Makefile.am
+index 0b8bfa1..72a144e 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -450,7 +450,7 @@ if USE_OSSFUZZ_STATIC
+ FUZZ_LDADD = $(LIB_FUZZING_ENGINE)
+ FUZZ_FLAG =
+ else
+-FUZZ_LDADD = libstandaloneengine.la
++FUZZ_LDADD = ossfuzz/libstandaloneengine.la
+ FUZZ_FLAG =
+ endif
+ endif

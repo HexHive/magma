@@ -1,0 +1,18 @@
+diff --git a/src/file_io.c b/src/file_io.c
+index 9cd9379..c3def11 100644
+--- a/src/file_io.c
++++ b/src/file_io.c
+@@ -358,8 +358,13 @@ psf_fwrite (const void *ptr, sf_count_t bytes, sf_count_t items, SF_PRIVATE *psf
+ {	sf_count_t total = 0 ;
+ 	ssize_t	count ;
+ 
++#ifdef MAGMA_ENABLE_FIXES
+ 	if (bytes == 0 || items == 0)
+ 		return 0 ;
++#endif
++#ifdef MAGMA_ENABLE_CANARIES
++    MAGMA_LOG("SND004", MAGMA_OR(bytes == 0, items == 0));
++#endif
+ 
+ 	if (psf->virtual_io)
+ 		return psf->vio.write (ptr, bytes*items, psf->vio_user_data) / bytes ;

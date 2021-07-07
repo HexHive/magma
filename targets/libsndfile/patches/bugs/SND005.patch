@@ -1,0 +1,19 @@
+diff --git a/src/aiff.c b/src/aiff.c
+index d872a89..1c05e2f 100644
+--- a/src/aiff.c
++++ b/src/aiff.c
+@@ -1773,7 +1773,14 @@ aiff_read_chanmap (SF_PRIVATE * psf, unsigned dword)
+ 		psf_binheader_readf (psf, "j", dword - bytesread) ;
+ 
+ 	if (map_info->channel_map != NULL)
++#ifdef MAGMA_ENABLE_FIXES
+ 	{	size_t chanmap_size = SF_MIN (psf->sf.channels, layout_tag & 0xffff) * sizeof (psf->channel_map [0]) ;
++#else
++	{    size_t chanmap_size = psf->sf.channels * sizeof (psf->channel_map [0]) ;
++#endif
++#ifdef MAGMA_ENABLE_CANARIES
++	    MAGMA_LOG("SND005", psf->sf.channels > (layout_tag & 0xffff));
++#endif
+ 
+ 		free (psf->channel_map) ;
+ 

@@ -1,0 +1,38 @@
+diff --git a/src/common.c b/src/common.c
+index c9737a9..dbd93f1 100644
+--- a/src/common.c
++++ b/src/common.c
+@@ -686,6 +686,7 @@ psf_binheader_writef (SF_PRIVATE *psf, const char *format, ...)
+ 					strptr = va_arg (argptr, char *) ;
+ 					size = strlen (strptr) + 1 ;
+ 
++#ifdef MAGMA_ENABLE_FIXES
+ 					if (psf->header.indx + 4 + (sf_count_t) size + (sf_count_t) (size & 1) > psf->header.len && psf_bump_header_allocation (psf, 4 + size + (size & 1)))
+ 						return count ;
+ 
+@@ -695,6 +696,25 @@ psf_binheader_writef (SF_PRIVATE *psf, const char *format, ...)
+ 						header_put_le_int (psf, size + (size & 1)) ;
+ 					memcpy (&(psf->header.ptr [psf->header.indx]), strptr, size) ;
+ 					size += (size & 1) ;
++#else
++#ifdef MAGMA_ENABLE_CANARIES
++                    MAGMA_LOG("SND010", psf->header.indx + 4 + (sf_count_t) size + (sf_count_t) (size & 1) > psf->header.len);
++#endif
++                    int padding = size & 1 ;
++                    size += (size & 1) ;
++
++					if (psf->header.indx + (sf_count_t) size >= psf->header.len && psf_bump_header_allocation (psf, 16))
++					    return count ;
++
++					if (psf->rwf_endian == SF_ENDIAN_BIG)
++						header_put_be_int (psf, size) ;
++					else
++						header_put_le_int (psf, size) ;
++#ifdef MAGMA_ENABLE_CANARIES
++                    MAGMA_LOG("SND010", padding == 1);
++#endif
++					memcpy (&(psf->header.ptr [psf->header.indx]), strptr, size) ;
++#endif
+ 					psf->header.indx += size ;
+ 					psf->header.ptr [psf->header.indx - 1] = 0 ;
+ 					count += 4 + size ;

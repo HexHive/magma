@@ -1,0 +1,20 @@
+diff --git a/src/sd2.c b/src/sd2.c
+index dd3dbef..1e6fbc4 100644
+--- a/src/sd2.c
++++ b/src/sd2.c
+@@ -457,10 +457,15 @@ sd2_parse_rsrc_fork (SF_PRIVATE *psf)
+ 
+ 	rsrc.type_offset = rsrc.map_offset + 30 ;
+ 
++#ifdef MAGMA_ENABLE_FIXES
+ 	if (rsrc.map_offset + 28 > rsrc.rsrc_len)
+ 	{	psf_log_printf (psf, "Bad map offset.\n") ;
+ 		goto parse_rsrc_fork_cleanup ;
+ 		} ;
++#endif
++#ifdef MAGMA_ENABLE_CANARIES
++    MAGMA_LOG("SND002", rsrc.map_offset + 28 > rsrc.rsrc_len);
++#endif
+ 
+ 	rsrc.type_count = read_rsrc_short (&rsrc, rsrc.map_offset + 28) + 1 ;
+ 	if (rsrc.type_count < 1)

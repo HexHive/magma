@@ -1,0 +1,22 @@
+diff --git a/src/ulaw.c b/src/ulaw.c
+index 744e354..57da681 100644
+--- a/src/ulaw.c
++++ b/src/ulaw.c
+@@ -850,9 +850,17 @@ f2ulaw_array (const float *ptr, int count, unsigned char *buffer, float normfact
+ static inline void
+ d2ulaw_array (const double *ptr, int count, unsigned char *buffer, double normfact)
+ {	while (--count >= 0)
++#ifdef MAGMA_ENABLE_FIXES
+ 	{	if (!isfinite (ptr [count]))
+ 			buffer [count] = 0 ;
+ 		else if (ptr [count] >= 0)
++#else
++	{
++#ifdef MAGMA_ENABLE_CANARIES
++        MAGMA_LOG("SND022", !isfinite(ptr[count]));
++#endif
++		if (ptr [count] >= 0)
++#endif
+ 			buffer [count] = ulaw_encode [psf_lrint (normfact * ptr [count])] ;
+ 		else
+ 			buffer [count] = 0x7F & ulaw_encode [- psf_lrint (normfact * ptr [count])] ;

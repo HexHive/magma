@@ -1,0 +1,23 @@
+diff --git a/src/wavlike.c b/src/wavlike.c
+index b59c684..5947148 100644
+--- a/src/wavlike.c
++++ b/src/wavlike.c
+@@ -350,10 +350,18 @@ wavlike_read_fmt_chunk (SF_PRIVATE *psf, int fmtsize)
+ 
+ 					/* Remove trailing ", ". */
+ 					bit = strlen (buffer) ;
++#ifdef MAGMA_ENABLE_FIXES
+ 					if (bit >= 2)
+ 					{	buffer [--bit] = 0 ;
+ 						buffer [--bit] = 0 ;
+ 						} ;
++#else
++#ifdef MAGMA_ENABLE_CANARIES
++                    MAGMA_LOG("SND020", bit < 2);
++#endif
++                    buffer [--bit] = 0 ;
++					buffer [--bit] = 0 ;
++#endif
+ 
+ 					if (k != psf->sf.channels)
+ 					{	psf_log_printf (psf, "  Channel Mask  : 0x%X\n", wav_fmt->ext.channelmask) ;

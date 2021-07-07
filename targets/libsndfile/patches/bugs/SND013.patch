@@ -1,0 +1,19 @@
+diff --git a/src/common.c b/src/common.c
+index c9737a9..d8f38a6 100644
+--- a/src/common.c
++++ b/src/common.c
+@@ -727,7 +727,14 @@ psf_binheader_writef (SF_PRIVATE *psf, const char *format, ...)
+ 					size = (size & 1) ? size : size + 1 ;
+ 					size = (size > 254) ? 254 : size ;
+ 
++#ifdef MAGMA_ENABLE_FIXES
+ 					if (psf->header.indx + 1 + (sf_count_t) size > psf->header.len && psf_bump_header_allocation (psf, 1 + size))
++#else
++#ifdef MAGMA_ENABLE_CANARIES
++                    MAGMA_LOG("SND013", psf->header.indx + 1 + (sf_count_t) size > psf->header.len);
++#endif
++					if (psf->header.indx + (sf_count_t) size > psf->header.len && psf_bump_header_allocation (psf, size))
++#endif
+ 						return count ;
+ 
+ 					header_put_byte (psf, size) ;

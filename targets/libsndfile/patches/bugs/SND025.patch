@@ -1,0 +1,19 @@
+diff --git a/src/wav.c b/src/wav.c
+index fd3e453..0bdcd02 100644
+--- a/src/wav.c
++++ b/src/wav.c
+@@ -1151,9 +1151,14 @@ wav_write_header (SF_PRIVATE *psf, int calc_length)
+ 		psf_binheader_writef (psf, "44", BHW4 (0), BHW4 (0)) ; /* SMTPE format */
+ 		psf_binheader_writef (psf, "44", BHW4 (psf->instrument->loop_count), BHW4 (0)) ;
+ 
++#ifdef MAGMA_ENABLE_FIXES
+ 		/* Make sure we don't read past the loops array end. */
+ 		if (psf->instrument->loop_count > ARRAY_LEN (psf->instrument->loops))
+ 			psf->instrument->loop_count = ARRAY_LEN (psf->instrument->loops) ;
++#endif
++#ifdef MAGMA_ENABLE_CANARIES
++        MAGMA_LOG("SND025", psf->instrument->loop_count > ARRAY_LEN (psf->instrument->loops));
++#endif
+ 
+ 		for (tmp = 0 ; tmp < psf->instrument->loop_count ; tmp++)
+ 		{	int type ;
