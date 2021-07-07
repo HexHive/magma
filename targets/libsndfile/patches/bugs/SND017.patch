@@ -1,0 +1,20 @@
+diff --git a/src/wavlike.c b/src/wavlike.c
+index b59c684..bbfab02 100644
+--- a/src/wavlike.c
++++ b/src/wavlike.c
+@@ -335,8 +335,15 @@ wavlike_read_fmt_chunk (SF_PRIVATE *psf, int fmtsize)
+ 					/* Terminate the buffer we're going to append_snprintf into. */
+ 					buffer [0] = 0 ;
+ 
++#ifdef MAGMA_ENABLE_FIXES
+ 					for (bit = k = 0 ; bit < ARRAY_LEN (channel_mask_bits) && k < psf->sf.channels ; bit++)
++#else
++					for (bit = k = 0 ; bit < ARRAY_LEN (channel_mask_bits) ; bit++)
++#endif
+ 					{
++#ifdef MAGMA_ENABLE_CANARIES
++                        MAGMA_LOG("SND017", k >= psf->sf.channels);
++#endif
+ 						if (wav_fmt->ext.channelmask & (1 << bit))
+ 						{	if (k > psf->sf.channels)
+ 							{	psf_log_printf (psf, "*** More channel map bits than there are channels.\n") ;

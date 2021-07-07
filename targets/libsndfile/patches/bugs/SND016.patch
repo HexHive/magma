@@ -1,0 +1,19 @@
+diff --git a/src/double64.c b/src/double64.c
+index fb6d468..bdbbda4 100644
+--- a/src/double64.c
++++ b/src/double64.c
+@@ -91,7 +91,14 @@ int
+ double64_init	(SF_PRIVATE *psf)
+ {	static int double64_caps ;
+ 
++#ifdef MAGMA_ENABLE_FIXES
+ 	if (psf->sf.channels < 1 || psf->sf.channels > SF_MAX_CHANNELS)
++#else
++#ifdef MAGMA_ENABLE_CANARIES
++    MAGMA_LOG("SND016", psf->sf.channels > SF_MAX_CHANNELS);
++#endif
++	if (psf->sf.channels < 1)
++#endif
+ 	{	psf_log_printf (psf, "double64_init : internal error : channels = %d\n", psf->sf.channels) ;
+ 		return SFE_INTERNAL ;
+ 		} ;

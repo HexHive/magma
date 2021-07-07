@@ -1,0 +1,22 @@
+diff --git a/src/alaw.c b/src/alaw.c
+index 6e0a794..61b0f42 100644
+--- a/src/alaw.c
++++ b/src/alaw.c
+@@ -327,9 +327,17 @@ s2alaw_array (const short *ptr, int count, unsigned char *buffer)
+ static inline void
+ i2alaw_array (const int *ptr, int count, unsigned char *buffer)
+ {	for (int i = 0 ; i < count ; i++)
++#ifdef MAGMA_ENABLE_FIXES
+ 	{	if (ptr [i] == INT_MIN)
+ 			buffer [i] = alaw_encode [INT_MAX >> (16 + 4)] ;
+ 		else if (ptr [i] >= 0)
++#else
++	{
++#ifdef MAGMA_ENABLE_CANARIES
++		MAGMA_LOG("SND015", ptr[i] == INT_MIN);
++#endif
++		if (ptr [i] >= 0)
++#endif
+ 			buffer [i] = alaw_encode [ptr [i] >> (16 + 4)] ;
+ 		else
+ 			buffer [i] = 0x7F & alaw_encode [- ptr [i] >> (16 + 4)] ;

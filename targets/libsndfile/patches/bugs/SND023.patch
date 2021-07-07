@@ -1,0 +1,22 @@
+diff --git a/src/ulaw.c b/src/ulaw.c
+index 744e354..96f2f40 100644
+--- a/src/ulaw.c
++++ b/src/ulaw.c
+@@ -828,9 +828,17 @@ s2ulaw_array (const short *ptr, int count, unsigned char *buffer)
+ static inline void
+ i2ulaw_array (const int *ptr, int count, unsigned char *buffer)
+ {	for (int i = 0 ; i < count ; i++)
++#ifdef MAGMA_ENABLE_FIXES
+ 	{	if (ptr [i] == INT_MIN)
+ 			buffer [i] = ulaw_encode [INT_MAX >> (16 + 2)] ;
+ 		else if (ptr [i] >= 0)
++#else
++	{
++#ifdef MAGMA_ENABLE_CANARIES
++	MAGMA_LOG("SND023", ptr[i] == INT_MIN);
++#endif
++		if (ptr [i] >= 0)
++#endif
+ 			buffer [i] = ulaw_encode [ptr [i] >> (16 + 2)] ;
+ 		else
+ 			buffer [i] = 0x7F & ulaw_encode [-ptr [i] >> (16 + 2)] ;

@@ -1,0 +1,23 @@
+diff --git a/src/flac.c b/src/flac.c
+index 64d0172..1c5503f 100644
+--- a/src/flac.c
++++ b/src/flac.c
+@@ -169,6 +169,7 @@ flac_buffer_copy (SF_PRIVATE *psf)
+ 	const int32_t* const *buffer = pflac->wbuffer ;
+ 	unsigned i = 0, j, offset, channels, len ;
+ 
++#ifdef MAGMA_ENABLE_FIXES
+ 	if (psf->sf.channels != (int) frame->header.channels)
+ 	{	psf_log_printf (psf, "Error: FLAC frame changed from %d to %d channels\n"
+ 									"Nothing to do but to error out.\n" ,
+@@ -176,6 +177,10 @@ flac_buffer_copy (SF_PRIVATE *psf)
+ 		psf->error = SFE_FLAC_CHANNEL_COUNT_CHANGED ;
+ 		return 0 ;
+ 		} ;
++#endif
++#ifdef MAGMA_ENABLE_CANARIES
++    MAGMA_LOG("SND006", psf->sf.channels != (int) frame->header.channels);
++#endif
+ 
+ 	/*
+ 	**	frame->header.blocksize is variable and we're using a constant blocksize

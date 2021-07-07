@@ -1,0 +1,23 @@
+diff --git a/src/flac.c b/src/flac.c
+index 64d0172..f3d2edb 100644
+--- a/src/flac.c
++++ b/src/flac.c
+@@ -441,6 +441,7 @@ sf_flac_meta_callback (const FLAC__StreamDecoder * UNUSED (decoder), const FLAC_
+ 
+ 	switch (metadata->type)
+ 	{	case FLAC__METADATA_TYPE_STREAMINFO :
++#ifdef MAGMA_ENABLE_FIXES
+ 			if (psf->sf.channels > 0 && psf->sf.channels != (int) metadata->data.stream_info.channels)
+ 			{	psf_log_printf (psf, "Error: FLAC stream changed from %d to %d channels\n"
+ 									"Nothing to do but to error out.\n" ,
+@@ -448,6 +449,10 @@ sf_flac_meta_callback (const FLAC__StreamDecoder * UNUSED (decoder), const FLAC_
+ 				psf->error = SFE_FLAC_CHANNEL_COUNT_CHANGED ;
+ 				return ;
+ 				} ;
++#endif
++#ifdef MAGMA_ENABLE_CANARIES
++            MAGMA_LOG("SND024", MAGMA_AND(psf->sf.channels > 0, psf->sf.channels != (int) metadata->data.stream_info.channels));
++#endif
+ 
+ 			if (psf->sf.channels > 0 && psf->sf.samplerate != (int) metadata->data.stream_info.sample_rate)
+ 			{	psf_log_printf (psf, "Warning: FLAC stream changed sample rates from %d to %d.\n"
