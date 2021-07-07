@@ -32,7 +32,7 @@ diff --git a/src/sqliteInt.h b/src/sqliteInt.h
 index 7a00b576a..9e7d21b7f 100644
 --- a/src/sqliteInt.h
 +++ b/src/sqliteInt.h
-@@ -2153,9 +2153,15 @@ struct Table {
+@@ -2153,9 +2153,20 @@ struct Table {
  */
  #ifndef SQLITE_OMIT_VIRTUALTABLE
  #  define IsVirtual(X)      ((X)->nModuleArg)
@@ -45,7 +45,7 @@ index 7a00b576a..9e7d21b7f 100644
 +              (MAGMA_LOG_V("JCH231", MAGMA_AND((X)->op==TK_COLUMN, (X)->y.pTab == 0)), \
 +                (X)->op==TK_COLUMN && (X)->y.pTab->nModuleArg)
 +#else
-+#  define ExprIsVtab(X)  \                
++#  define ExprIsVtab(X)  \
 +                ((X)->op==TK_COLUMN && (X)->y.pTab==0)
 +#endif
 +#endif
