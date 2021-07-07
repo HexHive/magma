@@ -24,10 +24,10 @@ index 1b300b0..b04612d 100644
              return;
 -
 +#else
-+        uint64 nstrips64 = TIFFhowmany_64(bytecount, stripbytes);
++        uint64_t nstrips64 = TIFFhowmany_64(bytecount, stripbytes);
 +        if ((nstrips64==0)||(nstrips64>0xFFFFFFFF)) /* something is wonky, do nothing. */
 +            return;
-+        nstrips = (uint32)nstrips64;
++        nstrips = (uint32_t)nstrips64;
 +#endif
 +#ifdef MAGMA_ENABLE_CANARIES
 +        MAGMA_LOG("AAH015", nstrips > TIFFhowmany_32(td->td_imagelength, rowsperstrip));

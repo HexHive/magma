@@ -8,8 +8,8 @@ index 7ffe885..a2bc7bf 100644
  	{
 +#ifdef MAGMA_ENABLE_FIXES
  	    TIFFErrorExt(tif->tif_clientdata, "JBIG",
- 	                 "Decoded %lu bytes, whereas %lu were requested",
- 	                 decodedSize, (unsigned long)size);
+ 	                 "Decoded %lu bytes, whereas %"TIFF_SSIZE_FORMAT" were requested",
+ 	                 decodedSize, size);
  	    jbg_dec_free(&decoder);
  	    return 0;
 +#else

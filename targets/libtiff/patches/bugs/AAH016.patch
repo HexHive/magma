@@ -21,8 +21,8 @@ index 0ba61ae..ba8b3cc 100644
  					break;
 +#ifdef MAGMA_ENABLE_FIXES
                  if (op_offset >= scanline ) {
-                     TIFFErrorExt(tif->tif_clientdata, module, "Invalid data for scanline %ld",
-                         (long) tif->tif_row);
+                     TIFFErrorExt(tif->tif_clientdata, module, "Invalid data for scanline %"PRIu32,
+                         tif->tif_row);
                      return (0);
                  }
 +#endif

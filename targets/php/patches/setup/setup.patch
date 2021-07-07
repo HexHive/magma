@@ -1,5 +1,17 @@
-diff --git a/sapi/fuzzer/config.m4 b/sapi/fuzzer/config.m4
-index 37945b8e9e..3c22df0605 100644
+--- a/build/php.m4
++++ b/build/php.m4
+@@ -252,8 +252,9 @@ dnl Append to the array which has been dynamically chosen at m4 time.
+ dnl Choose the right compiler/flags/etc. for the source-file.
+       case $ac_src in
+         *.c[)] ac_comp="$b_c_pre $ac_inc $b_c_meta $3 -c $ac_srcdir$ac_src -o $ac_bdir$ac_obj.$b_lo $b_c_post" ;;
+-        *.s[)] ac_comp="$b_c_pre $ac_inc $b_c_meta $3 -c $ac_srcdir$ac_src -o $ac_bdir$ac_obj.$b_lo $b_c_post" ;;
+-        *.S[)] ac_comp="$b_c_pre $ac_inc $b_c_meta $3 -c $ac_srcdir$ac_src -o $ac_bdir$ac_obj.$b_lo $b_c_post" ;;
++        *.s|*.S[)]
++        b_c_meta_clean='$(COMMON_FLAGS) $(CFLAGS_CLEAN)';
++        ac_comp="$b_c_pre $ac_inc $b_c_meta_clean $3 -c $ac_srcdir$ac_src -o $ac_bdir$ac_obj.$b_lo $b_c_post" ;;
+         *.cpp|*.cc|*.cxx[)] ac_comp="$b_cxx_pre $ac_inc $b_cxx_meta $3 -c $ac_srcdir$ac_src -o $ac_bdir$ac_obj.$b_lo $b_cxx_post" ;;
+       esac
+ 
 --- a/sapi/fuzzer/config.m4
 +++ b/sapi/fuzzer/config.m4
 @@ -60,7 +60,7 @@ if test "$PHP_FUZZER" != "no"; then
@@ -7,7 +19,7 @@ index 37945b8e9e..3c22df0605 100644
    else
      FUZZING_LIB="$LIB_FUZZING_ENGINE"
 -    FUZZING_CC="$CXX -stdlib=libc++"
-+    FUZZING_CC="$CXX"
++    AX_CHECK_COMPILE_FLAG([-stdlib=libc++], [FUZZING_CC="$CXX -stdlib=libc++"], [FUZZING_CC="$CXX"])
    fi
    PHP_SUBST(FUZZING_LIB)
    PHP_SUBST(FUZZING_CC)
@@ -31,7 +43,7 @@ index 37945b8e9e..3c22df0605 100644
 --- a/ext/standard/base64.c
 +++ b/ext/standard/base64.c
 @@ -376,8 +376,12 @@
- ZEND_INTRIN_SSSE3_FUNC_DECL(zend_string *php_base64_decode_ex_ssse3(const unsigned char *str, size_t length, zend_bool strict));
+ ZEND_INTRIN_SSSE3_FUNC_DECL(zend_string *php_base64_decode_ex_ssse3(const unsigned char *str, size_t length, bool strict));
  # endif
  
 +
@@ -39,7 +51,7 @@ index 37945b8e9e..3c22df0605 100644
  zend_string *php_base64_encode_default(const unsigned char *str, size_t length);
 +
 +__attribute__((used))
- zend_string *php_base64_decode_ex_default(const unsigned char *str, size_t length, zend_bool strict);
+ zend_string *php_base64_decode_ex_default(const unsigned char *str, size_t length, bool strict);
  
  # if (ZEND_INTRIN_AVX2_FUNC_PROTO || ZEND_INTRIN_SSSE3_FUNC_PROTO)
  PHPAPI zend_string *php_base64_encode(const unsigned char *str, size_t length) __attribute__((ifunc("resolve_base64_encode")));

@@ -26,7 +26,7 @@
          }
  	ctxt->pushTab = tmp2;
 -    } else if (ctxt->pushTab == NULL) {
--        ctxt->pushTab = (void **) xmlMalloc(ctxt->nameMax * 3 *
+-        ctxt->pushTab = (xmlStartTag *) xmlMalloc(ctxt->nameMax *
 -                                            sizeof(ctxt->pushTab[0]));
 -        if (ctxt->pushTab == NULL)
 -            goto mem_error;

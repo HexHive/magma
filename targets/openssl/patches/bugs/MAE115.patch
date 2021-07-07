@@ -8,7 +8,7 @@ index 923cf5b5cd..6ed2362391 100644
      /* Sanity check ticket length: must exceed keyname + IV + HMAC */
 +#ifdef MAGMA_ENABLE_FIXES
      if (eticklen <=
-         TLSEXT_KEYNAME_LENGTH + EVP_CIPHER_CTX_iv_length(ctx) + mlen) {
+         TLSEXT_KEYNAME_LENGTH + EVP_CIPHER_CTX_get_iv_length(ctx) + mlen) {
 +#else
 +    if (eticklen < 48) {
 +#endif
@@ -16,7 +16,7 @@ index 923cf5b5cd..6ed2362391 100644
          goto end;
      }
 +#ifdef MAGMA_ENABLE_CANARIES
-+    MAGMA_LOG("MAE115", eticklen <= TLSEXT_KEYNAME_LENGTH + EVP_CIPHER_CTX_iv_length(ctx) + mlen);
++    MAGMA_LOG("MAE115", eticklen <= TLSEXT_KEYNAME_LENGTH + EVP_CIPHER_CTX_get_iv_length(ctx) + mlen);
 +#endif
      eticklen -= mlen;
      /* Check HMAC of encrypted ticket */

@@ -14,7 +14,7 @@ index 7a4ed86f..9bbe4216 100644
 +#endif
 +                    if(ok) {
 +#endif
-                         cvtGlyph(val.pos, val.len, charBuf, subrIdx, pDict, false);
+                         cvtGlyph(val.pos, val.len, charBuf, subrIdx, pDict, false, offsetBeingParsed);
                      }
                  } else {
 @@ -1596,7 +1603,14 @@ void FoFiType1C::cvtGlyph(int offset, int nBytes, GooString *charBuf,
@@ -29,6 +29,6 @@ index 7a4ed86f..9bbe4216 100644
 +#endif
 +                    if(ok) {
 +#endif
-                         cvtGlyph(val.pos, val.len, charBuf, subrIdx, pDict, false);
+                         cvtGlyph(val.pos, val.len, charBuf, subrIdx, pDict, false, offsetBeingParsed);
                      }
                  } else {

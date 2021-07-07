@@ -11,9 +11,9 @@ index 9e4d306..98d6e1a 100644
 +#endif
 +#ifdef MAGMA_ENABLE_FIXES
  		if (tif->tif_dir.td_transferfunction[2] == NULL ||
- 		    !_TIFFmemcmp(tif->tif_dir.td_transferfunction[0],tif->tif_dir.td_transferfunction[2],m*sizeof(uint16)))
+ 		    !_TIFFmemcmp(tif->tif_dir.td_transferfunction[0],tif->tif_dir.td_transferfunction[2],m*sizeof(uint16_t)))
 +#else
-+		if (!_TIFFmemcmp(tif->tif_dir.td_transferfunction[0],tif->tif_dir.td_transferfunction[2],m*sizeof(uint16)))
++		if (!_TIFFmemcmp(tif->tif_dir.td_transferfunction[0],tif->tif_dir.td_transferfunction[2],m*sizeof(uint16_t)))
 +#endif
  			n=2;
  	}
@@ -24,9 +24,9 @@ index 9e4d306..98d6e1a 100644
 +#endif
 +#ifdef MAGMA_ENABLE_FIXES
  		if (tif->tif_dir.td_transferfunction[1] == NULL ||
- 		    !_TIFFmemcmp(tif->tif_dir.td_transferfunction[0],tif->tif_dir.td_transferfunction[1],m*sizeof(uint16)))
+ 		    !_TIFFmemcmp(tif->tif_dir.td_transferfunction[0],tif->tif_dir.td_transferfunction[1],m*sizeof(uint16_t)))
 +#else
-+		if (!_TIFFmemcmp(tif->tif_dir.td_transferfunction[0],tif->tif_dir.td_transferfunction[1],m*sizeof(uint16)))
++		if (!_TIFFmemcmp(tif->tif_dir.td_transferfunction[0],tif->tif_dir.td_transferfunction[1],m*sizeof(uint16_t)))
 +#endif
  			n=1;
  	}

@@ -62,7 +62,7 @@ make -j$(nproc) poppler poppler-cpp pdfimages pdftoppm
 EXTRA=""
 
 cp "$WORK/poppler/utils/"{pdfimages,pdftoppm} "$OUT/"
-$CXX $CXXFLAGS -std=c++11 -I"$TARGET/repo/cpp" \
+$CXX $CXXFLAGS -std=c++11 -I"$WORK/poppler/cpp" -I"$TARGET/repo/cpp" \
     "$TARGET/src/pdf_fuzzer.cc" -o "$OUT/pdf_fuzzer" \
     "$WORK/poppler/cpp/libpoppler-cpp.a" "$WORK/poppler/libpoppler.a" \
     "$WORK/lib/libfreetype.a" $LDFLAGS $LIBS -ljpeg -lz \

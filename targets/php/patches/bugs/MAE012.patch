@@ -7,16 +7,16 @@ index c566f4e6ae..0d3be92204 100644
  	GETSHORT(dlen, cp);
  	CHECKCP(dlen);
 +	#ifdef MAGMA_ENABLE_FIXES
-     if (dlen == 0) {
-         /* No data in the response - nothing to do */
-         return NULL;
-     }
+	if (dlen == 0) {
+ 		/* No data in the response - nothing to do */
+ 		return NULL;
+ 	}
 +	#else
-+    	#ifdef MAGMA_ENABLE_CANARIES
-+    		MAGMA_LOG("MAE012", dlen == 0);
-+    	#endif
++		#ifdef MAGMA_ENABLE_CANARIES
++			MAGMA_LOG("MAE012", dlen == 0);
++		#endif
 +	#endif
-     if (type_to_fetch != DNS_T_ANY && type != type_to_fetch) {
+ 	if (type_to_fetch != DNS_T_ANY && type != type_to_fetch) {
  		cp += dlen;
  		return cp;
 @@ -557,9 +563,15 @@ static u_char *php_parserr(u_char *cp, u_char *end, querybuf *answer, int type_t
