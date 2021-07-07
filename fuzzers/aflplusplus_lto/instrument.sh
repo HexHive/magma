@@ -19,7 +19,7 @@ export AR="${LLVM_PATH}/llvm-ar"
 export LD="${LLVM_PATH}/ld.lld"
 export NM="${LLVM_PATH}/llvm-nm"
 
-export LIBS="$LIBS -lstdc++ $FUZZER/repo/examples/aflpp_driver/libAFLDriver.a"
+export LIBS="$LIBS -lstdc++ $FUZZER/repo/utils/aflpp_driver/libAFLDriver.a"
 
 # Some targets do not support a static AFL memory region
 DYNAMIC_TARGETS=(php openssl)

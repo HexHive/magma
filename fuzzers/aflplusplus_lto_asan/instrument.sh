@@ -10,14 +10,24 @@ set -e
 # - env CFLAGS and CXXFLAGS must be set to link against Magma instrumentation
 ##
 
-export CC="$FUZZER/repo/afl-clang-fast"
-export CXX="$FUZZER/repo/afl-clang-fast++"
-export AS="llvm-as"
+export CC="$FUZZER/repo/afl-clang-lto"
+export CXX="$FUZZER/repo/afl-clang-lto++"
+export AFL_USE_ASAN=1
+LLVM_PATH=/usr/lib/llvm-11/bin
+export AS="${LLVM_PATH}/llvm-as"
+export RANLIB="${LLVM_PATH}/llvm-ranlib"
+export AR="${LLVM_PATH}/llvm-ar"
+export LD="${LLVM_PATH}/ld.lld"
+export NM="${LLVM_PATH}/llvm-nm"
 
-export LIBS="$LIBS -lc++ -lc++abi $FUZZER/repo/utils/aflpp_driver/libAFLDriver.a"
+export LIBS="$LIBS -lstdc++ $FUZZER/repo/utils/aflpp_driver/libAFLDriver.a"
 
-# AFL++'s driver is compiled against libc++
-export CXXFLAGS="$CXXFLAGS -stdlib=libc++"
+# Some targets do not support a static AFL memory region
+DYNAMIC_TARGETS=(php openssl)
+TARGET_NAME="$(basename $TARGET)"
+if [[ " ${DYNAMIC_TARGETS[@]} " =~ " $TARGET_NAME " ]]; then
+    export AFL_LLVM_MAP_DYNAMIC=1
+fi
 
 # Build the AFL-only instrumented version
 (
@@ -33,7 +43,6 @@ export CXXFLAGS="$CXXFLAGS -stdlib=libc++"
 (
     export OUT="$OUT/cmplog"
     export LDFLAGS="$LDFLAGS -L$OUT"
-    # export CFLAGS="$CFLAGS -DMAGMA_DISABLE_CANARIES"
 
     export AFL_LLVM_CMPLOG=1
 

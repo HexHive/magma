@@ -17,7 +17,6 @@ export CXX=clang++
 export AFL_NO_X86=1
 export PYTHON_INCLUDE=/
 make -j$(nproc) || exit 1
-make -C llvm_mode -j$(nproc) || exit 1
-make -C examples/aflpp_driver || exit 1
+make -C utils/aflpp_driver || exit 1
 
 mkdir -p "$OUT/afl" "$OUT/cmplog"
