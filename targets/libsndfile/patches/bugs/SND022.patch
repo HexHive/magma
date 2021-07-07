@@ -5,18 +5,18 @@ index 744e354..57da681 100644
 @@ -850,9 +850,17 @@ f2ulaw_array (const float *ptr, int count, unsigned char *buffer, float normfact
  static inline void
  d2ulaw_array (const double *ptr, int count, unsigned char *buffer, double normfact)
- {	while (--count >= 0)
+ {	for (int i = 0 ; i < count ; i++)
 +#ifdef MAGMA_ENABLE_FIXES
- 	{	if (!isfinite (ptr [count]))
- 			buffer [count] = 0 ;
- 		else if (ptr [count] >= 0)
+ 	{	if (!isfinite (ptr [i]))
+ 			buffer [i] = 0 ;
+ 		else if (ptr [i] >= 0)
 +#else
 +	{
 +#ifdef MAGMA_ENABLE_CANARIES
-+        MAGMA_LOG("SND022", !isfinite(ptr[count]));
++		MAGMA_LOG("SND022", !isfinite(ptr[i]));
 +#endif
-+		if (ptr [count] >= 0)
++		if (ptr [i] >= 0)
 +#endif
- 			buffer [count] = ulaw_encode [psf_lrint (normfact * ptr [count])] ;
+ 			buffer [i] = ulaw_encode [psf_lrint (normfact * ptr [i])] ;
  		else
- 			buffer [count] = 0x7F & ulaw_encode [- psf_lrint (normfact * ptr [count])] ;
+ 			buffer [i] = 0x7F & ulaw_encode [- psf_lrint (normfact * ptr [i])] ;

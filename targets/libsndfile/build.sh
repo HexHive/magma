@@ -13,12 +13,10 @@ if [ ! -d "$TARGET/repo" ]; then
     exit 1
 fi
 
-# build the libpng library
 cd "$TARGET/repo"
-#sed -i "s@FUZZ_LDADD = libstandaloneengine.la@FUZZ_LDADD = ossfuzz/libstandaloneengine.la@" Makefile.am
 ./autogen.sh
 ./configure --disable-shared --enable-ossfuzzers
 make -j$(nproc) clean
-make -j$(nproc) V=1
+make -j$(nproc)
 
 cp -v ossfuzz/sndfile_fuzzer $OUT/

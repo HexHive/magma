@@ -1,8 +1,6 @@
-diff --git a/Makefile.am b/Makefile.am
-index 0b8bfa1..72a144e 100644
 --- a/Makefile.am
 +++ b/Makefile.am
-@@ -450,7 +450,7 @@ if USE_OSSFUZZ_STATIC
+@@ -450,7 +450,7 @@
  FUZZ_LDADD = $(LIB_FUZZING_ENGINE)
  FUZZ_FLAG =
  else
@@ -11,3 +9,32 @@ index 0b8bfa1..72a144e 100644
  FUZZ_FLAG =
  endif
  endif
+--- a/src/ALAC/alac_encoder.c
++++ b/src/ALAC/alac_encoder.c
+@@ -44,11 +44,7 @@
+ #include "ALACAudioTypes.h"
+ #include "EndianPortable.h"
+ 
+-typedef enum
+-{
+-	false = 0,
+-	true = 1
+-} bool ;
++#include <stdbool.h>
+ 
+ static void     GetConfig (ALAC_ENCODER *p, ALACSpecificConfig * config) ;
+ 
+--- a/src/ALAC/alac_decoder.c
++++ b/src/ALAC/alac_decoder.c
+@@ -38,10 +38,7 @@
+ #include "ALACBitUtilities.h"
+ #include "EndianPortable.h"
+ 
+-typedef enum
+-{	false = 0,
+-	true = 1
+-} bool ;
++#include <stdbool.h>
+ 
+ // constants/data
+ const uint32_t kMaxBitDepth = 32 ; 			// max allowed bit depth is 32
