@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<browserconfig>
+    <msapplication>
+        <tile>
+            <square150x150logo src="/magma/assets/ico/mstile-150x150.png?v=1.2"/>
+            <TileColor>#f8f8f8</TileColor>
+        </tile>
+    </msapplication>
+</browserconfig>

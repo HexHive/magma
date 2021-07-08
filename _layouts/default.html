@@ -4,11 +4,22 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
 {% seo %}
+
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ '/assets/ico/apple-touch-icon.png?v=' | append: site.github.build_revision | relative_url }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ '/assets/ico/favicon-32x32.png?v=' | append: site.github.build_revision | relative_url }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ '/assets/ico/favicon-16x16.png?v=' | append: site.github.build_revision | relative_url }}">
+    <link rel="manifest" href="{{ '/assets/ico/site.webmanifest?v=' | append: site.github.build_revision | relative_url }}">
+    <link rel="mask-icon" href="{{ '/assets/ico/safari-pinned-tab.svg?v=' | append: site.github.build_revision | relative_url }}" color="#262626">
+    <link rel="shortcut icon" href="{{ '/assets/ico/favicon.ico?v=' | append: site.github.build_revision | relative_url }}">
+    <meta name="apple-mobile-web-app-title" content="Magma">
+    <meta name="application-name" content="Magma">
+    <meta name="msapplication-TileColor" content="#f8f8f8">
+    <meta name="msapplication-config" content="{{ '/assets/ico/browserconfig.xml?v=' | append: site.github.build_revision | relative_url }}">
+    <meta name="theme-color" content="#f8f8f8">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <link rel="stylesheet" href="{{ "/assets/css/style.css?v=" | append: site.github.build_revision | relative_url }}">
-    <link rel="shortcut icon" type="image/x-icon" href="{{ '/assets/svg/logo.ico' | relative_url }}">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
