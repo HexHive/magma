@@ -20,7 +20,7 @@ allows a monitoring utility to measure fuzzer progress in real time.</p>
 building Magma targets and running campaigns.</p>
 
 <p>Check out a <a href="{{ '/reports/sample_2/' | relative_url }}">sample Magma report</a>
-and read the <a href="https://arxiv.org/abs/2009.01120">paper preprint</a>.
+and read the <a href="https://hexhive.epfl.ch/publications/files/21SIGMETRICS.pdf">paper</a>.
 Questions, comments, and feedback are welcome!</p>
 </div>
 <div class="thumbnail center">
