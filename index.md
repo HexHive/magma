@@ -66,8 +66,10 @@ Magma. These targets were chosen from the Google
 are actively updated and developed:
 
 1. libpng
+1. libsndfile
 1. libtiff
 1. libxml2
+1. lua
 1. poppler
 1. openssl
 1. sqlite3
