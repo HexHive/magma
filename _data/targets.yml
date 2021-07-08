@@ -25,3 +25,11 @@ sqlite3:
 php:
   display_name: PHP
   url: https://github.com/php/php-src
+
+lua:
+  display_name: Lua
+  url: https://github.com/lua/lua
+
+libsndfile:
+  display_name: libsndfile
+  url: https://github.com/libsndfile/libsndfile
