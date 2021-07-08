@@ -24,7 +24,7 @@ and read the <a href="https://hexhive.epfl.ch/publications/files/21SIGMETRICS.pd
 Questions, comments, and feedback are welcome!</p>
 </div>
 <div class="thumbnail center">
-<a href="https://arxiv.org/abs/2009.01120">
+<a href="https://hexhive.epfl.ch/publications/files/21SIGMETRICS.pdf">
 <img class="thumbnail" src="{{ '/assets/img/preprint.png' | relative_url }}">
 </a>
 </div>
