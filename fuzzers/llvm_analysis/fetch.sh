@@ -9,4 +9,4 @@ set -e
 
 export GOPATH="$FUZZER/repo/go"
 mkdir -p $GOPATH
-go get github.com/SRI-CSL/gllvm/cmd/...@v1.3.0
+go get github.com/SRI-CSL/gllvm/cmd/...
