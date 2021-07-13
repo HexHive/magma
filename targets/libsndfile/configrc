@@ -1,1 +1,3 @@
 PROGRAMS=(sndfile_fuzzer)
+
+sndfile_fuzzer_ARGS="@@"
