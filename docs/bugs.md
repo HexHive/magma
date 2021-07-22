@@ -42,7 +42,11 @@ The following PoC dumps are also available:
         {% for row in rows %}
                 <tr>
                     <td><a href="{{ site.github.repository_url }}/tree/master/targets/{{ target }}/patches/bugs/{{ row.bug }}.patch">{{ row.bug }}</a></td>
+                    {% if row.identifier contains "CVE" %}
+                    <td><a href="https://cve.mitre.org/cgi-bin/cvename.cgi?name={{ row.identifier }}">{{ row.identifier }}</a></td>
+                    {% else %}
                     <td>{{ row.identifier }}</td>
+                    {% endif %}
                 </tr>
         {% endfor %}
             </tbody>
