@@ -19,5 +19,5 @@ git -C "$FUZZER/symcc" submodule update
 git clone --no-checkout https://github.com/Z3Prover/z3.git "$FUZZER/z3"
 git -C "$FUZZER/z3" checkout 897cbf347bcf73ac986d50636b15f09968130880
 
-git clone --no-checkout https://github.com/llvm/llvm-project.git "$FUZZER/llvm"
-git -C "$FUZZER/llvm" checkout 29cc50e17a6800ca75cd23ed85ae1ddf3e3dcc14
+git clone --depth 1 -b release/11.x \
+    https://github.com/llvm/llvm-project.git "$FUZZER/llvm"
