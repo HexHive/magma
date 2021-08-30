@@ -17,6 +17,6 @@ cd "$TARGET/repo"
 ./autogen.sh
 ./configure --disable-shared --enable-ossfuzzers
 make -j$(nproc) clean
-make -j$(nproc)
+make -j$(nproc) ossfuzz/sndfile_fuzzer
 
 cp -v ossfuzz/sndfile_fuzzer $OUT/
