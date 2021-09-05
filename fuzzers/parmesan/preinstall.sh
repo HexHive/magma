@@ -5,11 +5,14 @@ apt-get update && \
     apt-get install -y make build-essential git golang-go \
     python-pip python-dev wget zlib1g-dev libtinfo-dev
 
-# Install newer CMake (than Ubuntu repos)
-wget -O /tmp/cmake.sh https://github.com/Kitware/CMake/releases/download/v3.20.5/cmake-3.20.5-linux-x86_64.sh
-mkdir -p /opt/cmake
-/bin/bash /tmp/cmake.sh --skip-license --exclude-subdir --prefix=/opt/cmake
-rm -f /tmp/cmake.sh
+# Installl CMake from Kitware apt repository
+wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | \
+    gpg --dearmor - | \
+    tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null
+echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ bionic main' | \
+    tee /etc/apt/sources.list.d/kitware.list >/dev/null
+apt-get update && \
+    apt-get install -y cmake
 
 # Adapted from parmesan/build/install_tools.sh (because it needs to be run as root)
 pip install --upgrade pip==9.0.3
