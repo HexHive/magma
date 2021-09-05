@@ -22,7 +22,7 @@ export CXX="$FUZZER/repo/bin/angora-clang++"
     export LDFLAGS="$LDFLAGS -L$OUT"
 
     export USE_FAST=1
-    export LIBS="$LIBS -l:angora_driver.o -lstdc++"
+    export LIBS="$LIBS -l:angora_driver.o"
 
     "$MAGMA/build.sh"
     "$TARGET/build.sh"
@@ -52,7 +52,7 @@ export CXX="$FUZZER/repo/bin/angora-clang++"
 (
     export OUT="$OUT/angora-track"
     export LDFLAGS="$LDFLAGS -L$OUT -L$FUZZER/repo/bin/lib"
-    export LIBS="$LIBS -l:angora_driver.o -lstdc++"
+    export LIBS="$LIBS -l:angora_driver.o"
 
     export USE_TRACK=1
     export ANGORA_TAINT_RULE_LIST="$TARGET/repo/abilist.txt"
