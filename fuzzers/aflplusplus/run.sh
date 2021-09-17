@@ -11,7 +11,7 @@
 # - env FUZZARGS: extra arguments to pass to the fuzzer
 ##
 
-if nm "$OUT/afl/$PROGRAM" | grep -E '^[0-9a-f]+\s+W\s+main$'; then
+if nm "$OUT/afl/$PROGRAM" | grep -E '^[0-9a-f]+\s+[Ww]\s+main$'; then
     ARGS="-"
 fi
 
