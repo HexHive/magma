@@ -21,7 +21,7 @@ index d5fa08c..9a2e9b3 100644
     row_bytes = PNG_ROWBYTES(max_pixel_depth, row_bytes) +
         1 + ((max_pixel_depth + 7) >> 3U);
  
-+#if MAGMA_ENABLE_CANARIES
++#ifdef MAGMA_ENABLE_CANARIES
 +    /* Since width is initially aligned on the next larger 8 pixels,
 +     * the lowest 3 bits of row_bytes are initially all zeroes.
 +     * The PNG_ROWBYTES() operation is merely a product, so the lowest
