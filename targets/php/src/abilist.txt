@@ -1,0 +1,15 @@
+fun:make_fcontext=uninstrumented
+fun:jump_fcontext=uninstrumented
+fun:_ZNKSt3__120__vector_base_commonILb1EE20__throw_length_errorEv=uninstrumented
+fun:make_fcontext=discard
+fun:jump_fcontext=discard
+fun:_ZNKSt3__120__vector_base_commonILb1EE20__throw_length_errorEv=discard
+
+fun:__ctype_get_mb_cur_max=uninstrumented
+fun:bcmp=uninstrumented
+fun:strtok_r=uninstrumented
+fun:sysconf=uninstrumented
+fun:__ctype_get_mb_cur_max=discard
+fun:bcmp=discard
+fun:strtok_r=discard
+fun:sysconf=discard
