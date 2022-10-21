@@ -2,7 +2,7 @@
 set -e
 
 apt-get update && \
-    apt-get install -y make build-essential clang-9 git golang-go
+    apt-get install -y make build-essential clang-9 git wget
 
 update-alternatives \
   --install /usr/lib/llvm              llvm             /usr/lib/llvm-9  20 \
@@ -32,3 +32,5 @@ update-alternatives \
   --install /usr/bin/clang                 clang                  /usr/bin/clang-9     20 \
   --slave   /usr/bin/clang++               clang++                /usr/bin/clang++-9 \
   --slave   /usr/bin/clang-cpp             clang-cpp              /usr/bin/clang-cpp-9
+
+wget -qO- https://go.dev/dl/go1.19.1.linux-amd64.tar.gz | tar xz -C /usr/local/ --strip-components=1

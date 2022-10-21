@@ -6,7 +6,6 @@ set -e
 # - env FUZZER: path to fuzzer work dir
 ##
 
-
 export GOPATH="$FUZZER/repo/go"
 mkdir -p $GOPATH
-go get github.com/SRI-CSL/gllvm/cmd/...
+go install github.com/SRI-CSL/gllvm/cmd/...@latest
