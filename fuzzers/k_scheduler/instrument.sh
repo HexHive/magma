@@ -19,8 +19,8 @@ export LLVM_CXX_NAME="clang++"
 export CC="gclang"
 export CXX="gclang++"
 
-export CFLAGS="-fsanitize-coverage=trace-pc-guard,no-prune -O2 -fno-omit-frame-pointer -gline-tables-only"
-export CXXFLAGS="-fsanitize-coverage=trace-pc-guard,no-prune -O2 -fno-omit-frame-pointer -gline-tables-only"
+export CFLAGS="$CFLAGS -fsanitize-coverage=trace-pc-guard,no-prune -O2 -fno-omit-frame-pointer -gline-tables-only"
+export CXXFLAGS="$CXXFLAGS -fsanitize-coverage=trace-pc-guard,no-prune -O2 -fno-omit-frame-pointer -gline-tables-only"
 
 export LIBS="$LIBS -l:afl_llvm_rt_driver.a -lstdc++"
 
