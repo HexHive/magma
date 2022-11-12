@@ -14,4 +14,8 @@ go install github.com/SRI-CSL/gllvm/cmd/...@latest
 
 git clone --no-checkout https://github.com/Dongdongshe/K-Scheduler "$FUZZER/repo/kscheduler"
 git -C "$FUZZER/repo/kscheduler" checkout 36bc5aa658fa7c9716aee08a8ff22419f28e3fe9
-cp "$FUZZER/src/afl_driver.cpp" "$FUZZER/repo/kscheduler/libfuzzer_integration/llvm_11.0.1/compiler-rt/lib/fuzzer/afl/"
+
+sed -i '{s/^int main/__attribute__((weak)) &/}' \
+    "$FUZZER/repo/kscheduler/libfuzzer_integration/llvm_11.0.1/compiler-rt/lib/fuzzer/afl/afl_driver.cpp"
+sed -i '{s/^int LLVMFuzzerTestOneInput/__attribute__((weak)) &/}' \
+    "$FUZZER/repo/kscheduler/libfuzzer_integration/llvm_11.0.1/compiler-rt/lib/fuzzer/afl/afl_driver.cpp"

@@ -19,6 +19,8 @@ sleep 5s
 
 export AFL_SKIP_CPUFREQ=1
 export AFL_NO_AFFINITY=1
+export AFL_NO_UI=1
+export AFL_DRIVER_DONT_DEFER=1
 
 "$FUZZER/repo/kscheduler/afl_integration/afl-2.52b_kscheduler/afl-fuzz" \
     -m 100M -i "$TARGET/corpus/$PROGRAM" -o "$SHARED/findings" \

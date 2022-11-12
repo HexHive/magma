@@ -14,15 +14,16 @@ export PATH="/usr/local/go/bin:$PATH"
 export GOPATH="$FUZZER/repo/go"
 export PATH="$GOPATH/bin:$PATH"
 
+export CFLAGS="$CFLAGS -O2 -fsanitize-coverage=trace-pc-guard,no-prune -fno-omit-frame-pointer -gline-tables-only -fsanitize=fuzzer-no-link"
+export CXXFLAGS="$CXXFLAGS -O2 -fsanitize-coverage=trace-pc-guard,no-prune -fno-omit-frame-pointer -gline-tables-only -fsanitize=fuzzer-no-link"
+export LDFLAGS="$LDFLAGS -fsanitize=fuzzer-no-link"
+
 export LLVM_CC_NAME="clang"
 export LLVM_CXX_NAME="clang++"
 export CC="gclang"
 export CXX="gclang++"
 
-export CFLAGS="$CFLAGS -fsanitize-coverage=trace-pc-guard,no-prune -O2 -fno-omit-frame-pointer -gline-tables-only"
-export CXXFLAGS="$CXXFLAGS -fsanitize-coverage=trace-pc-guard,no-prune -O2 -fno-omit-frame-pointer -gline-tables-only"
-
-export LIBS="$LIBS -l:afl_llvm_rt_driver.a -lstdc++"
+export LIBS="$LIBS -l:afl_driver.o -l:afl-llvm-rt.o -lstdc++"
 
 "$MAGMA/build.sh"
 "$TARGET/build.sh"
