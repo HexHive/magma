@@ -5,7 +5,7 @@
 # - env SHARED: path to directory shared with host (to store results)
 ##
 
-CRASH_DIR="$SHARED/findings/crashes"
+CRASH_DIR="$SHARED/findings/default/crashes"
 
 if [ ! -d "$CRASH_DIR" ]; then
     exit 1
