@@ -14,6 +14,8 @@ fi
 cd "$FUZZER/repo/kscheduler/afl_integration/afl-2.52b_kscheduler"
 make clean
 make -j $(nproc)
+make -j $(nproc) -C llvm_mode ../afl-llvm-rt.o
+cp afl-llvm-rt.o $OUT
 
 export PATH="/usr/local/go/bin:$PATH"
 export GOPATH="$FUZZER/repo/go"
@@ -27,10 +29,7 @@ export LLVM_CXX_NAME="clang++"
 export CC="gclang"
 export CXX="gclang++"
 
-# Build AFL driver and runtime
+# Build AFL driver
 $CXX -std=c++11 -c \
     "$FUZZER/repo/kscheduler/libfuzzer_integration/llvm_11.0.1/compiler-rt/lib/fuzzer/afl/afl_driver.cpp" \
     -o "$OUT/afl_driver.o"
-$CC -c -w \
-    "$FUZZER/repo/kscheduler/afl_integration/afl-2.52b_kscheduler/llvm_mode/afl-llvm-rt.o.c" \
-    -o "$OUT/afl-llvm-rt.o"

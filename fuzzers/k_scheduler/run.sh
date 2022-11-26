@@ -13,7 +13,7 @@
 
 mkdir -p "$SHARED/findings"
 
-cd $OUT
+cd "$OUT/${PROGRAM}_out"
 python3 "$FUZZER/repo/kscheduler/afl_integration/build_example/gen_dyn_weight.py" 2>&1 &
 sleep 5s
 
