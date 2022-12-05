@@ -1,13 +1,14 @@
-import pandas as pd
-from pandas import DataFrame
-import numpy as np
 import sys
 import json
+import numpy as np
+import pandas as pd
+from pandas import DataFrame
 from collections import Mapping, Iterable
+import Constants
 
 INDEX_NAMES = ['Fuzzer', 'Target','Program','Campaign','Metric','BugID']
 
-#TODO add retrival of experiment infomation (Campaign duration)
+# TODO add retrieval of experiment information (Campaign duration)
 class BenchmarkData:
 
     def __init__(self,filename, **kwargs):
@@ -62,7 +63,7 @@ class BenchmarkData:
         df.rename(columns={0: 'Time'}, inplace=True)
         # change index names
         df.rename_axis(index=INDEX_NAMES, inplace=True)
-        #Sorting for later performance gain
+        # sorting for later performance gain
         self._df = df.sort_index()
 
         # save configuration parameters
@@ -75,11 +76,11 @@ class BenchmarkData:
 
     @property
     def duration(self):
-        return self._config.get('duration', 24 * 60 * 60)
+        return self._config.get('duration', Constants.DEFAULT_DURATION)
 
     @property
     def trials(self):
-        return self._config.get('trials', 10)
+        return self._config.get('trials', Constants.DEFAULT_TRIALS)
 
     @property
     def version(self):
