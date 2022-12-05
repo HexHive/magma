@@ -331,7 +331,7 @@ def bug_survival_data(bd):
             ]
             group = group.append(new_rows, ignore_index=True)
 
-        group = group.groupby('Fuzzer').apply(fillmissing, name).reset_index(drop=True)
+        group = group.groupby('Fuzzer', group_keys=False).apply(fillmissing, name).reset_index(drop=True)
 
         subgroups = group.groupby(['Fuzzer','Metric']).apply(fit_kmf_one, name, N)
         return subgroups
