@@ -302,15 +302,15 @@ def bug_survival_data(bd):
             metrics = set(['reached', 'triggered'])
             group_metrics = set(group['Metric'].unique())
             for metric in metrics.difference(group_metrics):
-                new_row = pd.Series({
+                new_row = pd.DataFrame({
                     'Fuzzer': fuzzer,
                     'Target': target,
                     'Program': program,
                     'Campaign': 0,
                     'Metric': metric,
                     'BugID': bug
-                })
-                group = group.append(new_row, ignore_index=True)
+                }, index=[metric])
+                group = pd.concat([group, new_row], ignore_index=True)
             return group
 
         name = group.name
@@ -319,17 +319,18 @@ def bug_survival_data(bd):
         for fuzzer in fuzzers:
             if fuzzer in fuzzers_in_group:
                 continue
-            new_rows = [
-                pd.Series({
+            # reached bugs
+            new_row = pd.DataFrame({
                     'Fuzzer': fuzzer,
                     'Metric': 'reached'
-                }),
-                pd.Series({
+                }, index=['Metric'])
+            group = pd.concat([group, new_row], ignore_index=True)
+            # triggered bugs
+            new_row = pd.DataFrame({
                     'Fuzzer': fuzzer,
                     'Metric': 'triggered'
-                }),
-            ]
-            group = group.append(new_rows, ignore_index=True)
+                }, index=['Metric'])
+            group = pd.concat([group, new_row], ignore_index=True)
 
         group = group.groupby('Fuzzer', group_keys=False).apply(fillmissing, name).reset_index(drop=True)
 
