@@ -109,7 +109,6 @@ def unique_bugs_per_target(bd, outdir, metric, libraries=None, symmetric=False, 
 
     for ax in axs.flat[len(libraries):]:
         fig.delaxes(ax)
-    fig.tight_layout(pad=2.0)
 
     sigmatrix, path = output(outdir, 'plot', 'summary_signplot.svg')
     fig.savefig(path, bbox_inches='tight')
@@ -226,7 +225,6 @@ def line_plot_unique_bugs(bd, outdir, fuzzers, target, metric) :
         axes.set_title(fuzzer)
         axes.set_ylim((0, y_max + 5))
         axes.set_xlim((x_min, x_max + 5))
-    plt.tight_layout(pad=2.0)
 
     name, path = output(outdir, 'plot', 'lineplot.svg')
     fig.savefig(path, bbox_inches='tight')
