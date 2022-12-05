@@ -11,7 +11,7 @@ import scipy.stats as ss
 
 def average_time_to_metric_data(bd,metric) :
     """
-    Reshapes the intial dataframe in a way to obtain the mean and
+    Reshapes the initial dataframe in a way to obtain the mean and
     variance of the number of bugs that have satisfied the metric
 
     :param bd: { A BenchmarkData object loaded from experiment summary file }
@@ -176,7 +176,7 @@ def number_of_unique_bugs_found_data(bd):
     df = bd.frame
     #Extracting all found bugs
     df_triggered = df.iloc[df.index.get_level_values('Metric') == Metric.TRIGGERED.value]
-    #Reseting the index is necessary to get the number of unique bugs triggered by each fuzzer
+    #Resetting the index is necessary to get the number of unique bugs triggered by each fuzzer
     num_trigg = df_triggered.reset_index().groupby(['Fuzzer'])['BugID'].nunique().to_frame()
     num_trigg.columns = ['Bugs']
     return num_trigg
@@ -207,13 +207,13 @@ def bug_list(bd,fuzzer,target,metric):
     df_bugs = df_bugs.loc[fuzzer,target].groupby('BugID')['Time'].apply(list)
     #Preparing the new index to be the bugs
     index = df_bugs.index.tolist()
-    #Reseting the index and converting the data in the column Time into a new Dataframe
+    #Resetting the index and converting the data in the column Time into a new Dataframe
     d = pd.DataFrame(df_bugs.reset_index()['Time'].to_list(),index = index)
     return d
 
 def line_plot_data(bd,target,metric) :
     """
-    Returns a Dataframe that has a row for every fuzzer and 3 columns (x,y,ci) representing repectively
+    Returns a Dataframe that has a row for every fuzzer and 3 columns (x,y,ci) representing respectively
     the datapoints to place on x and y axis alongside with the error margin
 
     :param bd: { A BenchmarkData object loaded from experiment summary file }
@@ -261,7 +261,7 @@ def line_plot_data(bd,target,metric) :
     x_plot.columns = ['x']
     y_plot = x_plot
     index = x_plot.index
-    #Reseting index to be able to pass index values as argument
+    #Resetting index to be able to pass index values as argument
     y_plot = y_plot.reset_index()
     y_plot = y_plot.apply(lambda f : get_step_value(f['Fuzzer'],f['x'],df_lib),axis=1).to_frame()
     y_plot.index = index

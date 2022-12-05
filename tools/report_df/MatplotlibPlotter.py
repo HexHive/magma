@@ -70,7 +70,7 @@ def expected_time_to_trigger(bd, outdir):
 def unique_bugs_per_target(bd, outdir, metric, libraries=None, symmetric=False, ncols=3):
     """
     Creates a 2D array plot representing the statistical significance
-    between every pair of fuzzers on a target libary
+    between every pair of fuzzers on a target library
 
     :param bd: { A BenchmarkData object loaded from experiment summary file }
     :type  bd: { BenchmarkData }
@@ -135,7 +135,7 @@ def unique_bugs_per_target(bd, outdir, metric, libraries=None, symmetric=False, 
 def bug_metric_boxplot(bd, outdir):
     """
     Create box plot graph showing the time distribution
-    of bugs who satisfid the metric
+    of bugs who satisfied the metric
 
     :param bd: { A BenchmarkData object loaded from experiment summary file }
     :type  bd: { BenchmarkData }
@@ -179,7 +179,7 @@ def bug_metric_boxplot(bd, outdir):
 
     return outfiles
 
-def line_plot_unqiue_bugs(bd, outdir, fuzzers, target, metric) :
+def line_plot_unique_bugs(bd, outdir, fuzzers, target, metric) :
     """
     Creates a line plot for each fuzzer,target pair
     If fuzzers is empty then a plot for every known fuzzer will be computed
