@@ -390,17 +390,17 @@ def bug_survival_plots(bd, outdir):
     hiliter.template = style_tpl
     heatmap.template = style_tpl
 
-    table_html = re.sub(r'colspan=(\d+)', r'colspan="\1"', styler.render())
+    table_html = re.sub(r'colspan=(\d+)', r'colspan="\1"', styler.to_html())
     table_name, path = output(outdir, 'data', 'mean_survival.html')
     with open(path, 'w') as f:
         f.write(table_html)
 
-    hiliter_css = '\n'.join(hiliter.render().split('\n')[1:-1]) + '}'
+    hiliter_css = '\n'.join(hiliter.to_html().split('\n')[1:-1]) + '}'
     hiliter_name, path = output(outdir, 'css', 'survival_hiliter.css')
     with open(path, 'w') as f:
         f.write(hiliter_css)
 
-    heatmap_css = '\n'.join(heatmap.render().split('\n')[1:-1]) + '}'
+    heatmap_css = '\n'.join(heatmap.to_html().split('\n')[1:-1]) + '}'
     heatmap_name, path = output(outdir, 'css', 'survival_heatmap.css')
     with open(path, 'w') as f:
         f.write(heatmap_css)
