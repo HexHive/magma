@@ -46,7 +46,7 @@ fi
 
 # launch the fuzzer in parallel with the monitor
 rm -f "$MONITOR/tmp"*
-polls=("$MONITOR"/*)
+polls=($(ls ${MONITOR}))
 if [ ${#polls[@]} -eq 0 ]; then
     counter=0
 else
