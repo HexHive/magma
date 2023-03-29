@@ -41,12 +41,16 @@ if [ ! -z $HARDEN ]; then
     harden_flag="--build-arg harden=1"
 fi
 
+GROUP_ID=$(id -g $USER)
+USER_ID=$(id -u $USER)
+test "$GROUP_ID" = "0" && GROUP_ID=1000
+test "$USER_ID" = "0" && USER_ID=1000
 set -x
 docker build -t "$IMG_NAME" \
     --build-arg fuzzer_name="$FUZZER" \
     --build-arg target_name="$TARGET" \
-    --build-arg USER_ID=$(id -u $USER) \
-    --build-arg GROUP_ID=$(id -g $USER) \
+    --build-arg USER_ID=$USER_ID \
+    --build-arg GROUP_ID=$GROUP_ID \
     $mode_flag $isan_flag $harden_flag \
     -f "$MAGMA/docker/Dockerfile" "$MAGMA"
 set +x
