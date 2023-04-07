@@ -7,7 +7,7 @@ set -e
 ##
 
 git clone --no-checkout https://github.com/AFLplusplus/AFLplusplus "$FUZZER/repo"
-git -C "$FUZZER/repo" checkout 71e2aa5d2bb99bd7edc2efcebd52eee5736c35fd
+git -C "$FUZZER/repo" checkout d581128d9e2958773354567b7e29d027772ca675
 
 # Replace afl++'s LLVMFuzzerTestOneOnput driver
 # Note that this not efficient. It would be better to keep that file untouched

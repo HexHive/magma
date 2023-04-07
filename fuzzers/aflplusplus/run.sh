@@ -21,6 +21,7 @@ flag_cmplog=(-l2 -c "$OUT/cmplog/$PROGRAM")
 
 export AFL_SKIP_CPUFREQ=1
 export AFL_NO_AFFINITY=1
+export AFL_I_DONT_CARE_ABOUT_MISSING_CRASHES=1
 export AFL_NO_UI=1
 export AFL_MAP_SIZE=256000
 export AFL_DRIVER_DONT_DEFER=1
