@@ -12,8 +12,9 @@ if [ ! -d "$FUZZER/repo" ]; then
 fi
 
 cd "$FUZZER/repo"
-export CC=clang
-export CXX=clang++
+export CC=clang-13
+export CXX=clang++-13
+export LLVM_CONFIG=llvm-config-13
 export AFL_NO_X86=1
 export PYTHON_INCLUDE=/
 make -j$(nproc) || exit 1

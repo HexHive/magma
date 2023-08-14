@@ -35,6 +35,7 @@ test -n "$RANLIB" && EXTRA="$EXTRA -DCMAKE_RANLIB=$RANLIB"
 
 cmake "$TARGET/repo" \
   $EXTRA \
+  -DCMAKE_VERBOSE_MAKEFILE:BOOL=O \
   -DCMAKE_BUILD_TYPE=debug \
   -DBUILD_SHARED_LIBS=OFF \
   -DFONT_CONFIGURATION=generic \
@@ -58,7 +59,7 @@ cmake "$TARGET/repo" \
   -DFREETYPE_LIBRARY="$WORK/lib/libfreetype.a" \
   -DICONV_LIBRARIES="/usr/lib/x86_64-linux-gnu/libc.so" \
   -DCMAKE_EXE_LINKER_FLAGS_INIT="$LIBS"
-make -j$(nproc) poppler poppler-cpp pdfimages pdftoppm
+make VERBOSE=1 -j$(nproc) poppler poppler-cpp pdfimages pdftoppm
 EXTRA=""
 
 cp "$WORK/poppler/utils/"{pdfimages,pdftoppm} "$OUT/"

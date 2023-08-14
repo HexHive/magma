@@ -24,6 +24,8 @@ export EXTRA_CXXFLAGS="$CXXFLAGS -fno-sanitize=object-size"
 unset CFLAGS
 unset CXXFLAGS
 
+test -n "$CXXFLAGS_REQUIRED" && CXXFLAGS=$CXXFLAGS_REQUIRED
+
 #build the php library
 ./buildconf
 LIB_FUZZING_ENGINE="-Wall" ./configure \
