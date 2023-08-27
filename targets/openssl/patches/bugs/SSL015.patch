@@ -16,7 +16,7 @@ index 2cf62b62cd..f53a5e0082 100644
      }
 +#else
 +#ifdef MAGMA_ENABLE_CANARIES
-+    MAGMA_LOG("%MAGMA_BUG%", MAGMA_OR(p7 == NULL, p7->d.ptr));
++    MAGMA_LOG("%MAGMA_BUG%", MAGMA_OR(p7 == NULL, p7->d.ptr == NULL));
 +#endif
 +#endif
  
@@ -80,7 +80,7 @@ index 2cf62b62cd..f53a5e0082 100644
  
 +#else
 +#ifdef MAGMA_ENABLE_CANARIES
-+    MAGMA_LOG("%MAGMA_BUG%", MAGMA_OR(p7 == NULL, p7->d.ptr));
++    MAGMA_LOG("%MAGMA_BUG%", MAGMA_OR(p7 == NULL, p7->d.ptr == NULL));
 +#endif
 +#endif
      if (PKCS7_type_is_signed(p7)) {
