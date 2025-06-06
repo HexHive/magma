@@ -63,7 +63,7 @@ def generate_report(bd, outdir, report_title="Report", **kwargs):
     ppool = locals()
 
     env = jinja2.Environment(loader=jinja2.ChoiceLoader(
-                                        [jinja2.FileSystemLoader('templates'),
+                                        [jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), 'templates')),
                                          jinja2.FileSystemLoader(outdir)])
                             )
     base_template = env.get_template('base.md')

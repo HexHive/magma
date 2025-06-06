@@ -70,7 +70,7 @@ def expected_time_to_trigger(bd, outdir):
 def unique_bugs_per_target(bd, outdir, metric, libraries=None, symmetric=False, ncols=3):
     """
     Creates a 2D array plot representing the statistical significance
-    between every pair of fuzzers on a target libary
+    between every pair of fuzzers on a target library
 
     :param bd: { A BenchmarkData object loaded from experiment summary file }
     :type  bd: { BenchmarkData }
@@ -109,7 +109,6 @@ def unique_bugs_per_target(bd, outdir, metric, libraries=None, symmetric=False, 
 
     for ax in axs.flat[len(libraries):]:
         fig.delaxes(ax)
-    fig.tight_layout(pad=2.0)
 
     sigmatrix, path = output(outdir, 'plot', 'summary_signplot.svg')
     fig.savefig(path, bbox_inches='tight')
@@ -135,7 +134,7 @@ def unique_bugs_per_target(bd, outdir, metric, libraries=None, symmetric=False, 
 def bug_metric_boxplot(bd, outdir):
     """
     Create box plot graph showing the time distribution
-    of bugs who satisfid the metric
+    of bugs who satisfied the metric
 
     :param bd: { A BenchmarkData object loaded from experiment summary file }
     :type  bd: { BenchmarkData }
@@ -179,7 +178,7 @@ def bug_metric_boxplot(bd, outdir):
 
     return outfiles
 
-def line_plot_unqiue_bugs(bd, outdir, fuzzers, target, metric) :
+def line_plot_unique_bugs(bd, outdir, fuzzers, target, metric) :
     """
     Creates a line plot for each fuzzer,target pair
     If fuzzers is empty then a plot for every known fuzzer will be computed
@@ -226,7 +225,6 @@ def line_plot_unqiue_bugs(bd, outdir, fuzzers, target, metric) :
         axes.set_title(fuzzer)
         axes.set_ylim((0, y_max + 5))
         axes.set_xlim((x_min, x_max + 5))
-    plt.tight_layout(pad=2.0)
 
     name, path = output(outdir, 'plot', 'lineplot.svg')
     fig.savefig(path, bbox_inches='tight')
@@ -390,17 +388,17 @@ def bug_survival_plots(bd, outdir):
     hiliter.template = style_tpl
     heatmap.template = style_tpl
 
-    table_html = re.sub(r'colspan=(\d+)', r'colspan="\1"', styler.render())
+    table_html = re.sub(r'colspan=(\d+)', r'colspan="\1"', styler.to_html())
     table_name, path = output(outdir, 'data', 'mean_survival.html')
     with open(path, 'w') as f:
         f.write(table_html)
 
-    hiliter_css = '\n'.join(hiliter.render().split('\n')[1:-1]) + '}'
+    hiliter_css = '\n'.join(hiliter.to_html().split('\n')[1:-1]) + '}'
     hiliter_name, path = output(outdir, 'css', 'survival_hiliter.css')
     with open(path, 'w') as f:
         f.write(hiliter_css)
 
-    heatmap_css = '\n'.join(heatmap.render().split('\n')[1:-1]) + '}'
+    heatmap_css = '\n'.join(heatmap.to_html().split('\n')[1:-1]) + '}'
     heatmap_name, path = output(outdir, 'css', 'survival_heatmap.css')
     with open(path, 'w') as f:
         f.write(heatmap_css)
